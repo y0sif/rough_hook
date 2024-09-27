@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+    "rusty_brain",
+    "hook_lens",
+    "rough_guard",
+]
