@@ -2,6 +2,7 @@ use std::io::empty;
 
 use crate::bitboards::Bitboards;
 
+#[derive(Clone, Copy)]
 pub enum Turn {
    White,
    Black, 
@@ -21,6 +22,14 @@ impl Board {
     
     pub fn make_move(&self) {
         todo!()
+    }
+    
+    pub fn generate_moves(&self) -> Vec<(u8, u8)> {
+        let mut moves = Vec::new();
+        let mut pawn_moves = self.pawn_moves();
+        
+        moves.append(&mut pawn_moves);
+        moves
     }
     
     fn pawn_moves(&self) -> Vec<(u8, u8)> {
@@ -50,6 +59,29 @@ impl Board {
                     double_push &= double_push - 1;
                 }
                 // pawn capture
+                let not_a_file = 0xfefefefefefefefe;
+                let not_h_file = 0x7f7f7f7f7f7f7f7f;
+                
+                let enemy_pieces = self.bitboards.get_enemy_pieces(self.turn);
+
+                let mut right_captures = (self.bitboards.white_pawns << 9) & not_a_file & enemy_pieces;
+                let mut left_captures = (self.bitboards.white_pawns << 7) & not_h_file & enemy_pieces;
+                
+                while right_captures != 0 {
+                    let end_square = right_captures.trailing_zeros() as u8;
+
+                    moves.push((end_square - 9, end_square));
+                    
+                    right_captures &= right_captures - 1;
+                }
+                
+                while left_captures != 0 {
+                    let end_squares = left_captures.trailing_zeros() as u8;
+
+                    moves.push((end_squares - 7, end_squares));     
+                    
+                    left_captures &= left_captures - 1;
+                }
             },
             Turn::Black => {
                 // pawn push
@@ -75,6 +107,29 @@ impl Board {
                     double_push &= double_push - 1;
                 }
                 // pawn capture
+                let not_a_file = 0xfefefefefefefefe;
+                let not_h_file = 0x7f7f7f7f7f7f7f7f;
+                
+                let enemy_pieces = self.bitboards.get_enemy_pieces(self.turn);
+
+                let mut right_captures = (self.bitboards.black_pawns >> 7) & not_a_file & enemy_pieces;
+                let mut left_captures = (self.bitboards.black_pawns >> 9) & not_h_file & enemy_pieces;
+                
+                while right_captures != 0 {
+                    let end_square = right_captures.trailing_zeros() as u8;
+
+                    moves.push((end_square + 7, end_square));
+                    
+                    right_captures &= right_captures - 1;
+                }
+                
+                while left_captures != 0 {
+                    let end_squares = left_captures.trailing_zeros() as u8;
+
+                    moves.push((end_squares + 9, end_squares));     
+                    
+                    left_captures &= left_captures - 1;
+                }
             }
         }
         moves
