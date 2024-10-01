@@ -1,18 +1,18 @@
+use crate::board::Turn;
 pub struct Bitboards{
-    white_pawns: u64,
-    white_knights: u64,
-    white_bishops: u64,
-    white_rooks: u64,
-    white_queens: u64,
-    white_king: u64,
+    pub white_pawns: u64,
+    pub white_knights: u64,
+    pub white_bishops: u64,
+    pub white_rooks: u64,
+    pub white_queens: u64,
+    pub white_king: u64,
 
-    
-    black_pawns: u64,
-    black_knights: u64,
-    black_bishops: u64,
-    black_rooks: u64,
-    black_queens: u64,
-    black_king: u64,
+    pub black_pawns: u64,
+    pub black_knights: u64,
+    pub black_bishops: u64,
+    pub black_rooks: u64,
+    pub black_queens: u64,
+    pub black_king: u64,
 }
 
 impl Bitboards {
@@ -34,4 +34,51 @@ impl Bitboards {
             black_king: 0x0800000000000000,
         }
     }    
+
+    pub fn get_ally_pieces(&self, turn: Turn) -> u64 {
+        match turn{
+            Turn::White => {
+                self.white_bishops |
+                self.white_king |
+                self.white_knights |
+                self.white_pawns |
+                self.white_queens |
+                self.white_rooks
+            },
+            Turn::Black => {
+                self.black_bishops |
+                self.black_king |
+                self.black_knights |
+                self.black_pawns |
+                self.black_queens | 
+                self.black_rooks 
+            }
+        }
+    }
+    
+    pub fn get_enemy_pieces(&self, turn: Turn) -> u64 {
+        match turn{
+            Turn::Black => {
+                self.white_bishops |
+                self.white_king |
+                self.white_knights |
+                self.white_pawns |
+                self.white_queens |
+                self.white_rooks
+            },
+            Turn::White => {
+                self.black_bishops |
+                self.black_king |
+                self.black_knights |
+                self.black_pawns |
+                self.black_queens | 
+                self.black_rooks 
+            }
+        }
+    }
+    
+    pub fn get_empty_squares(&self) -> u64 {
+        !(self.get_ally_pieces(Turn::White) | self.get_enemy_pieces(Turn::White))
+    }
+
 }
