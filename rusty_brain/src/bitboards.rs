@@ -80,5 +80,35 @@ impl Bitboards {
     pub fn get_empty_squares(&self) -> u64 {
         !(self.get_ally_pieces(Turn::White) | self.get_enemy_pieces(Turn::White))
     }
-
+    pub fn move_north(bitboard: u64) -> u64 {
+        bitboard << 8
+    }
+    
+    pub fn move_south(bitboard: u64) -> u64 {
+        bitboard >> 8
+    }
+    
+    pub fn move_east(bitboard: u64) -> u64 {
+        (bitboard << 1) & 0xfefefefefefefefe  // return 0  if the move goes out of the board
+    }
+    
+    pub fn move_west(bitboard: u64) -> u64 {
+        (bitboard >> 1) & 0x7f7f7f7f7f7f7f7f  // return 0  if the move goes out of the board
+    }
+    
+    pub fn move_north_east(bitboard: u64) -> u64 {
+        (bitboard << 9) & 0xfefefefefefefe00 // return 0  if the move goes out of the board
+    }
+    
+    pub fn move_north_west(bitboard: u64) -> u64 {
+        (bitboard << 7) & 0x7f7f7f7f7f7f7f00 // return 0  if the move goes out of the board
+    }
+    
+    pub fn move_south_east(bitboard: u64) -> u64 {
+        (bitboard >> 7) & 0x00fefefefefefefe // return 0  if the move goes out of the board
+    }
+    
+    pub fn move_south_west(bitboard: u64) -> u64 {
+        (bitboard >> 9) & 0x007f7f7f7f7f7f7f // return 0  if the move goes out of the board
+    }
 }
