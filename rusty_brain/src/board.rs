@@ -31,17 +31,17 @@ impl Board {
         // moves.append(&mut pawn_moves);
         // moves
 
-        let mut moves = Vec::new();
-        let mut queen_moves = self.queen_moves();
-        
-        moves.append(&mut queen_moves);
-        moves
-
         // let mut moves = Vec::new();
-        // let mut rooks_moves = self.rook_moves();
+        // let mut queen_moves = self.queen_moves();
         
-        // moves.append(&mut rooks_moves);
+        // moves.append(&mut queen_moves);
         // moves
+
+        let mut moves = Vec::new();
+        let mut rooks_moves = self.rook_moves();
+        
+        moves.append(&mut rooks_moves);
+        moves
 
         //   let mut moves = Vec::new();
         //   let mut bishop_moves = self.bishop_moves();
@@ -163,7 +163,10 @@ impl Board {
             Turn::White => self.bitboards.white_bishops,
             Turn::Black=>self.bitboards.black_bishops
         };
-        // Get the light-square bishop bit board
+        
+        // Since it is impossible for two bishops to occupy the same color square (one must be on a light square and the other on a dark square),
+        // we can leverage masks to isolate the bitboards for the light-square bishop and the dark-square bishop.
+
         let light_square_bishop = piece_position & Masks::LIGHT_SQUARE_MASK;
         // Get the dark-square bishop bit board
         let dark_square_bishop = piece_position & Masks::DARK_SQUARE_MASK;
@@ -200,15 +203,33 @@ impl Board {
             Turn::White => self.bitboards.white_rooks,
             Turn::Black => self.bitboards.black_rooks
         };
-        // Get the light-square rook bitboard
-        let light_square_rook = piece_position & Masks::LIGHT_SQUARE_MASK;
-        // Get the dark-square rook bitboard
-        let dark_square_rook = piece_position & Masks::DARK_SQUARE_MASK;
 
-        Self::get_rook_moves(&mut moves, light_square_rook,empty_positions, enemy_positions);
-        Self::get_rook_moves(&mut moves, dark_square_rook,empty_positions, enemy_positions);
-
-        return moves
+        // We cannot apply the same masking technique as we did for the bishops, 
+        // as both pieces can occupy squares of the same color. 
+        // Therefore, we will use a different method to isolate the bitboards for the rooks. 
+        // 
+        // Steps of this method:
+        //   1. Isolate the least significant set bit (rightmost 1) in `piece_position`.
+        //   2. Clear the least significant set bit in `piece_position`.
+        // 
+        // Example:
+        // If the rook's position is represented as 
+        // 0000000000000000000001000000000000000000000000100000000000000000, 
+        // then:
+        //   rook1 = 0000000000000000000000000000000000000000000000100000000000000000
+        //   rook2 = 0000000000000000000001000000000000000000000000000000000000000000
+        //
+        // Note: This technique is designed to handle boards that contain only one rook.
+        match piece_position {
+            0 => return moves,
+            _ => {
+                let rook1 = piece_position & (!piece_position + 1); 
+                let rook2 = piece_position & (piece_position - 1);
+                Self::get_rook_moves(&mut moves, rook1,empty_positions, enemy_positions);
+                Self::get_rook_moves(&mut moves, rook2,empty_positions, enemy_positions);
+                return moves
+            }
+        }
     }
     // Get the the bit board of all valid positions for a rook based on its movement directions
     // And fill the moves vector with the start and end squares for each move
