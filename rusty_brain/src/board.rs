@@ -259,8 +259,59 @@ impl Board {
         return moves;
     }
     
-    fn kingt_moves(&self) -> Vec<(u8, u8)> {
-        todo!()
+    fn king_moves(&self) -> Vec<(u8, u8)> {
+
+        let mut moves: Vec<(u8, u8)> = Vec::new();
+        let empty_squares = self.bitboards.get_empty_squares();
+
+        match self.turn {
+            Turn::White => {
+                let king_square = self.bitboards.white_king.trailing_zeros() as u8;
+                let mut kingset = self.bitboards.white_king;
+                
+                let mut attacks = Bitboards::move_east(kingset) | Bitboards::move_west(kingset);
+                kingset |= attacks;
+                attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
+
+                attacks &= empty_squares;
+
+                while attacks != 0 {
+                    let end_square = attacks.trailing_zeros() as u8;
+
+                    if end_square == king_square {
+                        attacks &= attacks - 1;
+                        continue;
+                    }
+
+                    moves.push((king_square, end_square));
+                    attacks &= attacks - 1;
+                }
+
+            },
+            Turn::Black => {
+                let mut kingset = self.bitboards.black_king;
+                let king_square = self.bitboards.black_king.trailing_zeros() as u8;
+
+                let mut attacks = Bitboards::move_east(kingset) | Bitboards::move_west(kingset);
+                kingset |= attacks;
+                attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
+
+                attacks &= empty_squares;
+
+                while attacks != 0 {
+                    let end_square = attacks.trailing_zeros() as u8;
+
+                    if end_square == king_square as u8 {
+                        continue;
+                    }
+                    
+                    moves.push((king_square as u8, end_square));
+                    attacks &= attacks - 1;
+                }
+            }
+        }
+
+        moves
     }
 
     // get the bit board of valid positions that the piece can move to (in specific direction)

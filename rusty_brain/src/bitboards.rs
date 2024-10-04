@@ -30,8 +30,8 @@ impl Bitboards {
             black_bishops: 0x2400000000000000,
             black_knights: 0x4200000000000000,
             black_rooks: 0x8100000000000000,
-            black_queens: 0x1000000000000000,
-            black_king: 0x0800000000000000,
+            black_queens: 0x0800000000000000,
+            black_king: 0x1000000000000000,
         }
     }    
 
