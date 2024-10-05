@@ -47,6 +47,8 @@ mod tests {
             }else{
                 assert_eq!(moves.len(), 8);
             }
+            
+            board.bitboards.white_knights <<= 1;
         }
     }
 
