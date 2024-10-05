@@ -255,12 +255,6 @@ impl Board {
 
                 while attacks != 0 {
                     let end_square = attacks.trailing_zeros() as u8;
-
-                    if end_square == king_square {
-                        attacks &= attacks - 1;
-                        continue;
-                    }
-
                     moves.push((king_square, end_square));
                     attacks &= attacks - 1;
                 }
@@ -277,12 +271,7 @@ impl Board {
                 attacks &= empty_squares;
 
                 while attacks != 0 {
-                    let end_square = attacks.trailing_zeros() as u8;
-
-                    if end_square == king_square as u8 {
-                        continue;
-                    }
-                    
+                    let end_square = attacks.trailing_zeros() as u8;             
                     moves.push((king_square as u8, end_square));
                     attacks &= attacks - 1;
                 }
