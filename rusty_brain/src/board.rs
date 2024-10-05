@@ -1,4 +1,6 @@
 use crate::bitboards::Bitboards;
+use crate::square::Square;
+
 #[derive(Clone, Copy)]
 pub enum Turn {
    White,
@@ -320,5 +322,92 @@ impl Board {
             bitboard &= bitboard - 1;
         }
         positions
+    }
+
+    pub fn print_board(&self) {
+
+        println!("\nWhite:♚ - Black:♔\n");
+
+        for rank in (0..8).rev() {
+            print!("{} ", rank + 1);
+            for file in 0..8 {
+                let square_index = rank * 8 + file;
+                let square = Square::from(square_index as u8);
+
+                if self.bitboards.white_pawns & (1 << square_index) != 0 {
+                    print!("♟ ");
+                } 
+                else if self.bitboards.white_rooks & (1 << square_index) != 0 {
+                    print!("♜ "); 
+                } 
+                else if self.bitboards.white_knights & (1 << square_index) != 0 {
+                    print!("♞ "); 
+                } 
+                else if self.bitboards.white_bishops & (1 << square_index) != 0 {
+                    print!("♝ "); 
+                } 
+                else if self.bitboards.white_queens & (1 << square_index) != 0 {
+                    print!("♛ ");
+                } 
+                else if self.bitboards.white_king & (1 << square_index) != 0 {
+                    print!("♚ ");
+                } 
+                else if self.bitboards.black_pawns & (1 << square_index) != 0 {
+                    print!("♙ ");
+                } 
+                else if self.bitboards.black_rooks & (1 << square_index) != 0 {
+                    print!("♖ ");
+                } 
+                else if self.bitboards.black_knights & (1 << square_index) != 0 {
+                    print!("♘ ");
+                } 
+                else if self.bitboards.black_bishops & (1 << square_index) != 0 {
+                    print!("♗ ");
+                } 
+                else if self.bitboards.black_queens & (1 << square_index) != 0 {
+                    print!("♕ ");
+                } 
+                else if self.bitboards.black_king & (1 << square_index) != 0 {
+                    print!("♔ ");
+                } 
+                else {
+                    print!(". ");
+                }
+            }
+            println!(); 
+        }
+        
+        println!("  a b c d e f g h");
+
+        match self.turn {
+            Turn::White => println!("\nTurn: White"),
+            Turn::Black => println!("\nTurn: Balck",),
+        };
+        
+        println!("\nPossible moves:");
+        print!("Pawns: ");
+        for &(start, end) in &self.pawn_moves() {
+            print!("({}, {}) ", Square::from(start), Square::from(end));
+        }
+        print!("\nKing: ");
+        for &(start, end) in &self.king_moves() {
+            print!("({}, {}) ", Square::from(start), Square::from(end));
+        }
+        print!("\nQueens: ");
+        for &(start, end) in &self.queen_moves() {
+            print!("({}, {}) ", Square::from(start), Square::from(end));
+        }
+        print!("\nBishops: ");
+        for &(start, end) in &self.bishop_moves() {
+            print!("({}, {}) ", Square::from(start), Square::from(end));
+        }
+        print!("\nKnights: ");
+        //for &(start, end) in &self.knight_moves() {
+        //    print!("({}, {}) ", Square::from(start), Square::from(end));
+        //}
+        print!("\nRooks: ");
+        for &(start, end) in &self.rook_moves() {
+            print!("({}, {}) ", Square::from(start), Square::from(end));
+        }
     }
 }

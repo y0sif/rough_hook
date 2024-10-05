@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum File {
     A = 0,
@@ -40,6 +42,16 @@ pub enum Square {
     A6, B6, C6, D6, E6, F6, G6, H6,
     A7, B7, C7, D7, E7, F7, G7, H7,
     A8, B8, C8, D8, E8, F8, G8, H8
+}
+
+// to print the squares values as string
+impl fmt::Display for Square {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let rank = (self.clone() as u8) / 8 + 1;
+        let file = (self.clone() as u8) % 8;
+        let file_char = char::from(b'A' + file);
+        write!(f, "{}{}", file_char, rank)
+    }
 }
 
 impl From<u8> for Square {
