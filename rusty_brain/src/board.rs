@@ -1,5 +1,3 @@
-use std::io::empty;
-
 use crate::bitboards::Bitboards;
 #[derive(Clone, Copy)]
 pub enum Turn {
@@ -7,7 +5,7 @@ pub enum Turn {
    Black, 
 }
 pub struct Board{
-    bitboards: Bitboards,
+    pub bitboards: Bitboards,
     turn: Turn,
 }
 
@@ -15,6 +13,13 @@ impl Board {
     pub fn new() -> Self {
         Board{
             bitboards: Bitboards::new(),
+            turn: Turn::White,
+        }
+    }
+    
+    pub fn empty() -> Self{
+        Board {
+            bitboards: Bitboards::empty(),
             turn: Turn::White,
         }
     }
@@ -50,7 +55,7 @@ impl Board {
         
     }
     
-    fn pawn_moves(&self) -> Vec<(u8, u8)> {
+   pub fn pawn_moves(&self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
         match self.turn {
             Turn::White => {
@@ -153,7 +158,7 @@ impl Board {
         moves
     }
     
-    fn bishop_moves(&self) -> Vec<(u8, u8)> {
+    pub fn bishop_moves(&self) -> Vec<(u8, u8)> {
         let mut moves : Vec<(u8 ,u8)> = Vec::new();
     
         let empty_bitboard= self.bitboards.get_empty_squares();
@@ -183,11 +188,11 @@ impl Board {
     }
 
     
-    fn knight_moves(&self) -> Vec<(u8, u8)> {
+    pub fn knight_moves(&self) -> Vec<(u8, u8)> {
         todo!()     
     }
     
-    fn rook_moves(&self) -> Vec<(u8, u8)> {
+    pub fn rook_moves(&self) -> Vec<(u8, u8)> {
         let mut moves : Vec<(u8 ,u8)> = Vec::new();
     
         let empty_bitboard= self.bitboards.get_empty_squares(); 
@@ -216,7 +221,7 @@ impl Board {
         Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);
     }
 
-    fn queen_moves(&self) -> Vec<(u8, u8)> {
+    pub fn queen_moves(&self) -> Vec<(u8, u8)> {
         let mut moves : Vec<(u8 ,u8)> = Vec::new();
     
         let empty_bitboard= self.bitboards.get_empty_squares();
@@ -232,7 +237,7 @@ impl Board {
         return moves;
     }
     
-    fn king_moves(&self) -> Vec<(u8, u8)> {
+    pub fn king_moves(&self) -> Vec<(u8, u8)> {
 
         let mut moves: Vec<(u8, u8)> = Vec::new();
         let empty_squares = self.bitboards.get_empty_squares();

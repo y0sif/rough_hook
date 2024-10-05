@@ -67,7 +67,7 @@ impl From<u8> for Square {
 }
 
 impl Square {
-    fn rank(self) -> Rank {
+    pub fn rank(self) -> Rank {
         let rank_index = (self as u8) / 8;
         match rank_index {
             0 => Rank::First,
@@ -82,7 +82,7 @@ impl Square {
         }
     }
 
-    fn file(self) -> File {
+    pub fn file(self) -> File {
         let file_index = (self as u8) % 8;
         match file_index {
             0 => File::A,
