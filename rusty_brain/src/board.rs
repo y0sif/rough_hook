@@ -8,7 +8,7 @@ pub enum Turn {
 }
 pub struct Board{
     pub bitboards: Bitboards,
-    turn: Turn,
+    pub turn: Turn,
 }
 
 impl Board {
@@ -418,7 +418,6 @@ impl Board {
             print!("{} ", rank + 1);
             for file in 0..8 {
                 let square_index = rank * 8 + file;
-                let square = Square::from(square_index as u8);
 
                 if self.bitboards.white_pawns & (1 << square_index) != 0 {
                     print!("♟ ");
