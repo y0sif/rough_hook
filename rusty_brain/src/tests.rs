@@ -40,7 +40,7 @@ mod tests {
                 assert_eq!(moves.len(), 3);
             }else if rank == Rank::First || rank == Rank::Eighth {
                 assert_eq!(moves.len(), 4);
-            }else if square == Square::B2 || square == Square::G2 || square == Square::B7 || square == Square::G7 {
+            }else if square == Square::B2 || square == Square::G2 || square == Square::B7 || square == Square::G7 || file == File::A || file == File::H {
                 assert_eq!(moves.len(), 4);
             }else if rank == Rank::Second || rank == Rank::Seventh || file == File::B || file == File::G {
                 assert_eq!(moves.len(), 6);
