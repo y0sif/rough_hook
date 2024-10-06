@@ -54,6 +54,7 @@ mod tests {
         
         board.bitboards.black_pawns = 0;
 
+        board.turn = Turn::White;
 
         board.bitboards.white_pawns = u64::MAX;
 
@@ -126,12 +127,28 @@ mod tests {
         
         board.bitboards.black_knights = 0;
 
+        board.turn = Turn::White;
 
         board.bitboards.white_knights = u64::MAX;
 
         let moves = board.knight_moves();
         
         assert_eq!(moves.len(), 0);
+        
+        // white knight on dark squares and black knights on light squares
+        board.bitboards.white_knights = 0xAA55AA55AA55AA55;
+
+        board.bitboards.black_knights = 0x55AA55AA55AA55AA;
+        
+        let moves = board.knight_moves();
+
+        assert_eq!(moves.len(), 168);
+
+        board.turn = Turn::Black;
+
+        let moves = board.knight_moves();
+
+        assert_eq!(moves.len(), 168);
     }
 
     #[test]
@@ -196,6 +213,7 @@ mod tests {
         
         board.bitboards.black_bishops = 0;
 
+        board.turn = Turn::White;
 
         board.bitboards.white_bishops = u64::MAX;
 
@@ -239,6 +257,7 @@ mod tests {
         
         board.bitboards.black_rooks = 0;
 
+        board.turn = Turn::White;
 
         board.bitboards.white_rooks = u64::MAX;
 
@@ -310,6 +329,7 @@ mod tests {
         
         board.bitboards.black_queens = 0;
 
+        board.turn = Turn::White;
 
         board.bitboards.white_queens = u64::MAX;
 
