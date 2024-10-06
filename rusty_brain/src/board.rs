@@ -43,17 +43,22 @@ impl Board {
         // moves.append(&mut queen_moves);
         // moves
 
-        let mut moves = Vec::new();
-        let mut rooks_moves = self.rook_moves();
+        // let mut moves = Vec::new();
+        // let mut rooks_moves = self.rook_moves();
         
-        moves.append(&mut rooks_moves);
-        moves
+        // moves.append(&mut rooks_moves);
+        // moves
 
         //   let mut moves = Vec::new();
         //   let mut bishop_moves = self.bishop_moves();
         
         //   moves.append(&mut bishop_moves);
         //   moves
+
+        let mut moves = Vec::new();
+        let mut knight_moves = self.knight_moves();
+        moves.append(&mut knight_moves);
+        moves
         
     }
     
@@ -191,7 +196,88 @@ impl Board {
 
     
     pub fn knight_moves(&self) -> Vec<(u8, u8)> {
-        todo!()     
+        let mut moves: Vec<(u8, u8)> = Vec::new();
+        let not_ab_file: u64 = 0xFCFCFCFCFCFCFCFC;
+        let not_a_file: u64= 0xfefefefefefefefe;
+        let not_gh_file: u64 = 0x3F3F3F3F3F3F3F3F;
+        let not_h_file: u64 = 0x7f7f7f7f7f7f7f7f;
+        
+        match self.turn {
+            Turn::White => {
+                let not_ally_squares = !self.bitboards.get_ally_pieces(self.turn);
+                let mut knights: u64 = self.bitboards.white_knights;
+                while knights != 0 {
+                    let knight_position = knights.trailing_zeros();
+                    let current_knight: u64;
+                    let temp = (knights << 63 - knight_position) >> 63 - knight_position; //isolates LSB1
+                    if temp != 0 {
+                        current_knight = temp;
+                    }else {
+                        current_knight = knights;
+                    }
+
+                    let mut new_square = (current_knight << 17) & not_a_file & not_ally_squares; //noNoEa
+                    new_square |= (current_knight << 10) & not_ab_file & not_ally_squares; // noEaEa
+                    new_square |= (current_knight >> 6) & not_ab_file & not_ally_squares; // soEaEa
+                    new_square |= (current_knight >> 15) & not_a_file & not_ally_squares; //soSoEa
+                    new_square |= (current_knight << 15) & not_h_file & not_ally_squares; // noNoWe
+                    new_square |= (current_knight << 6) & not_gh_file & not_ally_squares; // noWeWe
+                    new_square |= (current_knight >> 10) & not_gh_file & not_ally_squares; // soWeWe
+                    new_square |= (current_knight >> 17) & not_h_file & not_ally_squares; // soSoWe
+                              
+                    let knight_square = current_knight.trailing_zeros() as u8;
+                    while new_square != 0 {
+                        let to_go_sqaure = new_square.trailing_zeros() as u8;
+                        moves.push((knight_square, to_go_sqaure));
+                        new_square &= new_square -1;
+                    }
+                    if knight_position < 63 {
+                        knights = (knights >> knight_position+1) << knight_position+1;
+                    }else {
+                        break;
+                    }
+                }
+            }
+            Turn::Black => {
+                let mut knights = self.bitboards.black_knights;
+                let not_ally_squares = !self.bitboards.get_ally_pieces(self.turn);
+                while knights != 0 {
+                    let knight_position = knights.trailing_zeros();
+                    let current_knight: u64;
+
+                    let temp = (knights << 63 - knight_position) >> 63 - knight_position;
+                    if temp != 0 {
+                        current_knight = temp;
+                    }else {
+                        current_knight = knights;
+                    }
+
+                    let mut new_square = (current_knight << 17) & not_a_file & not_ally_squares; //noNoEa
+                    new_square |= (current_knight << 10) & not_ab_file & not_ally_squares; // noEaEa
+                    new_square |= (current_knight >> 6) & not_ab_file & not_ally_squares; // soEaEa
+                    new_square |= (current_knight >> 15) & not_a_file & not_ally_squares; //soSoEa
+                    new_square |= (current_knight << 15) & not_h_file & not_ally_squares; // noNoWe
+                    new_square |= (current_knight << 6) & not_gh_file & not_ally_squares; // noWeWe
+                    new_square |= (current_knight >> 10) & not_gh_file & not_ally_squares; // soWeWe
+                    new_square |= (current_knight >> 17) & not_h_file & not_ally_squares; // soSoWe
+                    knights = (knights >> knight_position+1) << knight_position+1;
+                    
+                    let knight_square = current_knight.trailing_zeros() as u8;
+                    while new_square != 0 {
+                        let to_go_square = new_square.trailing_zeros() as u8;
+                        moves.push((knight_square, to_go_square));
+                        new_square &= new_square -1;
+                    }
+                    if knight_position < 63 {
+                        knights = (knights >> knight_position+1) << knight_position+1;
+                    }else {
+                        break;
+                    }
+                }
+            }
+        }
+        moves
+             
     }
     
     pub fn rook_moves(&self) -> Vec<(u8, u8)> {
