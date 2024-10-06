@@ -44,8 +44,22 @@ mod tests {
             board.bitboards.black_pawns <<= 1;
 
         }
+
+        // make sure no friendly captures are allowed
+        board.bitboards.black_pawns = u64::MAX;
         
-                
+        let moves = board.pawn_moves();
+        
+        assert_eq!(moves.len(), 0);
+        
+        board.bitboards.black_pawns = 0;
+
+
+        board.bitboards.white_pawns = u64::MAX;
+
+        let moves = board.pawn_moves();
+        
+        assert_eq!(moves.len(), 0);
               
     }
     
@@ -103,6 +117,21 @@ mod tests {
             board.bitboards.black_knights <<= 1;
         }
         
+        // make sure no friendly captures are allowed
+        board.bitboards.black_knights = u64::MAX;
+        
+        let moves = board.knight_moves();
+        
+        assert_eq!(moves.len(), 0);
+        
+        board.bitboards.black_knights = 0;
+
+
+        board.bitboards.white_knights = u64::MAX;
+
+        let moves = board.knight_moves();
+        
+        assert_eq!(moves.len(), 0);
     }
 
     #[test]
@@ -158,6 +187,21 @@ mod tests {
             board.bitboards.black_bishops <<= 1;
         }
 
+        // make sure no friendly captures are allowed
+        board.bitboards.black_bishops = u64::MAX;
+        
+        let moves = board.bishop_moves();
+        
+        assert_eq!(moves.len(), 0);
+        
+        board.bitboards.black_bishops = 0;
+
+
+        board.bitboards.white_bishops = u64::MAX;
+
+        let moves = board.bishop_moves();
+        
+        assert_eq!(moves.len(), 0);
     }
 
     #[test]
@@ -186,6 +230,21 @@ mod tests {
            board.bitboards.black_rooks <<= 1;
         }
 
+        // make sure no friendly captures are allowed
+        board.bitboards.black_rooks = u64::MAX;
+        
+        let moves = board.rook_moves();
+        
+        assert_eq!(moves.len(), 0);
+        
+        board.bitboards.black_rooks = 0;
+
+
+        board.bitboards.white_rooks = u64::MAX;
+
+        let moves = board.rook_moves();
+        
+        assert_eq!(moves.len(), 0);
     }
 
     #[test]
@@ -241,6 +300,22 @@ mod tests {
             }
             board.bitboards.black_queens <<= 1;
         }
+
+        // make sure no friendly captures are allowed
+        board.bitboards.black_queens = u64::MAX;
+        
+        let moves = board.queen_moves();
+        
+        assert_eq!(moves.len(), 0);
+        
+        board.bitboards.black_queens = 0;
+
+
+        board.bitboards.white_queens = u64::MAX;
+
+        let moves = board.queen_moves();
+        
+        assert_eq!(moves.len(), 0);
         
     }
     

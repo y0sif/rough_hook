@@ -486,9 +486,9 @@ impl Board {
             print!("({}, {}) ", Square::from(start), Square::from(end));
         }
         print!("\nKnights: ");
-        //for &(start, end) in &self.knight_moves() {
-        //    print!("({}, {}) ", Square::from(start), Square::from(end));
-        //}
+        for &(start, end) in &self.knight_moves() {
+           print!("({}, {}) ", Square::from(start), Square::from(end));
+        }
         print!("\nRooks: ");
         for &(start, end) in &self.rook_moves() {
             print!("({}, {}) ", Square::from(start), Square::from(end));
