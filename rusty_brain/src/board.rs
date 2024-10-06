@@ -260,7 +260,6 @@ impl Board {
                     new_square |= (current_knight << 6) & not_gh_file & not_ally_squares; // noWeWe
                     new_square |= (current_knight >> 10) & not_gh_file & not_ally_squares; // soWeWe
                     new_square |= (current_knight >> 17) & not_h_file & not_ally_squares; // soSoWe
-                    knights = (knights >> knight_position+1) << knight_position+1;
                     
                     let knight_square = current_knight.trailing_zeros() as u8;
                     while new_square != 0 {
