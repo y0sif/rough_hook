@@ -1,7 +1,5 @@
 use crate::{bitboards::Bitboards, board::Board};
-pub struct Magic{
-
-}
+pub struct Magic;
 
 impl Magic {
 
@@ -41,13 +39,13 @@ impl Magic {
         let blockers_configs = Self::create_all_blocker_configs(move_mask);
         let piece_position = 1 << square;        
 
-
         for blocker in blockers_configs {
-            let legal_moves = Board::get_sliding_bitboard(piece_position,piece_position & blocker,blocker, Bitboards::move_north)
-                                  |Board::get_sliding_bitboard(piece_position,piece_position & blocker,blocker, Bitboards::move_south)
-                                  |Board::get_sliding_bitboard(piece_position, piece_position & blocker,blocker ,Bitboards::move_east)
-                                  |Board::get_sliding_bitboard(piece_position, piece_position & blocker,blocker, Bitboards::move_west);
-            let index = (blocker.wrapping_mul(magic)) >> left_shift;
+            let occupied_bitboard = piece_position & blocker;
+            let legal_moves = Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_north)
+                                  |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_south)
+                                  |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_east)
+                                  |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_west);
+            let index = blocker.wrapping_mul(magic) >> left_shift;
             rook_moves_table[index as usize] = legal_moves;
         }
         rook_moves_table
@@ -70,13 +68,13 @@ impl Magic {
         let blockers_configs = Self::create_all_blocker_configs(move_mask);
         let piece_position = 1 << square;        
 
-
         for blocker in blockers_configs {
-            let legal_moves = Board::get_sliding_bitboard(piece_position,piece_position & blocker,blocker, Bitboards::move_north_east)
-                                  |Board::get_sliding_bitboard(piece_position,piece_position & blocker,blocker, Bitboards::move_north_west)
-                                  |Board::get_sliding_bitboard(piece_position, piece_position & blocker,blocker ,Bitboards::move_south_east)
-                                  |Board::get_sliding_bitboard(piece_position, piece_position & blocker,blocker, Bitboards::move_south_west);
-            let index = (blocker.wrapping_mul(magic)) >> left_shift;
+            let occupied_bitboard = piece_position & blocker;
+            let legal_moves = Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_north_east)
+                                  |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_north_west)
+                                  |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_south_east)
+                                  |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_south_west);
+            let index = blocker.wrapping_mul(magic) >> left_shift;
             bishop_moves_table[index as usize] = legal_moves;
         }
         bishop_moves_table
