@@ -1,4 +1,5 @@
 use crate::bitboards::Bitboards;
+use crate::magic::Magic;
 use crate::square::Square;
 
 #[derive(Clone, Copy)]
@@ -9,20 +10,30 @@ pub enum Turn {
 pub struct Board{
     pub bitboards: Bitboards,
     pub turn: Turn,
+    pub rook_attacks: [Vec<u64>; 64],
+    pub bishop_attacks: [Vec<u64>; 64],
 }
 
 impl Board {
     pub fn new() -> Self {
+        let rook_attacks = Magic::rook_attacks();
+        let bishop_attacks = Magic::bishop_attacks();
         Board{
             bitboards: Bitboards::new(),
             turn: Turn::White,
+            rook_attacks,
+            bishop_attacks,
         }
     }
     
     pub fn empty() -> Self{
+        let rook_attacks = Magic::rook_attacks();
+        let bishop_attacks = Magic::bishop_attacks();
         Board {
             bitboards: Bitboards::empty(),
             turn: Turn::White,
+            rook_attacks,
+            bishop_attacks
         }
     }
     
@@ -168,8 +179,8 @@ impl Board {
     pub fn bishop_moves(&self) -> Vec<(u8, u8)> {
         let mut moves : Vec<(u8 ,u8)> = Vec::new();
     
-        let empty_bitboard= self.bitboards.get_empty_squares();
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
+        let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
         let piece_bitboard   = match self.turn {
             Turn::White => self.bitboards.white_bishops,
             Turn::Black=>self.bitboards.black_bishops
@@ -177,21 +188,29 @@ impl Board {
         
         let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
         for piece_position in all_piece_positions {
-            Self::get_bishop_moves(&mut moves, piece_position,empty_bitboard, enemy_bitboard);
+            Self::get_bishop_moves(&self, &mut moves, piece_position, enemy_bitboard, ally_bitboard);
         }
         return moves;
     }
     // Get the the bit board of all valid positions for a bishop  based on its movement directions
     // And fill the moves vector with the start and end squares for each move
-    fn get_bishop_moves(moves : &mut Vec<(u8,u8)> , piece_position : u64 , empty_bitboard : u64, enemy_bitboard : u64)
+    fn get_bishop_moves(&self, moves : &mut Vec<(u8,u8)> , piece_position : u64 , enemy_bitboard : u64, ally_bitboard: u64)
     {
-        let mut valid_bitboard:u64 = Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_north_east)
-                                     |Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_north_west)
-                                     |Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_south_east)
-                                     |Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_south_west);
+        let start_square = piece_position.trailing_zeros() as u8;
+        let bishop_mask = Bitboards::bishop_mask_ex(start_square);
+        let all_pieces = enemy_bitboard | ally_bitboard;
+        let blocker = all_pieces & bishop_mask; 
+        let key = ((blocker & bishop_mask).wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+        let mut moves_bitboard = self.bishop_attacks[start_square as usize][key as usize];
+        moves_bitboard &= !all_pieces;
+        
+        while moves_bitboard != 0 {
+            let end_square = moves_bitboard.trailing_zeros() as u8;
 
-        let start_square = piece_position.trailing_zeros() as u8;    
-        Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);                         
+            moves.push((start_square, end_square));
+            
+            moves_bitboard &= moves_bitboard - 1;
+        }
     }
 
     
@@ -282,8 +301,8 @@ impl Board {
     pub fn rook_moves(&self) -> Vec<(u8, u8)> {
         let mut moves : Vec<(u8 ,u8)> = Vec::new();
     
-        let empty_bitboard= self.bitboards.get_empty_squares(); 
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
+        let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
         let piece_bitboard   = match self.turn {
             Turn::White => self.bitboards.white_rooks,
             Turn::Black => self.bitboards.black_rooks
@@ -291,35 +310,43 @@ impl Board {
 
         let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
         for piece_position in all_piece_positions {
-            Self::get_rook_moves(&mut moves, piece_position,empty_bitboard, enemy_bitboard);
+            Self::get_rook_moves(&self, &mut moves, piece_position, enemy_bitboard, ally_bitboard);
         }
         return  moves;
     }
     // Get the the bit board of all valid positions for a rook based on its movement directions
     // And fill the moves vector with the start and end squares for each move
-    fn get_rook_moves(moves : &mut Vec<(u8,u8)> , piece_position : u64 , empty_bitboard : u64, enemy_bitboard : u64)
+    fn get_rook_moves(&self, moves : &mut Vec<(u8,u8)> , piece_position : u64 , enemy_bitboard : u64, ally_bitboard: u64)
     {
-        let mut valid_bitboard :u64 = Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_north)
-                                     |Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_south)
-                                     |Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard ,Bitboards::move_east)
-                                     |Self::get_sliding_bitboard(piece_position, !empty_bitboard,enemy_bitboard, Bitboards::move_west);
-
         let start_square = piece_position.trailing_zeros() as u8;
-        Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);
+        let rook_mask = Bitboards::rook_mask_ex(start_square);
+        let all_pieces = enemy_bitboard | ally_bitboard;
+        let blocker = all_pieces & rook_mask; 
+        let key = ((blocker & rook_mask).wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+        let mut moves_bitboard = self.rook_attacks[start_square as usize][key as usize];
+        moves_bitboard &= !all_pieces;
+        
+        while moves_bitboard != 0 {
+            let end_square = moves_bitboard.trailing_zeros() as u8;
+
+            moves.push((start_square, end_square));
+            
+            moves_bitboard &= moves_bitboard - 1;
+        }
     }
 
     pub fn queen_moves(&self) -> Vec<(u8, u8)> {
         let mut moves : Vec<(u8 ,u8)> = Vec::new();
     
-        let empty_bitboard= self.bitboards.get_empty_squares();
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
+        let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
         let piece_bitboard   = match self.turn {
             Turn::White => self.bitboards.white_queens,
             Turn::Black => self.bitboards.black_queens
         };
         // The queen moves is Combination of bishop and rook moves
-        Self::get_bishop_moves(&mut moves, piece_bitboard, empty_bitboard, enemy_bitboard);
-        Self::get_rook_moves(&mut moves, piece_bitboard, empty_bitboard, enemy_bitboard);
+        Self::get_bishop_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+        Self::get_rook_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
 
         return moves;
     }
@@ -370,7 +397,7 @@ impl Board {
 
     // get the bit board of valid positions that the piece can move to (in specific direction)
     // the move_fn is a function that determines movement direction 
-    fn get_sliding_bitboard(current_position: u64, occupied_bitboard: u64,enemy_bitboard : u64 , move_fn: fn(u64) -> u64) -> u64 {
+    pub fn get_sliding_bitboard(current_position: u64, occupied_bitboard: u64,enemy_bitboard : u64 , move_fn: fn(u64) -> u64) -> u64 {
         let mut bitboard = 0;             
         let mut next_position = move_fn(current_position); 
     
@@ -385,11 +412,12 @@ impl Board {
         bitboard
     }
     // construct start square and end square of the each move using the valid_positions_ bit board
-    fn construct_moves_squares(moves : &mut Vec<(u8,u8)>  , start_square : u8 , valid_bitboard : &mut u64){
-        while *valid_bitboard != 0 {
+    pub fn construct_moves_squares(moves : &mut Vec<(u8,u8)>  , start_square : u8 , valid_bitboard : u64){
+        let mut valid_bitboard = valid_bitboard;
+        while valid_bitboard != 0 {
             let end_squares = valid_bitboard.trailing_zeros() as u8;
             moves.push((start_square  , end_squares));        
-            *valid_bitboard &= *valid_bitboard - 1;
+            valid_bitboard &= valid_bitboard - 1;
         }
     }
     // get the position for each piece using piece bitboard

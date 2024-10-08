@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 hook_lens = { path = "../hook_lens" }
 rough_guard = { path = "../rough_guard" }
+rand = "0.8.5"

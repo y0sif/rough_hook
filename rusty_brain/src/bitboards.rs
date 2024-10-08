@@ -1,3 +1,5 @@
+use std::u64;
+
 use crate::board::Turn;
 pub struct Bitboards{
     pub white_pawns: u64,
@@ -128,4 +130,87 @@ impl Bitboards {
     pub fn move_south_west(bitboard: u64) -> u64 {
         (bitboard >> 9) & 0x007f7f7f7f7f7f7f // return 0  if the move goes out of the board
     }
+
+    // sliding pieces masks
+    pub fn east_mask_ex(square: u8) -> u64 {
+        2 * ( (1 << (square|7)) - (1 << square))
+    }
+    
+    pub fn north_mask_ex(square: u8) -> u64 {
+        0x0101010101010100 << square
+    }
+    
+    pub fn west_mask_ex(square: u8) -> u64 {
+        (1 << square) - (1 << (square&56))
+    }
+    
+    pub fn south_mask_ex(square: u8) -> u64 {
+        0x0080808080808080 >> (square ^ 63)
+    }
+    
+    pub fn rank_mask(square: u8) -> u64 {
+        0xff << (square & 56)
+    }
+    
+    pub fn file_mask(square: u8) -> u64 {
+        0x0101010101010101 << (square & 7)
+    }
+    
+    pub fn diagonal_mask(square: u8) -> u64 {
+        let square = square as i32;
+        let main_diagonal = 0x8040201008040201;
+        let diagonal = 8*(square & 7) - (square & 56);
+        let north = -diagonal & (diagonal >> 31);
+        let south = diagonal & (-diagonal >> 31);
+        (main_diagonal >> south) << north
+    }
+    
+    pub fn anti_diagonal_mask(square: u8) -> u64 {
+        let square = square as i32;
+        let main_diagonal = 0x0102040810204080;
+        let diagonal = 56 - 8*(square & 7) - (square & 56);
+        let north = -diagonal & (diagonal >> 31);
+        let south = diagonal & (-diagonal >> 31);
+        (main_diagonal >> south) << north
+    }
+    
+    pub fn rank_mask_ex(square: u8) -> u64 {
+        (1 << square) ^ Bitboards::rank_mask(square)
+    }
+    
+    pub fn file_mask_ex(square: u8) -> u64 {
+        (1 << square) ^ Bitboards::file_mask(square)
+    }
+
+    pub fn diagonal_mask_ex(square: u8) -> u64 {
+        (1 << square) ^ Bitboards::diagonal_mask(square)
+    }
+
+    pub fn anti_diagonal_mask_ex(square: u8) -> u64 {
+        (1 << square) ^ Bitboards::anti_diagonal_mask(square)
+    }
+    
+    pub fn rook_mask(square: u8) -> u64 {
+        Bitboards::rank_mask(square) | Bitboards::file_mask(square)
+    }
+    
+    pub fn bishop_mask(square: u8) -> u64 {
+        Bitboards::diagonal_mask(square) | Bitboards::anti_diagonal_mask(square)
+    }
+    pub fn rook_mask_ex(square: u8) -> u64 {
+        Bitboards::rank_mask(square) ^ Bitboards::file_mask(square)
+    }
+    
+    pub fn bishop_mask_ex(square: u8) -> u64 {
+        Bitboards::diagonal_mask(square) ^ Bitboards::anti_diagonal_mask(square)
+    }
+    
+    pub fn queen_mask(square: u8) -> u64 {
+        Bitboards::rook_mask(square) | Bitboards::bishop_mask(square)
+    }
+    
+    pub fn queen_mask_ex(square: u8) -> u64 {
+        Bitboards::rook_mask(square) ^ Bitboards::bishop_mask(square)
+    }
+
 }
