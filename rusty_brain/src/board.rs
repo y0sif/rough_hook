@@ -37,8 +37,69 @@ impl Board {
         }
     }
     
-    pub fn make_move(&self) {
-        todo!()
+    pub fn make_move(&mut self, move_to_make: (u8, u8)) {
+        let start_square = 1 << move_to_make.0;
+        let end_square = 1 << move_to_make.1;
+        match self.turn {
+            Turn::White => {
+                if start_square & self.bitboards.white_pawns != 0 {
+                    self.bitboards.white_pawns &= !start_square;      
+                    self.bitboards.white_pawns |= end_square;
+
+                }else if start_square & self.bitboards.white_knights != 0 {
+                    self.bitboards.white_knights &= !start_square;
+                    self.bitboards.white_knights |= end_square;
+
+                }else if start_square & self.bitboards.white_bishops != 0 {
+                    self.bitboards.white_bishops &= !start_square;
+                    self.bitboards.white_bishops |= end_square;
+
+                }else if start_square & self.bitboards.white_rooks != 0 {
+                    self.bitboards.white_rooks &= !start_square;
+                    self.bitboards.white_rooks |= end_square;
+
+                }else if start_square & self.bitboards.white_queens != 0 {
+                    self.bitboards.white_queens &= !start_square;
+                    self.bitboards.white_queens |= end_square;
+
+                }else if start_square & self.bitboards.white_king != 0 {
+                    self.bitboards.white_king &= !start_square;
+                    self.bitboards.white_king |= end_square;
+
+                }
+                self.turn = Turn::Black;
+            },
+            Turn::Black => {
+                if start_square & self.bitboards.black_pawns != 0 {
+                    self.bitboards.black_pawns &= !start_square;      
+                    self.bitboards.black_pawns |= end_square;
+
+                }else if start_square & self.bitboards.black_knights != 0 {
+                    self.bitboards.black_knights &= !start_square;
+                    self.bitboards.black_knights |= end_square;
+
+                }else if start_square & self.bitboards.black_bishops != 0 {
+                    self.bitboards.black_bishops &= !start_square;
+                    self.bitboards.black_bishops |= end_square;
+
+                }else if start_square & self.bitboards.black_rooks != 0 {
+                    self.bitboards.black_rooks &= !start_square;
+                    self.bitboards.black_rooks |= end_square;
+
+                }else if start_square & self.bitboards.black_queens != 0 {
+                    self.bitboards.black_queens &= !start_square;
+                    self.bitboards.black_queens |= end_square;
+
+                }else if start_square & self.bitboards.black_king != 0 {
+                    self.bitboards.black_king &= !start_square;
+                    self.bitboards.black_king |= end_square;
+
+                }
+                self.turn = Turn::White;
+                
+            }
+        }
+        
     }
     
     pub fn generate_moves(&self) -> Vec<(u8, u8)> {
