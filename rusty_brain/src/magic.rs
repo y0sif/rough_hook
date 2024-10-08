@@ -40,7 +40,7 @@ impl Magic {
         let piece_position = 1 << square;        
 
         for blocker in blockers_configs {
-            let occupied_bitboard = piece_position & blocker;
+            let occupied_bitboard = piece_position | blocker;
             let legal_moves = Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_north)
                                   |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_south)
                                   |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_east)
@@ -69,7 +69,7 @@ impl Magic {
         let piece_position = 1 << square;        
 
         for blocker in blockers_configs {
-            let occupied_bitboard = piece_position & blocker;
+            let occupied_bitboard = piece_position | blocker;
             let legal_moves = Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_north_east)
                                   |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_north_west)
                                   |Board::get_sliding_bitboard(piece_position, occupied_bitboard, blocker, Bitboards::move_south_east)
