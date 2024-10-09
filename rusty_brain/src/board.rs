@@ -1,6 +1,6 @@
 use crate::bitboards::Bitboards;
 use crate::magic::Magic;
-use crate::square::Square;
+use crate::square::{Rank, Square};
 
 #[derive(Clone, Copy)]
 pub enum Turn {
@@ -227,18 +227,59 @@ impl Board {
                 }
             }
         }
+        self.check_en_passant(&mut moves);
         moves
     }
-    pub fn check_en_passant(&self) -> bool{
+
+    pub fn check_en_passant(&self, moves: &mut Vec<(u8,u8)>){
         match self.turn{
             Turn::White=>{
-                // Check if black pawn in 5th rank after double push in log [Sq32-Sq39]
-                    // Check for any adjacent white pawn
-                        // return true - add capture & enemy_positions
-                true
+                // check if move is actually a pawn double push
+                if let Some(last_move) = self.move_log.last(){ 
+                    if (1 << last_move.1) & self.bitboards.black_pawns != 0{
+                        if Square::from(last_move.0).rank() == Rank::Seventh
+                        && Square::from(last_move.1).rank() == Rank::Fifth{
+                            //check for adjacent white pawns
+                            let white_pawns = self.bitboards.white_pawns;
+                            let east_bitboard = Bitboards::move_east(1 << last_move.1);
+                            let west_bitboard = Bitboards::move_west(1 << last_move.1);
+    
+                            let mut ep_captures = white_pawns & (east_bitboard | west_bitboard);
+                            let end_square = last_move.1 + 8;
+
+                            while ep_captures != 0{
+                                let start_square = ep_captures.trailing_zeros() as u8;
+                                
+                                moves.push((start_square, end_square));
+    
+                                ep_captures &= ep_captures - 1;
+                            }
+                        }      
+                    } 
+                }
             },
             Turn::Black=>{
-                false
+                if let Some(last_move) = self.move_log.last(){
+                    if (1 << last_move.1) & self.bitboards.white_pawns != 0 {
+                        if  Square::from(last_move.0).rank() == Rank::Second
+                        && Square::from(last_move.1).rank() == Rank::Forth{
+                            let black_pawns = self.bitboards.black_pawns;
+                            let east_bitboard = Bitboards::move_east(1 << last_move.1);
+                            let west_bitboard = Bitboards::move_west(1 << last_move.1);
+
+                            let mut ep_captures = black_pawns & (east_bitboard | west_bitboard);
+                            let end_square = last_move.1 - 8;   
+
+                            while ep_captures != 0{
+                                let start_square = ep_captures.trailing_zeros() as u8;
+
+                                moves.push((start_square, end_square));
+
+                                ep_captures &= ep_captures - 1;
+                            }
+                        }
+                    }
+                }
             }
         }
 
