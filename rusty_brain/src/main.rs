@@ -1,3 +1,3 @@
 fn main() {
-    print!("negawatt");
+    print!("Core Engine");
 }
