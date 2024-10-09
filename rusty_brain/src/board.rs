@@ -12,6 +12,7 @@ pub struct Board{
     pub turn: Turn,
     pub rook_attacks: [Vec<u64>; 64],
     pub bishop_attacks: [Vec<u64>; 64],
+    pub move_log: Vec<(u8, u8)>,
 }
 
 impl Board {
@@ -23,6 +24,7 @@ impl Board {
             turn: Turn::White,
             rook_attacks,
             bishop_attacks,
+            move_log: Vec::new(),
         }
     }
     
@@ -33,13 +35,15 @@ impl Board {
             bitboards: Bitboards::empty(),
             turn: Turn::White,
             rook_attacks,
-            bishop_attacks
+            bishop_attacks,
+            move_log: Vec::new(),
         }
     }
     
     pub fn make_move(&mut self, move_to_make: (u8, u8)) {
         let start_square = 1 << move_to_make.0;
         let end_square = 1 << move_to_make.1;
+        self.move_log.push((start_square as u8, end_square as u8));
         match self.turn {
             Turn::White => {
                 if start_square & self.bitboards.white_pawns != 0 {
