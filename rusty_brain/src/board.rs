@@ -579,11 +579,12 @@ impl Board {
     }
     
     pub fn king_moves(&self) -> Vec<(u8, u8)> {
+        
         let mut moves: Vec<(u8, u8)> = Vec::new();
-        let empty_squares = self.bitboards.get_empty_squares();
-
+        
         match self.turn {
             Turn::White => {
+                let ally_squares = self.bitboards.get_ally_pieces(Turn::White);
                 let king_square = self.bitboards.white_king.trailing_zeros() as u8;
                 let mut kingset = self.bitboards.white_king;
                 
@@ -591,7 +592,7 @@ impl Board {
                 kingset |= attacks;
                 attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
 
-                attacks &= empty_squares;
+                attacks &= !ally_squares;
 
                 while attacks != 0 {
                     let end_square = attacks.trailing_zeros() as u8;
@@ -601,6 +602,7 @@ impl Board {
 
             },
             Turn::Black => {
+                let ally_squares = self.bitboards.get_ally_pieces(Turn::Black);
                 let mut kingset = self.bitboards.black_king;
                 let king_square = self.bitboards.black_king.trailing_zeros() as u8;
 
@@ -608,7 +610,7 @@ impl Board {
                 kingset |= attacks;
                 attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
 
-                attacks &= empty_squares;
+                attacks &= !ally_squares;
 
                 while attacks != 0 {
                     let end_square = attacks.trailing_zeros() as u8;             
@@ -694,7 +696,7 @@ impl Board {
 
         match self.turn {
             Turn::White => println!("\nTurn: White"),
-            Turn::Black => println!("\nTurn: Balck",),
+            Turn::Black => println!("\nTurn: Black",),
         };
         
         println!("\nPossible moves:");
