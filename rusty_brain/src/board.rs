@@ -225,6 +225,20 @@ impl Board {
         }
         moves
     }
+    pub fn check_en_passant(&self) -> bool{
+        match self.turn{
+            Turn::White=>{
+                // Check if black pawn in 5th rank after double push in log [Sq32-Sq39]
+                    // Check for any adjacent white pawn
+                        // return true - add capture & enemy_positions
+                true
+            },
+            Turn::Black=>{
+                false
+            }
+        }
+
+    }
 
     pub fn knight_moves(&self) -> Vec<(u8, u8)> {
         let mut moves: Vec<(u8, u8)> = Vec::new();
