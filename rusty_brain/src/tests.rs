@@ -61,6 +61,16 @@ mod tests {
         let moves = board.pawn_moves();
         
         assert_eq!(moves.len(), 0);
+        
+        // test en passant
+        board.turn = Turn::Black;
+        board.bitboards.white_pawns = 0x0800000000;
+        board.bitboards.black_pawns = 0x10000000000000;
+        board.make_move((Square::E7 as u8, Square::E5 as u8));
+
+        let moves = board.pawn_moves();
+        
+        assert_eq!(moves.len(), 2);        
               
     }
     
