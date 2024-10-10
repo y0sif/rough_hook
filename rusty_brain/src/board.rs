@@ -12,7 +12,7 @@ pub struct Board{
     pub turn: Turn,
     pub rook_attacks: [Vec<u64>; 64],
     pub bishop_attacks: [Vec<u64>; 64],
-    pub move_log: Vec<(u8, u8)>,
+    pub move_log: Vec<(u8, u8)>
 }
 
 impl Board {
