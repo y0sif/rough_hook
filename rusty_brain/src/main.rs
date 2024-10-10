@@ -1,3 +1,3 @@
 fn main() {
-    print!("Core Engine");
+    println!("Core Engine");
 }

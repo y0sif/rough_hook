@@ -109,20 +109,20 @@ impl Board {
     pub fn generate_moves(&self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
 
-        // let mut pawn_moves = self.pawn_moves();
-        // moves.append(&mut pawn_moves);
+        let mut pawn_moves = self.pawn_moves();
+        moves.append(&mut pawn_moves);
 
-        // let mut queen_moves = self.queen_moves();
-        // moves.append(&mut queen_moves);
+        let mut queen_moves = self.queen_moves();
+        moves.append(&mut queen_moves);
 
-        // let mut rooks_moves = self.rook_moves();
-        // moves.append(&mut rooks_moves);
+        let mut rooks_moves = self.rook_moves();
+        moves.append(&mut rooks_moves);
 
-        // let mut bishop_moves = self.bishop_moves();
-        // moves.append(&mut bishop_moves);
+        let mut bishop_moves = self.bishop_moves();
+        moves.append(&mut bishop_moves);
 
-        // let mut knight_moves = self.knight_moves();
-        // moves.append(&mut knight_moves);
+        let mut knight_moves = self.knight_moves();
+        moves.append(&mut knight_moves);
         
         let mut king_moves = self.king_moves();
         moves.append(&mut king_moves);
