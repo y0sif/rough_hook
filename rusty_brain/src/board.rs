@@ -291,86 +291,35 @@ impl Board {
     pub fn knight_moves(&self) -> Vec<(u8, u8)> {
         let mut moves: Vec<(u8, u8)> = Vec::new();
 
+        let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
+        let piece_bitboard = match self.turn {
+            Turn::White => self.bitboards.white_knights,
+            Turn::Black => self.bitboards.black_knights,
+        };
+        let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
+        for piece_position in all_piece_positions {
+            Self::get_knight_moves(&mut moves, piece_position, ally_bitboard);
+        }
+        moves 
+    }
+    fn get_knight_moves(moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64)
+    {
         let not_ab_file: u64 = 0xFCFCFCFCFCFCFCFC;
         let not_a_file: u64= 0xfefefefefefefefe;
         let not_gh_file: u64 = 0x3F3F3F3F3F3F3F3F;
         let not_h_file: u64 = 0x7f7f7f7f7f7f7f7f;
-        
-        match self.turn {
-            Turn::White => {
-                let not_ally_squares = !self.bitboards.get_ally_pieces(self.turn);
-                let mut knights: u64 = self.bitboards.white_knights;
-                while knights != 0 {
-                    let knight_position = knights.trailing_zeros();
-                    let current_knight: u64;
-                    let temp = (knights << 63 - knight_position) >> 63 - knight_position; //isolates LSB1
-                    if temp != 0 {
-                        current_knight = temp;
-                    }else {
-                        current_knight = knights;
-                    }
 
-                    let mut new_square = (current_knight << 17) & not_a_file & not_ally_squares; //noNoEa
-                    new_square |= (current_knight << 10) & not_ab_file & not_ally_squares; // noEaEa
-                    new_square |= (current_knight >> 6) & not_ab_file & not_ally_squares; // soEaEa
-                    new_square |= (current_knight >> 15) & not_a_file & not_ally_squares; //soSoEa
-                    new_square |= (current_knight << 15) & not_h_file & not_ally_squares; // noNoWe
-                    new_square |= (current_knight << 6) & not_gh_file & not_ally_squares; // noWeWe
-                    new_square |= (current_knight >> 10) & not_gh_file & not_ally_squares; // soWeWe
-                    new_square |= (current_knight >> 17) & not_h_file & not_ally_squares; // soSoWe
-                              
-                    let knight_square = current_knight.trailing_zeros() as u8;
-                    while new_square != 0 {
-                        let to_go_sqaure = new_square.trailing_zeros() as u8;
-                        moves.push((knight_square, to_go_sqaure));
-                        new_square &= new_square -1;
-                    }
-                    if knight_position < 63 {
-                        knights = (knights >> knight_position+1) << knight_position+1;
-                    }else {
-                        break;
-                    }
-                }
-            }
-            Turn::Black => {
-                let mut knights = self.bitboards.black_knights;
-                let not_ally_squares = !self.bitboards.get_ally_pieces(self.turn);
-                while knights != 0 {
-                    let knight_position = knights.trailing_zeros();
-                    let current_knight: u64;
+        let mut valid_bitboard = (piece_position << 17) & not_a_file & !ally_bitboard; //noNoEa
+        valid_bitboard |= (piece_position << 10) & not_ab_file & !ally_bitboard; // noEaEa
+        valid_bitboard |= (piece_position >> 6)  & not_ab_file & !ally_bitboard; // soEaEa
+        valid_bitboard |= (piece_position >> 15) & not_a_file  & !ally_bitboard; //soSoEa
+        valid_bitboard |= (piece_position << 15) & not_h_file  & !ally_bitboard; // noNoWe
+        valid_bitboard |= (piece_position << 6)  & not_gh_file & !ally_bitboard; // noWeWe
+        valid_bitboard |= (piece_position >> 10) & not_gh_file & !ally_bitboard; // soWeWe
+        valid_bitboard |= (piece_position >> 17) & not_h_file  & !ally_bitboard; // soSoWe
 
-                    let temp = (knights << 63 - knight_position) >> 63 - knight_position;
-                    if temp != 0 {
-                        current_knight = temp;
-                    }else {
-                        current_knight = knights;
-                    }
-
-                    let mut new_square = (current_knight << 17) & not_a_file & not_ally_squares; //noNoEa
-                    new_square |= (current_knight << 10) & not_ab_file & not_ally_squares; // noEaEa
-                    new_square |= (current_knight >> 6) & not_ab_file & not_ally_squares; // soEaEa
-                    new_square |= (current_knight >> 15) & not_a_file & not_ally_squares; //soSoEa
-                    new_square |= (current_knight << 15) & not_h_file & not_ally_squares; // noNoWe
-                    new_square |= (current_knight << 6) & not_gh_file & not_ally_squares; // noWeWe
-                    new_square |= (current_knight >> 10) & not_gh_file & not_ally_squares; // soWeWe
-                    new_square |= (current_knight >> 17) & not_h_file & not_ally_squares; // soSoWe
-                    
-                    let knight_square = current_knight.trailing_zeros() as u8;
-                    while new_square != 0 {
-                        let to_go_square = new_square.trailing_zeros() as u8;
-                        moves.push((knight_square, to_go_square));
-                        new_square &= new_square -1;
-                    }
-                    if knight_position < 63 {
-                        knights = (knights >> knight_position+1) << knight_position+1;
-                    }else {
-                        break;
-                    }
-                }
-            }
-        }
-        moves
-             
+        let start_square = piece_position.trailing_zeros() as u8;    
+        Self::construct_moves_squares(moves, start_square, &mut valid_bitboard); 
     }
     
     pub fn bishop_moves(&self) -> Vec<(u8, u8)> {
@@ -585,52 +534,29 @@ impl Board {
     }
     
     pub fn king_moves(&self) -> Vec<(u8, u8)> {
-        
         let mut moves: Vec<(u8, u8)> = Vec::new();
-        match self.turn {
-            Turn::White => {
-                let ally_squares = self.bitboards.get_ally_pieces(Turn::White);
-                let king_square = self.bitboards.white_king.trailing_zeros() as u8;
-                let mut kingset = self.bitboards.white_king;
-                
-                let castling_bitboard = self.get_castling_bitboard(&kingset);
-
-                let mut attacks = Bitboards::move_east(kingset) | Bitboards::move_west(kingset);
-                kingset |= attacks;
-                attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
-
-                attacks &= !ally_squares;
-                attacks |= castling_bitboard;
-                
-                while attacks != 0 {
-                    let end_square = attacks.trailing_zeros() as u8;
-                    moves.push((king_square, end_square));
-                    attacks &= attacks - 1;
-                }
-
-            },
-            Turn::Black => {
-                let ally_squares = self.bitboards.get_ally_pieces(Turn::Black);
-                let mut kingset = self.bitboards.black_king;
-                let king_square = self.bitboards.black_king.trailing_zeros() as u8;
-
-                let castling_bitboard = self.get_castling_bitboard(&kingset);
-
-                let mut attacks = Bitboards::move_east(kingset) | Bitboards::move_west(kingset);
-                kingset |= attacks;
-                attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
-                
-                attacks &= !ally_squares;
-                attacks |= castling_bitboard;
-                
-                while attacks != 0 {
-                    let end_square = attacks.trailing_zeros() as u8;             
-                    moves.push((king_square as u8, end_square));
-                    attacks &= attacks - 1;
-                }
-            }
-        }
+        let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
+        let piece_bitboard = match self.turn { 
+            Turn::White => self.bitboards.white_king,
+            Turn::Black => self.bitboards.black_king,
+        };
+        Self::get_king_moves(&mut moves, piece_bitboard, ally_bitboard);
         moves
+    }
+    fn get_king_moves(moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64){
+        //let king_square = self.bitboards.white_king.trailing_zeros() as u8;
+        let mut king_bitboard = piece_position;
+        
+        //let castling_bitboard = self.get_castling_bitboard(&valid_bitboard);
+
+        let mut valid_bitboard = Bitboards::move_east(king_bitboard) | Bitboards::move_west(king_bitboard);
+        king_bitboard |= valid_bitboard;
+        valid_bitboard |= Bitboards::move_north(king_bitboard) | Bitboards::move_south(king_bitboard);
+
+        valid_bitboard &= !ally_bitboard;
+        //attacks |= castling_bitboard;
+        let start_square = piece_position.trailing_zeros() as u8;
+        Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);
     }
     pub fn get_castling_bitboard(&self, king_position: &u64) ->u64 {
         if true{ //  true :  will be changes after the castling rights is done 
@@ -681,6 +607,13 @@ impl Board {
             bitboard &= bitboard - 1;
         }
         positions
+    }
+    fn construct_moves_squares(moves : &mut Vec<(u8,u8)>  , start_square : u8 , valid_bitboard : &mut u64){
+        while *valid_bitboard != 0 {
+            let end_squares = valid_bitboard.trailing_zeros() as u8;
+            moves.push((start_square  , end_squares));        
+            *valid_bitboard &= *valid_bitboard - 1;
+        }
     }
 
     pub fn print_board(&self) {

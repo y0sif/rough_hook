@@ -1,3 +1,6 @@
+use rusty_brain::board;
+
 fn main() {
-    print!("Core Engine");
+    let board = board::Board::new();
+    board.print_board();
 }
