@@ -1,3 +1,5 @@
+use crate::board::Turn;
+
 pub struct CastlingRights {
     pub white_king_side: bool,
     pub white_queen_side: bool,
@@ -21,16 +23,16 @@ impl CastlingRights {
             black_queen_side: false,
         }
     }
-    fn check_king_castle(&self, turn : Turn) -> bool{
+    pub fn check_king_castle(&self, turn: Turn) -> bool{
         match turn{
             Turn::White => self.white_king_side,
             Turn::Black => self.black_king_side
         }
     }
-    fn check_queen_castle(&self, turn : Turn) -> bool{
+    pub fn check_queen_castle(&self, turn: Turn) -> bool{
         match turn{
-            Turn::White => self.white_queen_castle,
-            Turn::Black => self.black_queen_castle,
+            Turn::White => self.white_queen_side,
+            Turn::Black => self.black_queen_side,
         }
     }
 }
