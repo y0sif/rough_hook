@@ -197,10 +197,11 @@ impl Bitboards {
     pub fn bishop_mask(square: u8) -> u64 {
         Bitboards::diagonal_mask(square) | Bitboards::anti_diagonal_mask(square)
     }
-    pub fn rook_mask_ex(square: u8) -> u64 {
-        (Bitboards::rank_mask(square) ^ Bitboards::file_mask(square)) & 0x7E7E7E7E7E7E00
-    }
     
+    pub fn rook_mask_ex(square: u8) -> u64 {
+        Bitboards::rank_mask(square) ^ Bitboards::file_mask(square) 
+    }
+
     pub fn bishop_mask_ex(square: u8) -> u64 {
         (Bitboards::diagonal_mask(square) ^ Bitboards::anti_diagonal_mask(square)) & 0x7E7E7E7E7E7E00
     }
@@ -212,5 +213,6 @@ impl Bitboards {
     pub fn queen_mask_ex(square: u8) -> u64 {
         Bitboards::rook_mask(square) ^ Bitboards::bishop_mask(square)
     }
+
 
 }
