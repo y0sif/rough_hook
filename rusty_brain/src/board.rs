@@ -46,6 +46,7 @@ impl Board {
     pub fn make_move(&mut self, move_to_make: (u8, u8)) {
         let start_square = 1 << move_to_make.0;
         let end_square = 1 << move_to_make.1;
+        self.make_capture(move_to_make);
         match self.turn {
             Turn::White => {
                 if start_square & self.bitboards.white_pawns != 0 {
@@ -130,6 +131,26 @@ impl Board {
                     let white_pawn = 1 << last_move.1;
                     self.bitboards.white_pawns &= !white_pawn;
                 } 
+            }
+        }
+    }
+    
+    fn make_capture(&mut self, move_to_make: (u8, u8)) {
+        let square_captured = !(1 << move_to_make.1);
+        match self.turn {
+            Turn::White => {
+                self.bitboards.black_bishops &= square_captured;
+                self.bitboards.black_knights &= square_captured;
+                self.bitboards.black_pawns &= square_captured;
+                self.bitboards.black_queens &= square_captured;
+                self.bitboards.black_rooks &= square_captured;
+            },
+            Turn::Black => {
+                self.bitboards.white_bishops &= square_captured;
+                self.bitboards.white_knights &= square_captured;
+                self.bitboards.white_pawns &= square_captured;
+                self.bitboards.white_queens &= square_captured;
+                self.bitboards.white_rooks &= square_captured;
             }
         }
     }
