@@ -12,7 +12,8 @@ pub struct Board{
     pub turn: Turn,
     pub rook_attacks: [Vec<u64>; 64],
     pub bishop_attacks: [Vec<u64>; 64],
-    pub move_log: Vec<(u8, u8)>
+    pub move_log: Vec<(u8, u8)>,
+    pub is_en_passant: bool
 }
 
 impl Board {
@@ -25,6 +26,7 @@ impl Board {
             rook_attacks,
             bishop_attacks,
             move_log: Vec::new(),
+            is_en_passant: false
         }
     }
     
@@ -37,6 +39,7 @@ impl Board {
             rook_attacks,
             bishop_attacks,
             move_log: Vec::new(),
+            is_en_passant: false
         }
     }
     
@@ -106,7 +109,7 @@ impl Board {
         
     }
     
-    pub fn generate_moves(&self) -> Vec<(u8, u8)> {
+    pub fn generate_moves(&mut self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
 
         let mut pawn_moves = self.pawn_moves();
@@ -130,7 +133,7 @@ impl Board {
         moves
     }
     
-    pub fn pawn_moves(&self) -> Vec<(u8, u8)> {
+    pub fn pawn_moves(&mut self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
         self.check_en_passant(&mut moves);
         match self.turn {
@@ -234,7 +237,7 @@ impl Board {
         moves
     }
 
-    pub fn check_en_passant(&self, moves: &mut Vec<(u8,u8)>){
+    pub fn check_en_passant(&mut self, moves: &mut Vec<(u8,u8)>){
         match self.turn{
             Turn::White=>{
                 // check if move is actually a pawn double push
@@ -257,6 +260,7 @@ impl Board {
     
                                 ep_captures &= ep_captures - 1;
                             }
+                            self.is_en_passant = true;
                         }      
                     } 
                 }
@@ -280,6 +284,7 @@ impl Board {
 
                                 ep_captures &= ep_captures - 1;
                             }
+                            self.is_en_passant = true;
                         }
                     }
                 }
@@ -683,7 +688,7 @@ impl Board {
         positions
     }
 
-    pub fn print_board(&self) {
+    pub fn print_board(&mut self) {
 
         println!("\nWhite:♚ - Black:♔\n");
 
@@ -744,7 +749,7 @@ impl Board {
         
         println!("\nPossible moves:");
         print!("Pawns: ");
-        for &(start, end) in &self.pawn_moves() {
+        for (start, end) in self.pawn_moves() {
             print!("({}, {}) ", Square::from(start), Square::from(end));
         }
         print!("\nKing: ");
