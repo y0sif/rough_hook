@@ -25,14 +25,14 @@ impl CastlingRights {
         }
     }
 
-    pub fn check_king_castle(&self, turn: Turn) -> bool{
+    pub fn check_king_side(&self, turn: Turn) -> bool{
         match turn{
             Turn::White => self.white_king_side,
             Turn::Black => self.black_king_side
         }
     }
 
-    pub fn check_queen_castle(&self, turn: Turn) -> bool{
+    pub fn check_queen_side(&self, turn: Turn) -> bool{
         match turn{
             Turn::White => self.white_queen_side,
             Turn::Black => self.black_queen_side,

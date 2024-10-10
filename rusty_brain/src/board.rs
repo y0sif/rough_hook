@@ -653,6 +653,7 @@ impl Board {
             Turn::Black => self.bitboards.black_king,
         };
         Self::get_king_moves(&mut moves, piece_bitboard, ally_bitboard);
+        Self::get_castling_moves(self ,&mut moves ,&piece_bitboard);    
         moves
     }
     fn get_king_moves(moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64){
@@ -670,38 +671,31 @@ impl Board {
         let start_square = piece_position.trailing_zeros() as u8;
         Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);
     }
-    pub fn get_castling_bitboard(&self, king_position: &u64) ->u64 {
-        if true{ //  true :  will be changes after the castling rights is done 
-            let occupied_bitboard = self.bitboards.get_ally_pieces(self.turn) | self.bitboards.get_enemy_pieces(self.turn);
-            let king_side_castling_bitboard = Self::get_king_castling_bitboard(king_position , occupied_bitboard);
-            let queen_side_castling_bitboard = Self::get_queen_castling_bitboard(king_position , occupied_bitboard);
-            return king_side_castling_bitboard | queen_side_castling_bitboard;
-        } 
-        else {
-            0
+    pub fn get_castling_moves(&self, moves : &mut Vec<(u8,u8)> , king_position: &u64) {
+        let occupied_bitboard = self.bitboards.get_ally_pieces(self.turn) | self.bitboards.get_enemy_pieces(self.turn);
+        if self.castling_rights.check_king_side(self.turn){ //  true :  will be changes after the castling rights is done 
+            Self::get_king_side_move(moves ,&king_position , &occupied_bitboard);
         }
-        
+        if self.castling_rights.check_queen_side(self.turn){
+            Self::get_queen_side_move(moves ,&king_position , &occupied_bitboard);
+        }
     }
-    fn get_king_castling_bitboard(king_position : &u64 , occupied_bitboard: u64) -> u64 {
-        println!("king position {:b}", king_position);
-        println!("f_sqaure     {:b}", king_position << 1);
-        println!("s_sqaure     {:b}", king_position << 2);
-
+    fn get_king_side_move(moves : &mut Vec<(u8,u8)>, king_position : &u64 , occupied_bitboard: &u64){
         let square_between = king_position <<1 | king_position << 2;
-        println!("{:b}", square_between);
         let can_castle = square_between & occupied_bitboard == 0;
-        match can_castle {
-            true => king_position << 2 , 
-            false => 0 ,
+
+        if can_castle {
+            let start_square = king_position.trailing_zeros() as u8;
+            moves.push((start_square, start_square + 2));
         }
     }
-    fn get_queen_castling_bitboard(king_position : &u64 , occupied_bitboard: u64) -> u64 {
+    fn get_queen_side_move(moves : &mut Vec<(u8,u8)>, king_position : &u64 , occupied_bitboard: &u64){
         let square_between = king_position >>1 | king_position >> 2 | king_position >> 3;
-        println!("{:b}", square_between);
         let can_castle = square_between & occupied_bitboard == 0;
-        match can_castle {
-            true => king_position >> 2 , 
-            false => 0 ,
+
+        if can_castle {
+            let start_square = king_position.trailing_zeros() as u8;
+            moves.push((start_square, start_square - 2));
         }
     }
     // get the position for each piece using piece bitboard

@@ -21,11 +21,11 @@ impl Bitboards {
     // initialize the board at the starting position
     pub fn new() -> Self {
         Bitboards{
-            white_pawns: 0x0000000000000000,
-            white_bishops: 0x0000000000000000,
-            white_knights: 0x0000000000000000,
+            white_pawns: 0x000000000000FF00,
+            white_bishops: 0x0000000000000024,
+            white_knights: 0x0000000000000042,
             white_rooks: 0x0000000000000081,
-            white_queens: 0x0000000000000000,
+            white_queens: 0x0000000000000008,
             white_king: 0x0000000000000010,
 
             black_pawns: 0x00FF000000000000,
@@ -197,10 +197,11 @@ impl Bitboards {
     pub fn bishop_mask(square: u8) -> u64 {
         Bitboards::diagonal_mask(square) | Bitboards::anti_diagonal_mask(square)
     }
-    pub fn rook_mask_ex(square: u8) -> u64 {
-        (Bitboards::rank_mask(square) ^ Bitboards::file_mask(square)) & 0x7E7E7E7E7E7E00
-    }
     
+    pub fn rook_mask_ex(square: u8) -> u64 {
+        Bitboards::rank_mask(square) ^ Bitboards::file_mask(square) 
+    }
+
     pub fn bishop_mask_ex(square: u8) -> u64 {
         (Bitboards::diagonal_mask(square) ^ Bitboards::anti_diagonal_mask(square)) & 0x7E7E7E7E7E7E00
     }
@@ -212,5 +213,6 @@ impl Bitboards {
     pub fn queen_mask_ex(square: u8) -> u64 {
         Bitboards::rook_mask(square) ^ Bitboards::bishop_mask(square)
     }
+
 
 }
