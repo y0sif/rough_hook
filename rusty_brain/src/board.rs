@@ -69,6 +69,7 @@ impl Board {
                     self.bitboards.white_bishops |= end_square;
 
                 }else if start_square & self.bitboards.white_rooks != 0 {
+                    self.check_rook(move_to_make);
                     self.bitboards.white_rooks &= !start_square;
                     self.bitboards.white_rooks |= end_square;
 
@@ -77,6 +78,8 @@ impl Board {
                     self.bitboards.white_queens |= end_square;
 
                 }else if start_square & self.bitboards.white_king != 0 {
+                    self.make_castling_move(move_to_make);
+                    self.castling_rights.reset_rights(self.turn);
                     self.bitboards.white_king &= !start_square;
                     self.bitboards.white_king |= end_square;
 
@@ -100,6 +103,7 @@ impl Board {
                     self.bitboards.black_bishops |= end_square;
 
                 }else if start_square & self.bitboards.black_rooks != 0 {
+                    self.check_rook(move_to_make);
                     self.bitboards.black_rooks &= !start_square;
                     self.bitboards.black_rooks |= end_square;
 
@@ -108,6 +112,8 @@ impl Board {
                     self.bitboards.black_queens |= end_square;
 
                 }else if start_square & self.bitboards.black_king != 0 {
+                    self.make_castling_move(move_to_make);
+                    self.castling_rights.reset_rights(self.turn);
                     self.bitboards.black_king &= !start_square;
                     self.bitboards.black_king |= end_square;
 
@@ -156,6 +162,57 @@ impl Board {
                 self.bitboards.white_queens &= square_captured;
                 self.bitboards.white_rooks &= square_captured;
             }
+        }
+    }
+    
+    fn check_rook(&mut self, move_to_make: (u8, u8)) {
+        let rook_square = move_to_make.0;
+        match self.turn {
+            Turn::White => {
+                if rook_square == Square::H1 as u8 {
+                    self.castling_rights.reset_king_side_rights(self.turn);
+                }else if rook_square == Square::A1 as u8{
+                    self.castling_rights.reset_queen_side_rights(self.turn);
+                }
+            },
+            Turn::Black => {
+                if rook_square == Square::H8 as u8 {
+                    self.castling_rights.reset_king_side_rights(self.turn);
+                }else if rook_square == Square::A8 as u8{
+                    self.castling_rights.reset_queen_side_rights(self.turn);
+                }
+            }
+        }
+    }
+
+    fn make_castling_move(&mut self, move_to_make: (u8, u8)) {
+        // king side
+        if move_to_make.0 == move_to_make.1 - 2 {
+            match self.turn {
+                Turn::White => {
+                    self.bitboards.white_rooks &= !(1 << Square::H1 as u8);
+                    self.bitboards.white_rooks |= 1 << Square::F1 as u8;
+                },
+                Turn::Black => {
+                    self.bitboards.black_rooks &= !(1 << Square::H8 as u8);
+                    self.bitboards.black_rooks |= 1 << Square::F8 as u8;
+                }
+            }
+        }
+
+        // queen side
+        if move_to_make.0 == move_to_make.1 + 2 {
+            match self.turn {
+                Turn::White => {
+                    self.bitboards.white_rooks &= !(1 << Square::A1 as u8);
+                    self.bitboards.white_rooks |= 1 << Square::D1 as u8;
+                },
+                Turn::Black => {
+                    self.bitboards.black_rooks &= !(1 << Square::A8 as u8);
+                    self.bitboards.black_rooks |= 1 << Square::D8 as u8;
+                }
+            }
+
         }
     }
     
