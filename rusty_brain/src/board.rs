@@ -46,10 +46,12 @@ impl Board {
     pub fn make_move(&mut self, move_to_make: (u8, u8)) {
         let start_square = 1 << move_to_make.0;
         let end_square = 1 << move_to_make.1;
-        self.move_log.push((move_to_make.0, move_to_make.1));
         match self.turn {
             Turn::White => {
                 if start_square & self.bitboards.white_pawns != 0 {
+                    if self.is_en_passant {
+                        self.make_en_passant(move_to_make);
+                    }
                     self.bitboards.white_pawns &= !start_square;      
                     self.bitboards.white_pawns |= end_square;
 
@@ -78,6 +80,9 @@ impl Board {
             },
             Turn::Black => {
                 if start_square & self.bitboards.black_pawns != 0 {
+                    if self.is_en_passant {
+                        self.make_en_passant(move_to_make);
+                    }
                     self.bitboards.black_pawns &= !start_square;      
                     self.bitboards.black_pawns |= end_square;
 
@@ -106,7 +111,27 @@ impl Board {
                 
             }
         }
+        self.move_log.push((move_to_make.0, move_to_make.1));
+        self.is_en_passant = false;
         
+    }
+    
+    fn make_en_passant(&mut self, move_to_make: (u8, u8)) {
+        let last_move = self.move_log.last().unwrap();
+        match self.turn {
+            Turn::White => {
+                if move_to_make.1 - 8 == last_move.1 {
+                    let black_pawn = 1 << last_move.1;
+                    self.bitboards.black_pawns &= !black_pawn;
+                } 
+            },
+            Turn::Black => {
+                if move_to_make.1 + 8 == last_move.1 {
+                    let white_pawn = 1 << last_move.1;
+                    self.bitboards.white_pawns &= !white_pawn;
+                } 
+            }
+        }
     }
     
     pub fn generate_moves(&mut self) -> Vec<(u8, u8)> {
