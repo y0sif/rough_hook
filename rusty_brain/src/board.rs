@@ -109,26 +109,30 @@ impl Board {
     pub fn generate_moves(&self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
 
-        let mut pawn_moves = self.pawn_moves();
-        moves.append(&mut pawn_moves);
+        // let mut pawn_moves = self.pawn_moves();
+        // moves.append(&mut pawn_moves);
 
-        let mut queen_moves = self.queen_moves();
-        moves.append(&mut queen_moves);
+        // let mut queen_moves = self.queen_moves();
+        // moves.append(&mut queen_moves);
 
-        let mut rooks_moves = self.rook_moves();
-        moves.append(&mut rooks_moves);
+        // let mut rooks_moves = self.rook_moves();
+        // moves.append(&mut rooks_moves);
 
-        let mut bishop_moves = self.bishop_moves();
-        moves.append(&mut bishop_moves);
+        // let mut bishop_moves = self.bishop_moves();
+        // moves.append(&mut bishop_moves);
 
-        let mut knight_moves = self.knight_moves();
-        moves.append(&mut knight_moves);
+        // let mut knight_moves = self.knight_moves();
+        // moves.append(&mut knight_moves);
+        
+        let mut king_moves = self.king_moves();
+        moves.append(&mut king_moves);
 
         moves
     }
     
     pub fn pawn_moves(&self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
+        self.check_en_passant(&mut moves);
         match self.turn {
             Turn::White => {
                 // pawn push
@@ -227,7 +231,6 @@ impl Board {
                 }
             }
         }
-        self.check_en_passant(&mut moves);
         moves
     }
 
@@ -389,6 +392,7 @@ impl Board {
         return moves;
     }
 
+
     // Get the the bit board of all valid positions for a bishop  based on its movement directions
     // And fill the moves vector with the start and end squares for each move
     fn get_bishop_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, enemy_bitboard: u64, ally_bitboard: u64) {
@@ -463,8 +467,10 @@ impl Board {
         };
 
         // The queen moves is Combination of bishop and rook moves
-        Self::get_bishop_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
-        Self::get_rook_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+        if piece_bitboard != 0 {
+            Self::get_bishop_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+            Self::get_rook_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+        }
 
         return moves;
     }
@@ -579,20 +585,23 @@ impl Board {
     }
     
     pub fn king_moves(&self) -> Vec<(u8, u8)> {
+        
         let mut moves: Vec<(u8, u8)> = Vec::new();
-        let empty_squares = self.bitboards.get_empty_squares();
-
         match self.turn {
             Turn::White => {
+                let ally_squares = self.bitboards.get_ally_pieces(Turn::White);
                 let king_square = self.bitboards.white_king.trailing_zeros() as u8;
                 let mut kingset = self.bitboards.white_king;
                 
+                let castling_bitboard = self.get_castling_bitboard(&kingset);
+
                 let mut attacks = Bitboards::move_east(kingset) | Bitboards::move_west(kingset);
                 kingset |= attacks;
                 attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
 
-                attacks &= empty_squares;
-
+                attacks &= !ally_squares;
+                attacks |= castling_bitboard;
+                
                 while attacks != 0 {
                     let end_square = attacks.trailing_zeros() as u8;
                     moves.push((king_square, end_square));
@@ -601,15 +610,19 @@ impl Board {
 
             },
             Turn::Black => {
+                let ally_squares = self.bitboards.get_ally_pieces(Turn::Black);
                 let mut kingset = self.bitboards.black_king;
                 let king_square = self.bitboards.black_king.trailing_zeros() as u8;
+
+                let castling_bitboard = self.get_castling_bitboard(&kingset);
 
                 let mut attacks = Bitboards::move_east(kingset) | Bitboards::move_west(kingset);
                 kingset |= attacks;
                 attacks |= Bitboards::move_north(kingset) | Bitboards::move_south(kingset);
-
-                attacks &= empty_squares;
-
+                
+                attacks &= !ally_squares;
+                attacks |= castling_bitboard;
+                
                 while attacks != 0 {
                     let end_square = attacks.trailing_zeros() as u8;             
                     moves.push((king_square as u8, end_square));
@@ -617,10 +630,42 @@ impl Board {
                 }
             }
         }
-
         moves
     }
+    pub fn get_castling_bitboard(&self, king_position: &u64) ->u64 {
+        if true{ //  true :  will be changes after the castling rights is done 
+            let occupied_bitboard = self.bitboards.get_ally_pieces(self.turn) | self.bitboards.get_enemy_pieces(self.turn);
+            let king_side_castling_bitboard = Self::get_king_castling_bitboard(king_position , occupied_bitboard);
+            let queen_side_castling_bitboard = Self::get_queen_castling_bitboard(king_position , occupied_bitboard);
+            return king_side_castling_bitboard | queen_side_castling_bitboard;
+        } 
+        else {
+            0
+        }
+        
+    }
+    fn get_king_castling_bitboard(king_position : &u64 , occupied_bitboard: u64) -> u64 {
+        println!("king position {:b}", king_position);
+        println!("f_sqaure     {:b}", king_position << 1);
+        println!("s_sqaure     {:b}", king_position << 2);
 
+        let square_between = king_position <<1 | king_position << 2;
+        println!("{:b}", square_between);
+        let can_castle = square_between & occupied_bitboard == 0;
+        match can_castle {
+            true => king_position << 2 , 
+            false => 0 ,
+        }
+    }
+    fn get_queen_castling_bitboard(king_position : &u64 , occupied_bitboard: u64) -> u64 {
+        let square_between = king_position >>1 | king_position >> 2 | king_position >> 3;
+        println!("{:b}", square_between);
+        let can_castle = square_between & occupied_bitboard == 0;
+        match can_castle {
+            true => king_position >> 2 , 
+            false => 0 ,
+        }
+    }
     // get the position for each piece using piece bitboard
     // eg : if the piece bitboard is 0000000000000000000000100000000000000000000100000000000000000001
     //      so the positions will contain : 
@@ -694,7 +739,7 @@ impl Board {
 
         match self.turn {
             Turn::White => println!("\nTurn: White"),
-            Turn::Black => println!("\nTurn: Balck",),
+            Turn::Black => println!("\nTurn: Black",),
         };
         
         println!("\nPossible moves:");
