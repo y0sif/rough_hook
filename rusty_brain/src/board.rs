@@ -13,6 +13,7 @@ pub struct Board{
     pub rook_attacks: [Vec<u64>; 64],
     pub bishop_attacks: [Vec<u64>; 64],
     pub move_log: Vec<(u8, u8)>,
+    pub is_en_passant: bool
 }
 
 impl Board {
@@ -25,6 +26,7 @@ impl Board {
             rook_attacks,
             bishop_attacks,
             move_log: Vec::new(),
+            is_en_passant: false
         }
     }
     
@@ -37,16 +39,20 @@ impl Board {
             rook_attacks,
             bishop_attacks,
             move_log: Vec::new(),
+            is_en_passant: false
         }
     }
     
     pub fn make_move(&mut self, move_to_make: (u8, u8)) {
         let start_square = 1 << move_to_make.0;
         let end_square = 1 << move_to_make.1;
-        self.move_log.push((start_square as u8, end_square as u8));
+        self.make_capture(move_to_make);
         match self.turn {
             Turn::White => {
                 if start_square & self.bitboards.white_pawns != 0 {
+                    if self.is_en_passant {
+                        self.make_en_passant(move_to_make);
+                    }
                     self.bitboards.white_pawns &= !start_square;      
                     self.bitboards.white_pawns |= end_square;
 
@@ -75,6 +81,9 @@ impl Board {
             },
             Turn::Black => {
                 if start_square & self.bitboards.black_pawns != 0 {
+                    if self.is_en_passant {
+                        self.make_en_passant(move_to_make);
+                    }
                     self.bitboards.black_pawns &= !start_square;      
                     self.bitboards.black_pawns |= end_square;
 
@@ -103,26 +112,66 @@ impl Board {
                 
             }
         }
+        self.move_log.push((move_to_make.0, move_to_make.1));
+        self.is_en_passant = false;
         
     }
     
-    pub fn generate_moves(&self) -> Vec<(u8, u8)> {
+    fn make_en_passant(&mut self, move_to_make: (u8, u8)) {
+        let last_move = self.move_log.last().unwrap();
+        match self.turn {
+            Turn::White => {
+                if move_to_make.1 - 8 == last_move.1 {
+                    let black_pawn = 1 << last_move.1;
+                    self.bitboards.black_pawns &= !black_pawn;
+                } 
+            },
+            Turn::Black => {
+                if move_to_make.1 + 8 == last_move.1 {
+                    let white_pawn = 1 << last_move.1;
+                    self.bitboards.white_pawns &= !white_pawn;
+                } 
+            }
+        }
+    }
+    
+    fn make_capture(&mut self, move_to_make: (u8, u8)) {
+        let square_captured = !(1 << move_to_make.1);
+        match self.turn {
+            Turn::White => {
+                self.bitboards.black_bishops &= square_captured;
+                self.bitboards.black_knights &= square_captured;
+                self.bitboards.black_pawns &= square_captured;
+                self.bitboards.black_queens &= square_captured;
+                self.bitboards.black_rooks &= square_captured;
+            },
+            Turn::Black => {
+                self.bitboards.white_bishops &= square_captured;
+                self.bitboards.white_knights &= square_captured;
+                self.bitboards.white_pawns &= square_captured;
+                self.bitboards.white_queens &= square_captured;
+                self.bitboards.white_rooks &= square_captured;
+            }
+        }
+    }
+    
+    pub fn generate_moves(&mut self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
 
-        // let mut pawn_moves = self.pawn_moves();
-        // moves.append(&mut pawn_moves);
+        let mut pawn_moves = self.pawn_moves();
+        moves.append(&mut pawn_moves);
 
-        // let mut queen_moves = self.queen_moves();
-        // moves.append(&mut queen_moves);
+        let mut queen_moves = self.queen_moves();
+        moves.append(&mut queen_moves);
 
-        // let mut rooks_moves = self.rook_moves();
-        // moves.append(&mut rooks_moves);
+        let mut rooks_moves = self.rook_moves();
+        moves.append(&mut rooks_moves);
 
-        // let mut bishop_moves = self.bishop_moves();
-        // moves.append(&mut bishop_moves);
+        let mut bishop_moves = self.bishop_moves();
+        moves.append(&mut bishop_moves);
 
-        // let mut knight_moves = self.knight_moves();
-        // moves.append(&mut knight_moves);
+        let mut knight_moves = self.knight_moves();
+        moves.append(&mut knight_moves);
         
         let mut king_moves = self.king_moves();
         moves.append(&mut king_moves);
@@ -130,7 +179,7 @@ impl Board {
         moves
     }
     
-    pub fn pawn_moves(&self) -> Vec<(u8, u8)> {
+    pub fn pawn_moves(&mut self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
         self.check_en_passant(&mut moves);
         match self.turn {
@@ -234,7 +283,7 @@ impl Board {
         moves
     }
 
-    pub fn check_en_passant(&self, moves: &mut Vec<(u8,u8)>){
+    pub fn check_en_passant(&mut self, moves: &mut Vec<(u8,u8)>){
         match self.turn{
             Turn::White=>{
                 // check if move is actually a pawn double push
@@ -257,6 +306,7 @@ impl Board {
     
                                 ep_captures &= ep_captures - 1;
                             }
+                            self.is_en_passant = true;
                         }      
                     } 
                 }
@@ -280,6 +330,7 @@ impl Board {
 
                                 ep_captures &= ep_captures - 1;
                             }
+                            self.is_en_passant = true;
                         }
                     }
                 }
@@ -616,7 +667,7 @@ impl Board {
         }
     }
 
-    pub fn print_board(&self) {
+    pub fn print_board(&mut self) {
 
         println!("\nWhite:♚ - Black:♔\n");
 
@@ -677,7 +728,7 @@ impl Board {
         
         println!("\nPossible moves:");
         print!("Pawns: ");
-        for &(start, end) in &self.pawn_moves() {
+        for (start, end) in self.pawn_moves() {
             print!("({}, {}) ", Square::from(start), Square::from(end));
         }
         print!("\nKing: ");
