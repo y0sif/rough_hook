@@ -132,6 +132,7 @@ impl Board {
     
     pub fn pawn_moves(&self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
+        self.check_en_passant(&mut moves);
         match self.turn {
             Turn::White => {
                 // pawn push
@@ -230,7 +231,6 @@ impl Board {
                 }
             }
         }
-        self.check_en_passant(&mut moves);
         moves
     }
 
@@ -467,8 +467,10 @@ impl Board {
         };
 
         // The queen moves is Combination of bishop and rook moves
-        Self::get_bishop_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
-        Self::get_rook_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+        if piece_bitboard != 0 {
+            Self::get_bishop_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+            Self::get_rook_moves(&self, &mut moves, piece_bitboard, enemy_bitboard, ally_bitboard);
+        }
 
         return moves;
     }

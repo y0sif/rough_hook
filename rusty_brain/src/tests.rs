@@ -61,6 +61,16 @@ mod tests {
         let moves = board.pawn_moves();
         
         assert_eq!(moves.len(), 0);
+        
+        // test en passant
+        board.turn = Turn::Black;
+        board.bitboards.white_pawns = 0x0800000000;
+        board.bitboards.black_pawns = 0x10000000000000;
+        board.make_move((Square::E7 as u8, Square::E5 as u8));
+
+        let moves = board.pawn_moves();
+        
+        assert_eq!(moves.len(), 2);        
               
     }
     
@@ -220,7 +230,16 @@ mod tests {
         let moves = board.bishop_moves();
         
         assert_eq!(moves.len(), 0);
-    }
+        
+        // test captures 
+        board.bitboards.white_bishops = 1;
+        board.bitboards.black_bishops = 0x302;
+        
+        let moves = board.bishop_moves();
+
+        assert_eq!(moves.len(), 1);
+        
+}
 
     #[test]
     fn test_rooks() {
@@ -264,6 +283,14 @@ mod tests {
         let moves = board.rook_moves();
         
         assert_eq!(moves.len(), 0);
+        
+        // test captures 
+        board.bitboards.white_rooks = 1;
+        board.bitboards.black_rooks = 0x302;
+        
+        let moves = board.rook_moves();
+
+        assert_eq!(moves.len(), 2);
     }
 
     #[test]
@@ -336,6 +363,14 @@ mod tests {
         let moves = board.queen_moves();
         
         assert_eq!(moves.len(), 0);
+
+        // test captures
+        board.bitboards.white_queens = 1;
+        board.bitboards.black_queens = 0x302;
+        
+        let moves = board.queen_moves();
+
+        assert_eq!(moves.len(), 3);
         
     }
     
