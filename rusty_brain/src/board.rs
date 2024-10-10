@@ -1,7 +1,7 @@
 use crate::bitboards::Bitboards;
+use crate::castling::CastlingRights;
 use crate::magic::Magic;
 use crate::square::{Rank, Square};
-
 #[derive(Clone, Copy)]
 pub enum Turn {
    White,
@@ -13,7 +13,9 @@ pub struct Board{
     pub rook_attacks: [Vec<u64>; 64],
     pub bishop_attacks: [Vec<u64>; 64],
     pub move_log: Vec<(u8, u8)>,
-    pub is_en_passant: bool
+    pub is_en_passant: bool,
+    pub castling_rights: CastlingRights,
+
 }
 
 impl Board {
@@ -26,7 +28,8 @@ impl Board {
             rook_attacks,
             bishop_attacks,
             move_log: Vec::new(),
-            is_en_passant: false
+            is_en_passant: false,
+            castling_rights: CastlingRights::new(),
         }
     }
     
@@ -39,7 +42,8 @@ impl Board {
             rook_attacks,
             bishop_attacks,
             move_log: Vec::new(),
-            is_en_passant: false
+            is_en_passant: false, 
+            castling_rights: CastlingRights::empty()
         }
     }
     
