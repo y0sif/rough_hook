@@ -147,6 +147,7 @@ impl Board {
     
     fn make_capture(&mut self, move_to_make: (u8, u8)) {
         let square_captured = !(1 << move_to_make.1);
+        
         match self.turn {
             Turn::White => {
                 self.bitboards.black_bishops &= square_captured;
@@ -164,6 +165,7 @@ impl Board {
             }
         }
     }
+
     
     fn check_rook(&mut self, move_to_make: (u8, u8)) {
         let rook_square = move_to_make.0;
@@ -188,31 +190,33 @@ impl Board {
     fn make_castling_move(&mut self, move_to_make: (u8, u8)) {
         // king side
         if move_to_make.0 == move_to_make.1 - 2 {
-            match self.turn {
-                Turn::White => {
-                    self.bitboards.white_rooks &= !(1 << Square::H1 as u8);
-                    self.bitboards.white_rooks |= 1 << Square::F1 as u8;
-                },
-                Turn::Black => {
-                    self.bitboards.black_rooks &= !(1 << Square::H8 as u8);
-                    self.bitboards.black_rooks |= 1 << Square::F8 as u8;
-                }
+            self.make_king_side_move();
+        }else if move_to_make.0 == move_to_make.1 + 2 {
+            self.make_queen_side_move();
+        }
+    }
+    fn make_king_side_move(&mut self) {
+        match self.turn {
+            Turn::White => {
+                self.bitboards.white_rooks &= !(1 << Square::H1 as u8);
+                self.bitboards.white_rooks |= 1 << Square::F1 as u8;
+            },
+            Turn::Black => {
+                self.bitboards.black_rooks &= !(1 << Square::H8 as u8);
+                self.bitboards.black_rooks |= 1 << Square::F8 as u8;
             }
         }
-
-        // queen side
-        if move_to_make.0 == move_to_make.1 + 2 {
-            match self.turn {
-                Turn::White => {
-                    self.bitboards.white_rooks &= !(1 << Square::A1 as u8);
-                    self.bitboards.white_rooks |= 1 << Square::D1 as u8;
-                },
-                Turn::Black => {
-                    self.bitboards.black_rooks &= !(1 << Square::A8 as u8);
-                    self.bitboards.black_rooks |= 1 << Square::D8 as u8;
-                }
+    }
+    fn make_queen_side_move(&mut self) {
+        match self.turn {
+            Turn::White => {
+                self.bitboards.white_rooks &= !(1 << Square::A1 as u8);
+                self.bitboards.white_rooks |= 1 << Square::D1 as u8;
+            },
+            Turn::Black => {
+                self.bitboards.black_rooks &= !(1 << Square::A8 as u8);
+                self.bitboards.black_rooks |= 1 << Square::D8 as u8;
             }
-
         }
     }
     
@@ -241,109 +245,76 @@ impl Board {
     }
     
     pub fn pawn_moves(&mut self) -> Vec<(u8, u8)> {
-        let mut moves = Vec::new();
-        self.check_en_passant(&mut moves);
+        let mut moves = Vec::new(); 
+
+        let not_a_file : u64 = 0xfefefefefefefefe;
+        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+
+        let empty_bitboard = self.bitboards.get_empty_squares();
+        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn);
+
+        let mut single_push_bitboard ; 
+        let mut double_push_bitboard;
+        let push_direction;
+
+        let right_capture_mask;
+        let left_capture_mask;
+        let mut right_captures_bitboard;
+        let mut left_captures_bitboard;
+        
         match self.turn {
-            Turn::White => {
-                // pawn push
-                let empty_squares = self.bitboards.get_empty_squares();
-                let mut single_push = (self.bitboards.white_pawns << 8) & empty_squares;
-
-                let rank4 = 0x00000000FF000000;
-                let mut double_push = (single_push << 8) & empty_squares & rank4; 
-                
-                while single_push != 0 {
-                    let end_square = single_push.trailing_zeros() as u8;
-
-                    moves.push((end_square - 8, end_square));
-
-                    single_push &= single_push - 1;
-                }
-                
-                while double_push != 0 {
-                    let end_square = double_push.trailing_zeros() as u8;
-
-                    moves.push((end_square - 16, end_square));
-                    
-                    double_push &= double_push - 1;
-                }
-                // pawn capture
-                let not_a_file = 0xfefefefefefefefe;
-                let not_h_file = 0x7f7f7f7f7f7f7f7f;
-                
-                let enemy_pieces = self.bitboards.get_enemy_pieces(self.turn);
-
-                let mut right_captures = (self.bitboards.white_pawns << 9) & not_a_file & enemy_pieces;
-                let mut left_captures = (self.bitboards.white_pawns << 7) & not_h_file & enemy_pieces;
-                
-                while right_captures != 0 {
-                    let end_square = right_captures.trailing_zeros() as u8;
-
-                    moves.push((end_square - 9, end_square));
-                    
-                    right_captures &= right_captures - 1;
-                }
-                
-                while left_captures != 0 {
-                    let end_squares = left_captures.trailing_zeros() as u8;
-
-                    moves.push((end_squares - 7, end_squares));     
-                    
-                    left_captures &= left_captures - 1;
-                }
+            Turn::White => { 
+                //push Configurations
+                single_push_bitboard = (self.bitboards.white_pawns << 8) & empty_bitboard;
+                let rank = 0x00000000FF000000; // rank 4
+                double_push_bitboard = (single_push_bitboard << 8) & empty_bitboard & rank;
+                push_direction = -1; 
+                //Capture Configurations
+                right_capture_mask = 9;
+                left_capture_mask = 7;
+                right_captures_bitboard = (self.bitboards.white_pawns << right_capture_mask) & not_a_file & enemy_bitboard;
+                left_captures_bitboard =  (self.bitboards.white_pawns << left_capture_mask) & not_h_file & enemy_bitboard;
             },
             Turn::Black => {
-                // pawn push
-                let empty_squares = self.bitboards.get_empty_squares();
-                let mut single_push = (self.bitboards.black_pawns >> 8) & empty_squares;
-
-                let rank5 = 0x000000FF00000000;
-                let mut double_push = (single_push >> 8) & empty_squares & rank5; 
-                
-                while single_push != 0 {
-                    let end_square = single_push.trailing_zeros() as u8;
-
-                    moves.push((end_square + 8, end_square));
-
-                    single_push &= single_push - 1;
-                }
-                
-                while double_push != 0 {
-                    let end_square = double_push.trailing_zeros() as u8;
-
-                    moves.push((end_square + 16, end_square));
-                    
-                    double_push &= double_push - 1;
-                }
-                // pawn capture
-                let not_a_file = 0xfefefefefefefefe;
-                let not_h_file = 0x7f7f7f7f7f7f7f7f;
-                
-                let enemy_pieces = self.bitboards.get_enemy_pieces(self.turn);
-
-                let mut right_captures = (self.bitboards.black_pawns >> 7) & not_a_file & enemy_pieces;
-                let mut left_captures = (self.bitboards.black_pawns >> 9) & not_h_file & enemy_pieces;
-                
-                while right_captures != 0 {
-                    let end_square = right_captures.trailing_zeros() as u8;
-
-                    moves.push((end_square + 7, end_square));
-                    
-                    right_captures &= right_captures - 1;
-                }
-                
-                while left_captures != 0 {
-                    let end_squares = left_captures.trailing_zeros() as u8;
-
-                    moves.push((end_squares + 9, end_squares));     
-                    
-                    left_captures &= left_captures - 1;
-                }
+                // push Configurations
+                single_push_bitboard = (self.bitboards.black_pawns >> 8) & empty_bitboard;
+                let rank = 0x000000FF00000000; // rank 5
+                double_push_bitboard = (single_push_bitboard >> 8) & empty_bitboard & rank;
+                push_direction = 1; 
+                //Capture Configurations
+                right_capture_mask = 7;
+                left_capture_mask = 9;
+                right_captures_bitboard = (self.bitboards.black_pawns >> right_capture_mask) & not_a_file & enemy_bitboard;
+                left_captures_bitboard = (self.bitboards.black_pawns >> left_capture_mask) & not_h_file & enemy_bitboard;
             }
         }
+        Self::get_push_moves(&mut moves ,  &mut single_push_bitboard , 1 , push_direction); 
+        Self::get_push_moves(&mut moves ,  &mut double_push_bitboard , 2,  push_direction); 
+        Self::get_capture_moves(&mut moves , &mut right_captures_bitboard , right_capture_mask , push_direction); 
+        Self::get_capture_moves(&mut moves , &mut left_captures_bitboard  , left_capture_mask  , push_direction); 
+        Self::check_en_passant(self, &mut moves);
         moves
     }
+    fn get_push_moves(moves : &mut Vec<(u8, u8)> , push_bitboard  : & mut u64 ,  steps : i32 , push_direction : i32)
+    {
+        while *push_bitboard != 0
+        {
+            let end_square = push_bitboard.trailing_zeros() as i32 ;
+            let start_square = end_square + (steps*8*push_direction);  
+            moves.push((start_square as u8 , end_square as u8));            
+            *push_bitboard &= *push_bitboard - 1;
+        }
+    }
+    fn get_capture_moves(moves : &mut Vec<(u8, u8)> , capture_bitboard : &mut u64 , capture_mask : i32 , push_direction : i32)
+    {
+        while *capture_bitboard != 0 {
+            let end_square = capture_bitboard.trailing_zeros() as i32;
+            let start_square = end_square + (capture_mask*push_direction);
 
+            moves.push((start_square as u8, end_square as u8));
+            *capture_bitboard &= *capture_bitboard - 1;
+        }
+    }
     pub fn check_en_passant(&mut self, moves: &mut Vec<(u8,u8)>){
         match self.turn{
             Turn::White=>{
@@ -616,8 +587,8 @@ impl Board {
         let mut bitboard  =  *piece_bitboard; 
         let mut positions = Vec::new();
         while bitboard != 0 {
-            let rook1 = bitboard & (!bitboard + 1); 
-            positions.push(rook1);
+            let position = bitboard & (!bitboard + 1); 
+            positions.push(position);
             bitboard &= bitboard - 1;
         }
         positions
