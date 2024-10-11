@@ -71,6 +71,15 @@ mod tests {
         let moves = board.pawn_moves();
         
         assert_eq!(moves.len(), 2);        
+        
+        board.bitboards.black_pawns = 0x05000000;
+        board.bitboards.white_pawns = 0x0200;
+
+        board.make_move((Square::B2 as u8, Square::B4 as u8));
+
+        let moves = board.pawn_moves();
+
+        assert_eq!(moves.len(), 4);
               
     }
     
@@ -414,5 +423,61 @@ mod tests {
             board.bitboards.black_king <<= 1;
         }
         
+        board.bitboards.black_king = 0;
+        board.turn = Turn::White;
+        
+        // test captures
+        board.bitboards.white_king = 1;
+        board.bitboards.black_knights = 0x302;
+        
+        let moves = board.king_moves();
+
+        assert_eq!(moves.len(), 3);
+        
+        // test castling
+        let mut board = Board::new();
+        board.bitboards.white_bishops = 0;
+        board.bitboards.white_knights = 0;
+        board.bitboards.white_queens = 0;
+        board.bitboards.black_bishops = 0;
+        board.bitboards.black_knights = 0;
+        board.bitboards.black_queens = 0;
+        
+
+        let moves = board.king_moves();
+
+        assert_eq!(moves.len(), 4);
+        
+        board.make_move((Square::E1 as u8, Square::G1 as u8)); 
+        
+        assert_eq!(board.bitboards.white_king.trailing_zeros() as u8, Square::G1 as u8);
+        assert_eq!((board.bitboards.white_rooks & (1 << Square::F1 as u8)).trailing_zeros() as u8, Square::F1 as u8);
+        
+        let moves = board.king_moves();
+
+        assert_eq!(moves.len(), 4);
+
+        board.make_move((Square::E8 as u8, Square::C8 as u8));
+        
+        assert_eq!(board.bitboards.black_king.trailing_zeros() as u8, Square::C8 as u8);
+        assert_eq!((board.bitboards.black_rooks & (1 << Square::D8 as u8)).trailing_zeros() as u8, Square::D8 as u8);
+        
+        let moves = board.king_moves();
+        
+        assert_eq!(board.castling_rights.white_king_side, false);
+
+        assert_eq!(moves.len(), 1);
+
+        board.make_move(*moves.last().unwrap());
+        
+        let moves = board.king_moves();
+        
+        assert_eq!(board.castling_rights.black_queen_side, false);
+
+        assert_eq!(moves.len(), 1);
+
+        board.make_move(*moves.last().unwrap());
+        
+
     }
 }
