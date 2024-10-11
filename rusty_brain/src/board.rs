@@ -20,8 +20,8 @@ pub struct Board{
 
 impl Board {
     pub fn new() -> Self {
-        let rook_attacks = Magic::rook_attacks();
-        let bishop_attacks = Magic::bishop_attacks();
+        let rook_attacks = Magic::piece_attacks(true);
+        let bishop_attacks = Magic::piece_attacks(false);
         Board{
             bitboards: Bitboards::new(),
             turn: Turn::White,
@@ -34,8 +34,8 @@ impl Board {
     }
     
     pub fn empty() -> Self{
-        let rook_attacks = Magic::rook_attacks();
-        let bishop_attacks = Magic::bishop_attacks();
+        let rook_attacks = Magic::piece_attacks(true);
+        let bishop_attacks = Magic::piece_attacks(false);
         Board {
             bitboards: Bitboards::empty(),
             turn: Turn::White,
@@ -551,98 +551,6 @@ impl Board {
             bitboard |= next_position;
         }
         bitboard
-    }
-    
-    pub fn bishop_bitboard(piece_position: u64, blockers: u64) -> u64 {
-
-        let mut bishop_bitboard = 0;
-        let mut north_east = Bitboards::move_north_east(piece_position);
-        
-        while north_east & blockers == 0 && north_east != 0{
-            bishop_bitboard |= north_east;
-            north_east = Bitboards::move_north_east(north_east);
-        }
-        if north_east & blockers != 0 {
-            bishop_bitboard |= north_east;
-        }
-        
-        let mut north_west = Bitboards::move_north_west(piece_position);
-        
-        while north_west & blockers == 0 && north_west != 0{
-            bishop_bitboard |= north_west;
-            north_west = Bitboards::move_north_west(north_west);
-        }
-        if north_west & blockers != 0 {
-            bishop_bitboard |= north_west;
-        }
-
-        let mut south_east = Bitboards::move_south_east(piece_position);
-        
-        while south_east & blockers == 0 && south_east != 0{
-            bishop_bitboard |= south_east;
-            south_east = Bitboards::move_south_east(south_east);
-        }
-        if south_east & blockers != 0 {
-            bishop_bitboard |= south_east;
-        }
-
-        let mut south_west = Bitboards::move_south_west(piece_position);
-        
-        while south_west & blockers == 0 && south_west != 0{
-            bishop_bitboard |= south_west;
-            south_west = Bitboards::move_south_west(south_west);
-        }
-        if south_west & blockers != 0 {
-            bishop_bitboard |= south_west;
-        }
-
-        bishop_bitboard
-
-    }
-    
-    pub fn rook_bitboard(piece_position: u64, blockers: u64) -> u64 {
-        let mut rook_bitboard = 0;
-        let mut north = Bitboards::move_north(piece_position);
-        
-        while north & blockers == 0 && north != 0{
-            rook_bitboard |= north;
-            north = Bitboards::move_north(north);
-        }
-        if north & blockers != 0 {
-            rook_bitboard |= north;
-        }
-        
-        let mut east = Bitboards::move_east(piece_position);
-        
-        while east & blockers == 0 && east != 0{
-            rook_bitboard |= east;
-            east = Bitboards::move_east(east);
-        }
-        if east & blockers != 0 {
-            rook_bitboard |= east;
-        }
-
-        let mut south = Bitboards::move_south(piece_position);
-        
-        while south & blockers == 0 && south != 0{
-            rook_bitboard |= south;
-            south = Bitboards::move_south(south);
-        }
-        if south & blockers != 0 {
-            rook_bitboard |= south;
-        }
-
-        let mut west = Bitboards::move_west(piece_position);
-        
-        while west & blockers == 0 && west != 0{
-            rook_bitboard |= west;
-            west = Bitboards::move_west(west);
-        }
-        if west & blockers != 0 {
-            rook_bitboard |= west;
-        }
-
-        rook_bitboard
     }
     
     pub fn king_moves(&self) -> Vec<(u8, u8)> {

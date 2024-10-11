@@ -30,54 +30,56 @@ impl Magic {
         blockers_configs
     }
     
-    pub fn create_rook_table(square: u8, magic: u64, left_shift: u8) -> Vec<u64> {
+    fn create_piece_table(square: u8, magic: u64, left_shift: u8, is_rook: bool) -> Vec<u64>{
         let num_of_bits = 64 - left_shift;
         let lookup_size = 1 << num_of_bits;
-        let mut rook_moves_table = vec![0u64; lookup_size]; 
+        let mut moves_table = vec![0u64; lookup_size]; 
 
-        let move_mask = Bitboards::rook_mask_ex(square);
+        let move_mask = match is_rook {
+            true => Bitboards::rook_mask_ex(square),
+            false => Bitboards::bishop_mask_ex(square)
+        };
         let blockers_configs = Self::create_all_blocker_configs(move_mask);
         let piece_position = 1 << square;        
 
-        for blocker in blockers_configs {
-            let legal_moves = Board::rook_bitboard(piece_position, blocker);
-            let index = blocker.wrapping_mul(magic) >> left_shift;
-            rook_moves_table[index as usize] = legal_moves;
-        }
-        rook_moves_table
-    }
-    
-    pub fn rook_attacks() -> [Vec<u64>; 64]{
-        let mut rook_attacks = [const { Vec::new() }; 64];
-        for i in 0..64 {
-            rook_attacks[i] = Self::create_rook_table(i as u8, Self::ROOK_MAGICS[i], Self::ROOK_SHIFTS[i]);
-        }
-        rook_attacks
-    }
-
-    pub fn create_bishop_table(square: u8, magic: u64, left_shift: u8) -> Vec<u64> {
-        let num_of_bits = 64 - left_shift;
-        let lookup_size = 1 << num_of_bits;
-        let mut bishop_moves_table = vec![0u64; lookup_size]; 
-
-        let move_mask = Bitboards::bishop_mask_ex(square);
-        let blockers_configs = Self::create_all_blocker_configs(move_mask);
-        let piece_position = 1 << square;        
+        let piece_bitboard = match is_rook {
+            true => {
+                |current_position, blocker| {
+                    Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north)
+                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_east)
+                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south)
+                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_west)
+                }
+            },
+            false => {
+                |current_position, blocker| {
+                    Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north_east)
+                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north_west)
+                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south_east)
+                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south_west)
+                }
+            }
+        };
 
         for blocker in blockers_configs {
-            let legal_moves = Board::bishop_bitboard(piece_position, blocker); 
+            let legal_moves = piece_bitboard(piece_position, blocker);
             let index = blocker.wrapping_mul(magic) >> left_shift;
-            bishop_moves_table[index as usize] = legal_moves;
+            moves_table[index as usize] = legal_moves;
         }
-        bishop_moves_table
+        moves_table
     }
     
-    pub fn bishop_attacks() -> [Vec<u64>; 64]{
-        let mut bishop_attacks = [const { Vec::new() }; 64];
-        for i in 0..64 {
-            bishop_attacks[i] = Self::create_bishop_table(i as u8, Self::BISHOP_MAGICS[i], Self::BISHOP_SHIFTS[i]);
-        }
-        bishop_attacks
-    }
+    pub fn piece_attacks(is_rook: bool) -> [Vec<u64>; 64] {
+        let mut piece_attacks = [const { Vec::new() }; 64];
 
+        let (magics, shifts) = match is_rook {
+            true => (&Self::ROOK_MAGICS, &Self::ROOK_SHIFTS),
+            false => (&Self::BISHOP_MAGICS, &Self::BISHOP_SHIFTS)
+        };
+
+        for i in 0..64 {
+            piece_attacks[i] = Self::create_piece_table(i as u8, magics[i], shifts[i], is_rook);
+        }
+        piece_attacks
+    }
 }
