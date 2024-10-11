@@ -309,61 +309,40 @@ impl Board {
             *capture_bitboard &= *capture_bitboard - 1;
         }
     }
+    
+    fn get_en_passant_moves(moves: &mut Vec<(u8, u8)>, capture_bitboard : &mut u64, end_square: u8) {
+        while *capture_bitboard != 0 {
+            let start_square = capture_bitboard.trailing_zeros() as u8;
+
+            moves.push((start_square, end_square));
+
+            *capture_bitboard &= *capture_bitboard - 1;
+        }
+    }
 
     pub fn check_en_passant(&mut self, moves: &mut Vec<(u8,u8)>){
-        match self.turn{
-            Turn::White=>{
-                // check if move is actually a pawn double push
-                if let Some(last_move) = self.move_log.last(){ 
-                    if (1 << last_move.1) & self.bitboards.black_pawns != 0{
-                        if Square::from(last_move.0).rank() == Rank::Seventh
-                        && Square::from(last_move.1).rank() == Rank::Fifth{
-                            //check for adjacent white pawns
-                            let white_pawns = self.bitboards.white_pawns;
-                            let east_bitboard = Bitboards::move_east(1 << last_move.1);
-                            let west_bitboard = Bitboards::move_west(1 << last_move.1);
-    
-                            let mut ep_captures = white_pawns & (east_bitboard | west_bitboard);
-                            let end_square = last_move.1 + 8;
+        if let Some(last_move) = self.move_log.last() {
+            let (pawn_bitboard, start_rank, end_rank) = match self.turn {
+                Turn::White => (self.bitboards.black_pawns, Rank::Seventh, Rank::Fifth),
+                Turn::Black => (self.bitboards.white_pawns, Rank::Second, Rank::Forth)
+            };
+            
+            if (1 << last_move.1) & pawn_bitboard != 0 {
+                if Square::from(last_move.0).rank() == start_rank && Square::from(last_move.1).rank() == end_rank {
+                    let east_bitboard = Bitboards::move_east(1 << last_move.1);
+                    let west_bitboard = Bitboards::move_west(1 << last_move.1);
+                    let (pawns, end_square) = match self.turn {
+                        Turn::White => (self.bitboards.white_pawns, last_move.1 + 8),
+                        Turn::Black => (self.bitboards.black_pawns, last_move.1 - 8)
+                    };
+                    let mut ep_captures = pawns & (east_bitboard | west_bitboard);
+                    
+                    Self::get_en_passant_moves(moves, &mut ep_captures, end_square);
 
-                            while ep_captures != 0{
-                                let start_square = ep_captures.trailing_zeros() as u8;
-                                
-                                moves.push((start_square, end_square));
-    
-                                ep_captures &= ep_captures - 1;
-                            }
-                            self.is_en_passant = true;
-                        }      
-                    } 
-                }
-            },
-            Turn::Black=>{
-                if let Some(last_move) = self.move_log.last(){
-                    if (1 << last_move.1) & self.bitboards.white_pawns != 0 {
-                        if  Square::from(last_move.0).rank() == Rank::Second
-                        && Square::from(last_move.1).rank() == Rank::Forth{
-                            let black_pawns = self.bitboards.black_pawns;
-                            let east_bitboard = Bitboards::move_east(1 << last_move.1);
-                            let west_bitboard = Bitboards::move_west(1 << last_move.1);
-
-                            let mut ep_captures = black_pawns & (east_bitboard | west_bitboard);
-                            let end_square = last_move.1 - 8;   
-
-                            while ep_captures != 0{
-                                let start_square = ep_captures.trailing_zeros() as u8;
-
-                                moves.push((start_square, end_square));
-
-                                ep_captures &= ep_captures - 1;
-                            }
-                            self.is_en_passant = true;
-                        }
-                    }
+                    self.is_en_passant = true
                 }
             }
         }
-
     }
 
     pub fn knight_moves(&self) -> Vec<(u8, u8)> {
