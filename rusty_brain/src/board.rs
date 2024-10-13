@@ -213,6 +213,7 @@ impl Board {
                 self.bitboards.black_pawns &= square_captured;
                 self.bitboards.black_queens &= square_captured;
                 self.bitboards.black_rooks &= square_captured;
+                self.check_captured_rook(move_to_make, self.bitboards.black_rooks);
             },
             Turn::Black => {
                 self.bitboards.white_bishops &= square_captured;
@@ -220,8 +221,25 @@ impl Board {
                 self.bitboards.white_pawns &= square_captured;
                 self.bitboards.white_queens &= square_captured;
                 self.bitboards.white_rooks &= square_captured;
+                self.check_captured_rook(move_to_make, self.bitboards.white_rooks);
             }
         }
+    }
+    
+    fn check_captured_rook(&mut self, move_to_make: (u8, u8), rook_bitboard: u64) {
+        let square_captured = !(1 << move_to_make.1);
+        let end_square = move_to_make.1;
+        
+        if square_captured & rook_bitboard != 0 {
+            match Square::from(end_square) {
+                Square::A1 => self.castling_rights.white_queen_side = false,
+                Square::H1 => self.castling_rights.white_king_side = false,
+                Square::A8 => self.castling_rights.black_queen_side = false,
+                Square::H8 => self.castling_rights.black_king_side = false,
+                _ => ()
+            }
+        }
+        
     }
 
     fn check_rook(&mut self, move_to_make: (u8, u8)) {
