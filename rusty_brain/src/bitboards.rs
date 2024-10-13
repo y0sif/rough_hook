@@ -1,5 +1,5 @@
 use std::u64;
-
+use std::collections::HashMap;
 use crate::board::Turn;
 pub struct Bitboards{
     pub white_pawns: u64,
@@ -54,6 +54,58 @@ impl Bitboards {
             black_king: 0 
         }
     }
+    
+    pub fn from_fen(fen: &str) -> Self {
+        let mut map = HashMap::from([
+            ('P', 0u64),
+            ('B', 0u64),
+            ('N', 0u64),
+            ('R', 0u64),
+            ('Q', 0u64),
+            ('K', 0u64),
+            ('p', 0u64),
+            ('b', 0u64),
+            ('n', 0u64),
+            ('r', 0u64),
+            ('q', 0u64),
+            ('k', 0u64),
+        ]);
+        
+        let mut counter = 56;
+        for piece in fen.chars() {
+            if piece == '/' {
+                counter -= 16;
+                continue;
+            }
+            
+            if piece.is_numeric() {
+                counter += piece.to_digit(10).unwrap();
+                continue;
+            }
+
+            if let Some(bitboard) = map.get_mut(&piece) {
+                *bitboard |= 1 << counter;
+            }
+            counter += 1;            
+        }
+
+        Bitboards {
+            white_pawns: *map.get(&'P').unwrap(),
+            white_bishops: *map.get(&'B').unwrap(),
+            white_knights: *map.get(&'N').unwrap(),
+            white_rooks: *map.get(&'R').unwrap(),
+            white_queens: *map.get(&'Q').unwrap(),
+            white_king: *map.get(&'K').unwrap(),
+
+            black_pawns: *map.get(&'p').unwrap(),
+            black_bishops: *map.get(&'b').unwrap(),
+            black_knights: *map.get(&'n').unwrap(),
+            black_rooks: *map.get(&'r').unwrap(),
+            black_queens: *map.get(&'q').unwrap(),
+            black_king: *map.get(&'k').unwrap(),
+        }
+    }
+
     pub fn get_ally_pieces(&self, turn: Turn) -> u64 {
         match turn{
             Turn::White => {

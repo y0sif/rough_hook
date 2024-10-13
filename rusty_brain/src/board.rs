@@ -47,6 +47,64 @@ impl Board {
         }
     }
     
+    pub fn from_fen(fen: String) -> Self {
+        let rook_attacks = Magic::piece_attacks(true);
+        let bishop_attacks = Magic::piece_attacks(false);
+        let fen_vec: Vec<&str> = fen.split_whitespace().collect();
+        
+        let turn = match fen_vec[1] {
+            "w" => Turn::White,
+            _ => Turn::Black,
+        };
+        
+        let mut castling_rights = CastlingRights::empty();
+        
+        for right in fen_vec[2].chars() {
+            match right {
+                'K' => castling_rights.white_king_side = true,
+                'Q' => castling_rights.white_queen_side = true,
+                'k' => castling_rights.black_king_side = true,
+                'q' => castling_rights.black_queen_side = true,
+                _ => ()
+            }
+        }
+        
+        let mut move_log = Vec::new();
+
+        let is_en_passant = match fen_vec[3] {
+            "-" => false,
+            _ => {
+                let square = Square::from(fen_vec[3]) as u8;
+                let last_move = match turn {
+                    Turn::White => {
+                        let start_square = square + 8;
+                        let end_square = square - 8;
+                        (start_square, end_square)
+                    },
+                    Turn::Black => {
+                        let start_square = square - 8;
+                        let end_square = square + 8;
+                        (start_square, end_square)                    
+                    }
+                };
+                move_log.push(last_move);
+                true
+            }
+        };
+        
+        // add fifty move rule later
+
+        Board {
+            bitboards: Bitboards::from_fen(fen_vec[0]),
+            turn,
+            rook_attacks,
+            bishop_attacks,
+            move_log,
+            is_en_passant, 
+            castling_rights
+        }
+    }
+    
     pub fn make_move(&mut self, move_to_make: (u8, u8)) {
         let start_square = 1 << move_to_make.0;
         let end_square = 1 << move_to_make.1;
