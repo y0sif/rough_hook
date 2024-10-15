@@ -1,3 +1,5 @@
+use std::pin;
+
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
@@ -297,6 +299,22 @@ impl Board {
         }
     }
     
+    pub fn generate_legal_moves(&mut self) -> Vec<(u8, u8)> {
+        let mut moves = Vec::new();
+        let (checks, pins) = self.checks_and_pins();
+
+        if checks.len() == 1 { // you have to block the check or capture the piece checking, keeping pins in mind
+            
+        }else if checks.len() == 2 { // double check, have to move the king
+            let mut king_moves = self.king_moves();
+            moves.append(&mut king_moves);
+        }else { // there is no check, you just have to take care of pins
+
+        }
+        
+        moves
+    }
+    
     pub fn generate_moves(&mut self) -> Vec<(u8, u8)> {
         let mut moves = Vec::new();
 
@@ -320,12 +338,69 @@ impl Board {
 
         moves
     }
+    
+    pub fn checks_and_pins(&self) -> (Vec<u8>, Vec<u8>){
+        let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard) = match self.turn {
+            Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights),
+            Turn::Black => (self.bitboards.black_king, self.bitboards.white_rooks, self.bitboards.white_bishops, self.bitboards.white_queens, self.bitboards.white_knights)
+        };
+
+        let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
+
+        let mut checks = Vec::new();
+        let mut pins = Vec::new();
+
+        let orth_directions = [Bitboards::move_north, Bitboards::move_east, Bitboards::move_south, Bitboards::move_west];
+        let diag_directions = [Bitboards::move_north_west, Bitboards::move_north_east, Bitboards::move_south_east, Bitboards::move_south_west]; 
+        
+        for direction in orth_directions {
+            self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, rooks_bitboard | queen_bitboard, ally_bitboard, direction);
+        }
+
+        for direction in diag_directions {
+            self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, bishops_bitboard | queen_bitboard, ally_bitboard, direction);
+        }
+        
+        let king_as_knight = self.get_knight_attacked_squares(king_bitboard);
+        let opp_knight_square = knight_bitboard & king_as_knight;
+        
+        if opp_knight_square != 0 {
+            checks.push(opp_knight_square.trailing_zeros() as u8);
+        }
+        
+        (checks, pins)
+    } 
+    
+    fn get_checks_and_pins(&self, checks: &mut Vec<u8>, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, ally_bitboard: u64, move_fn: fn(u64) -> u64) {
+        let mut next_bitboard = move_fn(king_bitboard);
+        let mut flag = false;
+        
+        while next_bitboard != 0 {
+            if next_bitboard & ally_bitboard != 0 {
+                flag = true;
+                pins.pop();
+                pins.push(next_bitboard.trailing_zeros() as u8);
+
+            }else if next_bitboard & enemy_bitboard != 0 {
+                flag = false;
+                if pins.is_empty() {
+                    checks.push(next_bitboard.trailing_zeros() as u8);
+                }
+                break;
+            }
+            next_bitboard = move_fn(next_bitboard);
+        }
+
+        if flag {
+            pins.pop();
+        }
+    }
 
     fn get_attacked_squares(&self) -> u64 {
         match self.turn {
             Turn::White => {
                 self.get_pawns_attacked_squares() |
-                self.get_knight_attacked_squares() |
+                self.get_knight_attacked_squares(self.bitboards.black_knights) |
                 self.get_bishop_attacked_squares(&self.bitboards.black_bishops) |
                 self.get_rook_attacked_squares(&self.bitboards.black_rooks) |
                 self.get_queen_attacked_squares(&self.bitboards.black_queens) |
@@ -333,7 +408,7 @@ impl Board {
             },
             Turn::Black => {
                 self.get_pawns_attacked_squares() |
-                self.get_knight_attacked_squares() |
+                self.get_knight_attacked_squares(self.bitboards.white_knights) |
                 self.get_bishop_attacked_squares(&self.bitboards.white_bishops) |
                 self.get_rook_attacked_squares(&self.bitboards.white_rooks) |
                 self.get_queen_attacked_squares(&self.bitboards.white_queens) |
@@ -498,16 +573,7 @@ impl Board {
         Self::construct_moves_squares(moves, start_square, &mut valid_bitboard); 
     }
     
-    fn get_knight_attacked_squares(&self) -> u64 {
-        let piece_position = match self.turn {
-            Turn::White => {
-                self.bitboards.black_knights
-            },
-            Turn::Black => {
-                self.bitboards.white_knights
-            }
-        };
-
+    fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
         let not_ab_file = 0xFCFCFCFCFCFCFCFC;
         let not_a_file = 0xfefefefefefefefe;
         let not_gh_file = 0x3F3F3F3F3F3F3F3F;
