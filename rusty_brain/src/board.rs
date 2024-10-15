@@ -392,18 +392,16 @@ impl Board {
     fn get_pawns_attacked_squares(&self) -> u64 {
         let not_a_file : u64 = 0xfefefefefefefefe;
         let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
-
-        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn);
         
         match self.turn {
-            Turn::White => {
-                let right_capture = (self.bitboards.white_pawns << 9) & not_a_file & enemy_bitboard;
-                let left_capture = (self.bitboards.white_pawns << 7) & not_h_file & enemy_bitboard;
+            Turn::Black => {
+                let right_capture = (self.bitboards.white_pawns << 9) & not_a_file;
+                let left_capture = (self.bitboards.white_pawns << 7) & not_h_file;                
                 right_capture | left_capture
             },
-            Turn::Black => {
-                let right_capture = (self.bitboards.black_pawns >> 7) & not_a_file & enemy_bitboard;
-                let left_capture = (self.bitboards.black_pawns >> 9) & not_h_file & enemy_bitboard;                
+            Turn::White => {
+                let right_capture = (self.bitboards.black_pawns >> 7) & not_a_file;
+                let left_capture = (self.bitboards.black_pawns >> 9) & not_h_file;                
                 right_capture | left_capture
             }
         }
