@@ -548,25 +548,13 @@ impl Board {
         };
         let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
         for piece_position in all_piece_positions {
-            Self::get_knight_moves(&mut moves, piece_position, ally_bitboard);
+            Self::get_knight_moves(self, &mut moves, piece_position, ally_bitboard);
         }
         moves 
     }
 
-    fn get_knight_moves(moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64) {
-        let not_ab_file = 0xFCFCFCFCFCFCFCFC;
-        let not_a_file = 0xfefefefefefefefe;
-        let not_gh_file = 0x3F3F3F3F3F3F3F3F;
-        let not_h_file = 0x7f7f7f7f7f7f7f7f;
-
-        let mut valid_bitboard = (piece_position << 17) & not_a_file; //noNoEa
-        valid_bitboard |= (piece_position << 10) & not_ab_file; // noEaEa
-        valid_bitboard |= (piece_position >> 6)  & not_ab_file; // soEaEa
-        valid_bitboard |= (piece_position >> 15) & not_a_file; //soSoEa
-        valid_bitboard |= (piece_position << 15) & not_h_file; // noNoWe
-        valid_bitboard |= (piece_position << 6)  & not_gh_file; // noWeWe
-        valid_bitboard |= (piece_position >> 10) & not_gh_file; // soWeWe
-        valid_bitboard |= (piece_position >> 17) & not_h_file; // soSoWe
+    fn get_knight_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64) {
+        let mut valid_bitboard = self.get_knight_attacked_squares(piece_position);
         valid_bitboard &= !ally_bitboard;
 
         let start_square = piece_position.trailing_zeros() as u8;    
