@@ -1,5 +1,3 @@
-use std::pin;
-
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
@@ -378,9 +376,10 @@ impl Board {
         while next_bitboard != 0 {
             if next_bitboard & ally_bitboard != 0 {
                 flag = true;
-                pins.pop();
-                pins.push(next_bitboard.trailing_zeros() as u8);
-
+                match pins.pop() {
+                    Some(_) => break,
+                    None => pins.push(next_bitboard.trailing_zeros() as u8)
+                }
             }else if next_bitboard & enemy_bitboard != 0 {
                 flag = false;
                 if pins.is_empty() {
