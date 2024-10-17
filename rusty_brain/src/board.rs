@@ -369,29 +369,26 @@ impl Board {
         (checks, pins)
     } 
     
-    fn get_checks_and_pins(&self, checks: &mut Vec<u8>, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, ally_bitboard: u64, move_fn: fn(u64) -> u64) {
+    fn get_checks_and_pins(&self, checks: &mut Vec<u8>, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, ally_bitboard: u64, move_fn: fn(u64) -> u64 , ) {
         let mut next_bitboard = move_fn(king_bitboard);
-        let mut flag = false;
-        
+        let mut pins_ctr = 0 ;
         while next_bitboard != 0 {
             if next_bitboard & ally_bitboard != 0 {
-                flag = true;
-                match pins.pop() {
-                    Some(_) => break,
-                    None => pins.push(next_bitboard.trailing_zeros() as u8)
+                if(pins_ctr == 0){
+                    pins.push(next_bitboard.trailing_zeros() as u8);
+                    pins_ctr +=1;
+                }
+                else {
+                    pins.clear();
+                    break;
                 }
             }else if next_bitboard & enemy_bitboard != 0 {
-                flag = false;
-                if pins.is_empty() {
+                if pins_ctr == 0 {
                     checks.push(next_bitboard.trailing_zeros() as u8);
                 }
                 break;
             }
             next_bitboard = move_fn(next_bitboard);
-        }
-
-        if flag {
-            pins.pop();
         }
     }
 
