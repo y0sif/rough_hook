@@ -735,10 +735,10 @@ impl Board {
     pub fn get_direction_mask_ex_using (first_square : &u8 , second_sqaure : &u8)->u64{
         let res = (*first_square as i16 - *second_sqaure as i16).abs();
         if res < 7{
-            return Bitboards::rank_mask_ex(*first_square)
+            return Bitboards::rank_mask_to_end_ex(*first_square)
         }
         else if res % 8 == 0{
-            return Bitboards::file_mask_ex(*first_square)
+            return Bitboards::file_mask_to_end_ex(*first_square)
         }
         else if res % 9 == 0{
             return Bitboards::diagonal_mask_ex(*first_square)
