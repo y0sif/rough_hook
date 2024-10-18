@@ -208,6 +208,14 @@ impl Bitboards {
         0x0001010101010100  << (square & 7)
     }
     
+    pub fn rank_mask_to_end_ex(square: u8) -> u64 {
+        (1 << square) ^ (0xFF << (square & 56))
+    }
+    
+    pub fn file_mask_to_end_ex(square: u8) -> u64 {
+        (1 << square) ^ (0x0101010101010101 << (square & 7))
+    }
+    
     pub fn diagonal_mask(square: u8) -> u64 {
         let square = square as i32;
         let main_diagonal = 0x8040201008040201;
