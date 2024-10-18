@@ -455,10 +455,10 @@ impl Board {
             }
         };
         
-        Self::get_push_moves(&mut moves ,  &mut single_push_bitboard , 1 , push_direction); 
-        Self::get_push_moves(&mut moves ,  &mut double_push_bitboard , 2,  push_direction); 
-        Self::get_capture_moves(&mut moves , &mut right_captures_bitboard , right_capture_mask , push_direction); 
-        Self::get_capture_moves(&mut moves , &mut left_captures_bitboard  , left_capture_mask  , push_direction); 
+        Self::get_push_moves(self, &mut moves ,  &mut single_push_bitboard , 1 , push_direction ,pins); 
+        Self::get_push_moves(self, &mut moves ,  &mut double_push_bitboard , 2,  push_direction ,pins); 
+        Self::get_capture_moves(self,&mut moves , &mut right_captures_bitboard , right_capture_mask , push_direction,pins); 
+        Self::get_capture_moves(self,&mut moves , &mut left_captures_bitboard  , left_capture_mask  , push_direction ,pins); 
         Self::check_en_passant(self, &mut moves);
         moves
     }
@@ -482,22 +482,30 @@ impl Board {
 
     }
 
-    fn get_push_moves(moves : &mut Vec<(u8, u8)> , push_bitboard  : & mut u64 ,  steps : i32 , push_direction : i32) {
+    fn get_push_moves(&self,moves : &mut Vec<(u8, u8)> , push_bitboard  : & mut u64 ,  steps : i32 , push_direction : i32 ,pins :&Vec<u8>) {
         while *push_bitboard != 0
         {
-            let end_square = push_bitboard.trailing_zeros() as i32 ;
-            let start_square = end_square + (steps*8*push_direction);  
-            moves.push((start_square as u8 , end_square as u8));            
+            let end_square = push_bitboard.trailing_zeros() as i32 ; 
+            let start_square = end_square + (steps*8*push_direction); 
+            let valid_position = *push_bitboard & (!*push_bitboard + 1); 
+            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+            if legal_position!=0 {
+                moves.push((start_square as u8 , end_square as u8));            
+            }
             *push_bitboard &= *push_bitboard - 1;
         }
     }
 
-    fn get_capture_moves(moves : &mut Vec<(u8, u8)> , capture_bitboard : &mut u64 , capture_mask : i32 , push_direction : i32) {
+    fn get_capture_moves(&self,moves : &mut Vec<(u8, u8)> , capture_bitboard : &mut u64 , capture_mask : i32 , push_direction : i32, pins :&Vec<u8>) {
+
         while *capture_bitboard != 0 {
             let end_square = capture_bitboard.trailing_zeros() as i32;
             let start_square = end_square + (capture_mask*push_direction);
-
-            moves.push((start_square as u8, end_square as u8));
+            let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
+            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+            if legal_position!=0 {
+                moves.push((start_square as u8 , end_square as u8));            
+            }
             *capture_bitboard &= *capture_bitboard - 1;
         }
     }
