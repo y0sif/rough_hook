@@ -58,13 +58,13 @@ impl Move {
 
     // Set or clear FLAGS
     pub fn set_flags(&mut self, flags: u8) {
-        self.encoded_move &= !0xF000; // Clear existing flags
+        self.encoded_move &= !0xF000; //Clear existing flags
         self.encoded_move |= ((flags & 0xF) as u16) << 12; // Set new flags
     }   
     pub fn clear_flags(&mut self, flags: u8) {
         self.encoded_move &= !((flags & 0xF) as u16) << 12; // Clear specified flags
     }
-
+    
     // Check FLAGS
     pub fn is_quiet_move(&self) -> bool {
         (self.encoded_move >> 12 & 0x0F) == Move::QUIET_MOVE as u16
