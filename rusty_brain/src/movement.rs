@@ -2,6 +2,7 @@
 
 // Each move is represented in 16 bits
 // 6 bits "from" square, 6 bits "to" square, and 4 bits for flags
+#[derive(Debug, Clone, Copy)]
 pub struct Move {
     encoded_move: u16,
 }
