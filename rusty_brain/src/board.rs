@@ -114,11 +114,22 @@ impl Board {
         match self.turn {
             Turn::White => {
                 if start_square & self.bitboards.white_pawns != 0 {
+                    let promotion_rank:u64 = 0xFF00000000000000;
+                    let curr_rank: u64 = Bitboards::rank_mask(move_to_make.1);
                     if self.is_en_passant {
                         self.make_en_passant(move_to_make);
+                        self.bitboards.white_pawns &= !start_square;      
+                        self.bitboards.white_pawns |= end_square;
                     }
-                    self.bitboards.white_pawns &= !start_square;      
-                    self.bitboards.white_pawns |= end_square;
+                    //promote to queen
+                    else if curr_rank == promotion_rank {
+                        self.bitboards.white_pawns &= !start_square;
+                        self.bitboards.white_queens |= end_square;
+                    }
+                    else {
+                        self.bitboards.white_pawns &= !start_square;      
+                        self.bitboards.white_pawns |= end_square;
+                    }
 
                 }else if start_square & self.bitboards.white_knights != 0 {
                     self.bitboards.white_knights &= !start_square;
@@ -148,11 +159,20 @@ impl Board {
             },
             Turn::Black => {
                 if start_square & self.bitboards.black_pawns != 0 {
+                    let promotion_rank:u64 = 0x00000000000000FF;
+                    let curr_rank: u64 = Bitboards::rank_mask(move_to_make.1);
                     if self.is_en_passant {
                         self.make_en_passant(move_to_make);
                     }
-                    self.bitboards.black_pawns &= !start_square;      
-                    self.bitboards.black_pawns |= end_square;
+                    //promote to queen
+                    else if curr_rank == promotion_rank {
+                        self.bitboards.black_pawns &= !start_square;
+                        self.bitboards.black_queens |= end_square;
+                    }
+                    else {
+                        self.bitboards.black_pawns &= !start_square;      
+                        self.bitboards.black_pawns |= end_square;
+                    }
 
                 }else if start_square & self.bitboards.black_knights != 0 {
                     self.bitboards.black_knights &= !start_square;
@@ -482,13 +502,25 @@ impl Board {
     }
 
     fn get_push_moves(&self,moves : &mut Vec<(u8, u8)> , push_bitboard  : & mut u64 ,  steps : i32 , push_direction : i32 ,pins :&Vec<u8>) {
+        let promotion_rank:u64 = match push_direction {
+            1 => 0x00000000000000FF, // black, so promotion is 1st rank
+            _ => 0xFF00000000000000, // -1 is white so promotion is 8th rank
+        };
         while *push_bitboard != 0
         {
             let end_square = push_bitboard.trailing_zeros() as i32 ; 
             let start_square = end_square + (steps*8*push_direction); 
+            let curr_rank: u64 = Bitboards::rank_mask(end_square as u8);
             let valid_position = *push_bitboard & (!*push_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
-            if legal_position!=0 {
+            //promotion
+            if legal_position != 0 && curr_rank == promotion_rank {
+                moves.push((start_square as u8 , end_square as u8));            
+                moves.push((start_square as u8 , end_square as u8));            
+                moves.push((start_square as u8 , end_square as u8));            
+                moves.push((start_square as u8 , end_square as u8));
+            }
+            else if legal_position!=0 {
                 moves.push((start_square as u8 , end_square as u8));            
             }
             *push_bitboard &= *push_bitboard - 1;
@@ -496,13 +528,24 @@ impl Board {
     }
 
     fn get_capture_moves(&self,moves : &mut Vec<(u8, u8)> , capture_bitboard : &mut u64 , capture_mask : i32 , push_direction : i32, pins :&Vec<u8>) {
-
+        let promotion_rank:u64 = match push_direction {
+            1 => 0x00000000000000FF, // black, so promotion is 1st rank
+            _ => 0xFF00000000000000, // -1 is white so promotion is 8th rank
+        };
         while *capture_bitboard != 0 {
             let end_square = capture_bitboard.trailing_zeros() as i32;
             let start_square = end_square + (capture_mask*push_direction);
+            let curr_rank: u64 = Bitboards::rank_mask(end_square as u8);
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
-            if legal_position!=0 {
+            //promotion with capture
+            if legal_position != 0 && curr_rank == promotion_rank {
+                moves.push((start_square as u8 , end_square as u8));            
+                moves.push((start_square as u8 , end_square as u8));            
+                moves.push((start_square as u8 , end_square as u8));            
+                moves.push((start_square as u8 , end_square as u8));            
+            }
+            else if legal_position!=0 {
                 moves.push((start_square as u8 , end_square as u8));            
             }
             *capture_bitboard &= *capture_bitboard - 1;
