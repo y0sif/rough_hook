@@ -3,6 +3,7 @@ use core::panic;
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
+use crate::movement::Move;
 use crate::square::{Rank, Square};
 #[derive(Clone, Copy)]
 pub enum Turn {
@@ -299,7 +300,7 @@ impl Board {
         }
     }
     
-    pub fn generate_legal_moves(&mut self) -> Vec<(u8, u8)> {
+    pub fn generate_legal_moves(&mut self) -> Vec<Move> {
         let (checks, pins) = self.checks_and_pins();
         if checks.len() == 1 { // you have to block the check or capture the piece checking, keeping pins in mind
             self.generate_moves(&pins, checks[0])
@@ -310,7 +311,7 @@ impl Board {
         }
     }
     
-    pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
+    pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
 
         let mut pawn_moves = self.pawn_moves(pins, check_bitboard);
@@ -415,7 +416,7 @@ impl Board {
         }
     }
     
-    pub fn pawn_moves(&mut self ,pins :&Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
+    pub fn pawn_moves(&mut self ,pins :&Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new(); 
 
         let not_a_file : u64 = 0xfefefefefefefefe;
@@ -481,45 +482,48 @@ impl Board {
 
     }
 
-    fn get_push_moves(&self,moves : &mut Vec<(u8, u8)> , push_bitboard  : & mut u64 ,  steps : i32 , push_direction : i32 ,pins :&Vec<u8>) {
+    fn get_push_moves(&self, moves: &mut Vec<Move>, push_bitboard: &mut u64, steps: i32, push_direction: i32, pins: &Vec<u8>) {
+        let flag = match steps {
+            1 => 0,
+            _ => Move::DOUBLE_PAWN_PUSH,
+        };
         while *push_bitboard != 0
         {
-            let end_square = push_bitboard.trailing_zeros() as i32 ; 
+            let end_square = push_bitboard.trailing_zeros() as i32; 
             let start_square = end_square + (steps*8*push_direction); 
             let valid_position = *push_bitboard & (!*push_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
             if legal_position!=0 {
-                moves.push((start_square as u8 , end_square as u8));            
+                moves.push(Move::encode(start_square as u8, end_square as u8, flag));            
             }
             *push_bitboard &= *push_bitboard - 1;
         }
     }
 
-    fn get_capture_moves(&self,moves : &mut Vec<(u8, u8)> , capture_bitboard : &mut u64 , capture_mask : i32 , push_direction : i32, pins :&Vec<u8>) {
-
+    fn get_capture_moves(&self, moves: &mut Vec<Move>, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32 ,pins: &Vec<u8>) {
         while *capture_bitboard != 0 {
-            let end_square = capture_bitboard.trailing_zeros() as i32;
-            let start_square = end_square + (capture_mask*push_direction);
+            let end_square = capture_bitboard.trailing_zeros() as u8;
+            let start_square = end_square + (capture_mask*push_direction) as u8;
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
-            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+            let legal_position = Self::get_legal_bitboard(self, &start_square, pins, &valid_position);
             if legal_position!=0 {
-                moves.push((start_square as u8 , end_square as u8));            
+                moves.push(Move::encode(start_square, end_square, Move::CAPTURE));            
             }
             *capture_bitboard &= *capture_bitboard - 1;
         }
     }
     
-    fn get_en_passant_moves(moves: &mut Vec<(u8, u8)>, capture_bitboard : &mut u64, end_square: u8) {
+    fn get_en_passant_moves(moves: &mut Vec<Move>, capture_bitboard : &mut u64, end_square: u8) {
         while *capture_bitboard != 0 {
             let start_square = capture_bitboard.trailing_zeros() as u8;
 
-            moves.push((start_square, end_square));
+            moves.push(Move::encode(start_square, end_square, Move::EP_CAPTURE));
 
             *capture_bitboard &= *capture_bitboard - 1;
         }
     }
 
-    pub fn check_en_passant(&mut self, moves: &mut Vec<(u8,u8)>){
+    pub fn check_en_passant(&mut self, moves: &mut Vec<Move>){
         if let Some(last_move) = self.move_log.last() {
             let (pawn_bitboard, start_rank, end_rank) = match self.turn {
                 Turn::White => (self.bitboards.black_pawns, Rank::Seventh, Rank::Fifth),
@@ -544,7 +548,7 @@ impl Board {
         }
     }
 
-    pub fn knight_moves(&self ,pins :&Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
+    pub fn knight_moves(&self ,pins :&Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
 
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -560,12 +564,12 @@ impl Board {
         moves 
     }
 
-    fn get_knight_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
+    fn get_knight_moves(&self, moves: &mut Vec<Move>, piece_position: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
         let mut valid_bitboard = self.get_knight_attacked_squares(piece_position);
         valid_bitboard &= !ally_bitboard;
         let start_square = piece_position.trailing_zeros() as u8;
         let mut legal_bitboard = Self::get_legal_bitboard(self ,&start_square ,pins , &valid_bitboard) & check_bitboard;
-        Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
+        Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
     
     fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
@@ -586,8 +590,8 @@ impl Board {
         valid_bitboard
     }
     
-    pub fn bishop_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
-        let mut moves : Vec<(u8 ,u8)> = Vec::new();
+    pub fn bishop_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
+        let mut moves= Vec::new();
     
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -605,7 +609,7 @@ impl Board {
         return moves;
     }
 
-    fn get_bishop_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, enemy_bitboard: u64, ally_bitboard: u64 , pins: &Vec<u8>, check_bitboard: u64) {
+    fn get_bishop_moves(&self, moves: &mut Vec<Move>, piece_position: u64, enemy_bitboard: u64, ally_bitboard: u64 , pins: &Vec<u8>, check_bitboard: u64) {
         let start_square = piece_position.trailing_zeros() as u8;
         let bishop_mask = Bitboards::bishop_mask_ex(start_square);
         let all_pieces = enemy_bitboard | ally_bitboard;
@@ -618,7 +622,7 @@ impl Board {
         valid_bitboard &= !ally_bitboard;
         let mut legal_bitboard = Self::get_legal_bitboard(self, &start_square, pins, &valid_bitboard) & check_bitboard;
 
-        Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
+        Self::construct_moves_squares(&self, moves, start_square, &mut legal_bitboard); 
     }
     
     fn get_bishop_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
@@ -644,8 +648,8 @@ impl Board {
         moves_bitboard       
     }
     
-    pub fn rook_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
-        let mut moves : Vec<(u8 ,u8)> = Vec::new();
+    pub fn rook_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
+        let mut moves = Vec::new();
     
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -662,7 +666,7 @@ impl Board {
         return  moves;
     }
 
-    fn get_rook_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64 ,enemy_bitboard: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
+    fn get_rook_moves(&self, moves: &mut Vec<Move>, piece_position: u64 ,enemy_bitboard: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
         let start_square = piece_position.trailing_zeros() as u8;
         let rook_mask = Bitboards::rook_mask_ex(start_square);
         let all_pieces = enemy_bitboard | ally_bitboard;
@@ -672,7 +676,7 @@ impl Board {
         let mut valid_bitboard = self.rook_attacks[start_square as usize][key as usize];
         valid_bitboard &= !ally_bitboard;
         let mut legal_bitboard = Self::get_legal_bitboard(self, &start_square, pins, &valid_bitboard) & check_bitboard;
-        Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
+        Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
 
     fn get_rook_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
@@ -698,8 +702,8 @@ impl Board {
         moves_bitboard       
     }
 
-    pub fn queen_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
-        let mut moves : Vec<(u8 ,u8)> = Vec::new();
+    pub fn queen_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
+        let mut moves = Vec::new();
     
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -776,8 +780,8 @@ impl Board {
         bitboard
     }
     
-    pub fn king_moves(&self) -> Vec<(u8, u8)> {
-        let mut moves: Vec<(u8, u8)> = Vec::new();
+    pub fn king_moves(&self) -> Vec<Move> {
+        let mut moves = Vec::new();
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
         let piece_bitboard = match self.turn { 
             Turn::White => self.bitboards.white_king,
@@ -788,7 +792,7 @@ impl Board {
         moves
     }
 
-    fn get_king_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64){
+    fn get_king_moves(&self, moves: &mut Vec<Move>, piece_position: u64, ally_bitboard: u64){
         let mut king_bitboard= piece_position;
         
         let mut valid_bitboard = Bitboards::move_east(king_bitboard) | Bitboards::move_west(king_bitboard);
@@ -799,10 +803,10 @@ impl Board {
         valid_bitboard &= !self.get_attacked_squares();
 
         let start_square = piece_position.trailing_zeros() as u8;
-        Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);
+        Self::construct_moves_squares(self, moves, start_square, &mut valid_bitboard);
     }
 
-    pub fn get_castling_moves(&self, moves : &mut Vec<(u8,u8)> , king_position: &u64) {
+    pub fn get_castling_moves(&self, moves : &mut Vec<Move> , king_position: &u64) {
         let occupied_bitboard = self.bitboards.get_ally_pieces(self.turn) | self.bitboards.get_enemy_pieces(self.turn);
         if self.castling_rights.check_king_side(self.turn){ //  true :  will be changes after the castling rights is done 
             Self::get_king_side_move(moves ,&king_position , &occupied_bitboard);
@@ -812,23 +816,23 @@ impl Board {
         }
     }
 
-    fn get_king_side_move(moves : &mut Vec<(u8,u8)>, king_position : &u64 , occupied_bitboard: &u64){
+    fn get_king_side_move(moves : &mut Vec<Move>, king_position : &u64 , occupied_bitboard: &u64){
         let square_between = king_position <<1 | king_position << 2;
         let can_castle = square_between & occupied_bitboard == 0;
 
         if can_castle {
             let start_square = king_position.trailing_zeros() as u8;
-            moves.push((start_square, start_square + 2));
+            moves.push(Move::encode(start_square, start_square + 2, Move::KING_CASTLE));
         }
     }
 
-    fn get_queen_side_move(moves : &mut Vec<(u8,u8)>, king_position : &u64 , occupied_bitboard: &u64){
+    fn get_queen_side_move(moves : &mut Vec<Move>, king_position : &u64 , occupied_bitboard: &u64){
         let square_between = king_position >>1 | king_position >> 2 | king_position >> 3;
         let can_castle = square_between & occupied_bitboard == 0;
 
         if can_castle {
             let start_square = king_position.trailing_zeros() as u8;
-            moves.push((start_square, start_square - 2));
+            moves.push(Move::encode(start_square, start_square - 2, Move::QUEEN_CASTLE));
         }
     }
     
@@ -859,10 +863,16 @@ impl Board {
         positions
     }
     
-    fn construct_moves_squares(moves : &mut Vec<(u8,u8)>  , start_square : u8 , valid_bitboard : &mut u64){
+    fn construct_moves_squares(&self, moves : &mut Vec<Move>  , start_square : u8 , valid_bitboard : &mut u64){
+        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn);
         while *valid_bitboard != 0 {
             let end_squares = valid_bitboard.trailing_zeros() as u8;
-            moves.push((start_square  , end_squares));        
+            let end_bitboard = 1 << end_squares;
+            let flag = match end_bitboard & enemy_bitboard {
+                0 => 0,
+                _ => Move::CAPTURE,
+            };
+            moves.push(Move::encode(start_square, end_squares, flag));        
             *valid_bitboard &= *valid_bitboard - 1;
         }
     }
@@ -929,8 +939,8 @@ impl Board {
         };
         
         println!("\nPossible moves:");
-        for (start, end) in self.generate_legal_moves() {
-            print!("({}, {}) ", Square::from(start), Square::from(end));
+        for _move in self.generate_legal_moves() {
+            print!("({}, {}) ", Square::from(_move.get_from()), Square::from(_move.get_to()));
         }
     }
 }
