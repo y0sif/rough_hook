@@ -254,25 +254,57 @@ impl Board {
         }
     }
     
-    fn make_capture(&mut self, move_to_make: (u8, u8)) { //don't forget move_clock and hashes
+    fn make_capture(&mut self, move_to_make: (u8, u8)) {
         let square_captured = !(1 << move_to_make.1);
         
         match self.turn {
             Turn::White => {
-                self.bitboards.black_bishops &= square_captured;
-                self.bitboards.black_knights &= square_captured;
-                self.bitboards.black_pawns &= square_captured;
-                self.bitboards.black_queens &= square_captured;
-                self.bitboards.black_rooks &= square_captured;
-                self.check_captured_rook(move_to_make, self.bitboards.black_rooks);
+                if self.bitboards.black_pawns & square_captured != 0 {
+                    self.bitboards.black_pawns &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.black_knights & square_captured != 0 {
+                    self.bitboards.black_knights &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.black_bishops & square_captured != 0 {
+                    self.bitboards.black_bishops &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.black_queens & square_captured != 0 {
+                    self.bitboards.black_queens &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.black_rooks & square_captured != 0 {
+                    self.bitboards.black_rooks &= square_captured;
+                    self.check_captured_rook(move_to_make, self.bitboards.black_rooks);
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }
             },
             Turn::Black => {
-                self.bitboards.white_bishops &= square_captured;
-                self.bitboards.white_knights &= square_captured;
-                self.bitboards.white_pawns &= square_captured;
-                self.bitboards.white_queens &= square_captured;
-                self.bitboards.white_rooks &= square_captured;
-                self.check_captured_rook(move_to_make, self.bitboards.white_rooks);
+                if self.bitboards.white_pawns & square_captured != 0 {
+                    self.bitboards.white_pawns &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.white_knights & square_captured != 0 {
+                    self.bitboards.white_knights &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.white_bishops & square_captured != 0 {
+                    self.bitboards.white_bishops &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.white_queens & square_captured != 0 {
+                    self.bitboards.white_queens &= square_captured;
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }else if self.bitboards.white_rooks & square_captured != 0 {
+                    self.bitboards.white_rooks &= square_captured;
+                    self.check_captured_rook(move_to_make, self.bitboards.white_rooks);
+                    self.half_move_clock = 0;
+                    self.board_hashes = HashMap::new();
+                }
             }
         }
     }
