@@ -4,6 +4,7 @@ use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
 use crate::movement::Move;
+use crate::piece::Piece;
 use crate::square::{Rank, Square};
 #[derive(Clone, Copy)]
 pub enum Turn {
@@ -22,6 +23,8 @@ pub struct Board{
     pub stalemate: bool,
     pub draw: bool,
     pub half_move_clock: u8,
+    pub capture_log: Vec<Piece>,
+    pub castling_rights_log: Vec<CastlingRights>,
 }
 
 impl Board {
@@ -38,6 +41,8 @@ impl Board {
             stalemate: false,
             draw: false,
             half_move_clock: 0,
+            capture_log: Vec::new(),
+            castling_rights_log: Vec::new()
         }
     }
     
@@ -53,7 +58,9 @@ impl Board {
             board_hashes: HashMap::new(),
             stalemate: false,
             draw: false,
-            half_move_clock:0
+            half_move_clock:0,
+            capture_log: Vec::new(),
+            castling_rights_log: Vec::new()
         }
     }
     
@@ -113,6 +120,8 @@ impl Board {
             stalemate: false,
             draw: false,
             half_move_clock: fen_vec[4].parse().unwrap(),
+            capture_log: Vec::new(),
+            castling_rights_log: Vec::new()
         }
     }
     
@@ -123,19 +132,14 @@ impl Board {
         let flag = move_to_make.get_flags();
 
         match flag {
-            Move::CAPTURE => {
-                self.board_hashes = HashMap::new();
-                self.half_move_clock =0;
-                self.make_capture(&move_to_make)
-            },
-            Move::QUEEN_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE |
+            Move::CAPTURE | Move::QUEEN_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE |
             Move::ROOK_PROMO_CAPTURE | Move::BISHOP_PROMO_CAPTURE 
              => {               
                 self.board_hashes = HashMap::new();
                 self.half_move_clock =0;
                 self.make_capture(&move_to_make)
              },
-            _ => ()
+            _ => (),
         }
 
         match self.turn {
@@ -265,6 +269,7 @@ impl Board {
             }
         }
         self.move_log.push(move_to_make);
+        self.castling_rights_log.push(self.castling_rights);
 
         let count = self.board_hashes.entry(self::Bitboards::hash_board(&self.bitboards)).or_insert(0);
         *count +=1; 
@@ -295,28 +300,38 @@ impl Board {
             Turn::White => {
                 if self.bitboards.black_pawns & square_captured != 0 {
                     self.bitboards.black_pawns &= square_captured;
+                    self.capture_log.push(Piece::Pawn);
                 }else if self.bitboards.black_knights & square_captured != 0 {
                     self.bitboards.black_knights &= square_captured;
+                    self.capture_log.push(Piece::Knight);
                 }else if self.bitboards.black_bishops & square_captured != 0 {
                     self.bitboards.black_bishops &= square_captured;
+                    self.capture_log.push(Piece::Bishop);
                 }else if self.bitboards.black_queens & square_captured != 0 {
                     self.bitboards.black_queens &= square_captured;
+                    self.capture_log.push(Piece::Queen);
                 }else if self.bitboards.black_rooks & square_captured != 0 {
                     self.bitboards.black_rooks &= square_captured;
+                    self.capture_log.push(Piece::Rook);
                     self.check_captured_rook(move_to_make, self.bitboards.black_rooks);
                 }
             },
             Turn::Black => {
                 if self.bitboards.white_pawns & square_captured != 0 {
                     self.bitboards.white_pawns &= square_captured;
+                    self.capture_log.push(Piece::Pawn);
                 }else if self.bitboards.white_knights & square_captured != 0 {
                     self.bitboards.white_knights &= square_captured;
+                    self.capture_log.push(Piece::Knight);
                 }else if self.bitboards.white_bishops & square_captured != 0 {
                     self.bitboards.white_bishops &= square_captured;
+                    self.capture_log.push(Piece::Bishop);
                 }else if self.bitboards.white_queens & square_captured != 0 {
                     self.bitboards.white_queens &= square_captured;
+                    self.capture_log.push(Piece::Queen);
                 }else if self.bitboards.white_rooks & square_captured != 0 {
                     self.bitboards.white_rooks &= square_captured;
+                    self.capture_log.push(Piece::Rook);
                     self.check_captured_rook(move_to_make, self.bitboards.white_rooks);
                 }
             }
@@ -385,9 +400,153 @@ impl Board {
         }
     }
     
+    pub fn undo_move(&mut self) {
+        let last_move = self.move_log.pop().unwrap();
+        let end_position = 1 << last_move.get_to();
+        let start_position = 1 << last_move.get_from();
+        let flag = last_move.get_flags();
+        
+        match flag {
+            Move::CAPTURE => self.undo_capture(end_position), 
+            Move::EP_CAPTURE => self.undo_en_passant(end_position),
+            Move::KING_CASTLE => self.undo_king_side_castling(start_position, end_position),
+            Move::QUEEN_CASTLE => self.undo_queen_side_castling(start_position, end_position),
+            Move::BISHOP_PROMOTION | Move::ROOK_PROMOTION | Move::QUEEN_PROMOTION | Move::KNIGHT_PROMOTION | 
+            Move::ROOK_PROMO_CAPTURE | Move::BISHOP_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE | Move::QUEEN_PROMO_CAPTURE 
+            => (), // undo promotions
+            _ => ()
+        }
+        
+        match self.turn {
+            Turn::Black => {
+                if end_position & self.bitboards.white_pawns != 0 {
+                    self.bitboards.white_pawns &= !end_position;
+                    self.bitboards.white_pawns |= start_position;
+                }else if end_position & self.bitboards.white_knights != 0 {
+                    self.bitboards.white_knights &= !end_position;
+                    self.bitboards.white_knights |= start_position;
+
+                }else if end_position & self.bitboards.white_bishops != 0 {
+                    self.bitboards.white_bishops &= !end_position;
+                    self.bitboards.white_bishops |= start_position;
+
+                }else if end_position & self.bitboards.white_rooks != 0 {
+                    self.bitboards.white_rooks &= !end_position;
+                    self.bitboards.white_rooks |= start_position;
+
+                }else if end_position & self.bitboards.white_queens != 0 {
+                    self.bitboards.white_queens &= !end_position;
+                    self.bitboards.white_queens |= start_position;
+
+                }else if end_position & self.bitboards.white_king != 0 {
+                    self.bitboards.white_king &= !end_position;
+                    self.bitboards.white_king |= start_position;
+
+                }
+                self.turn = Turn::White;
+            },
+            Turn::White => {
+                if end_position & self.bitboards.black_pawns != 0 {
+                    self.bitboards.black_pawns &= !end_position;
+                    self.bitboards.black_pawns |= start_position;
+                }else if end_position & self.bitboards.black_knights != 0 {
+                    self.bitboards.black_knights &= !end_position;
+                    self.bitboards.black_knights |= start_position;
+
+                }else if end_position & self.bitboards.black_bishops != 0 {
+                    self.bitboards.black_bishops &= !end_position;
+                    self.bitboards.black_bishops |= start_position;
+
+                }else if end_position & self.bitboards.black_rooks != 0 {
+                    self.bitboards.black_rooks &= !end_position;
+                    self.bitboards.black_rooks |= start_position;
+
+                }else if end_position & self.bitboards.black_queens != 0 {
+                    self.bitboards.black_queens &= !end_position;
+                    self.bitboards.black_queens |= start_position;
+
+                }else if end_position & self.bitboards.black_king != 0 {
+                    self.bitboards.black_king &= !end_position;
+                    self.bitboards.black_king |= start_position;
+
+                }
+                self.turn = Turn::Black;
+                
+            }
+        }
+        
+        self.castling_rights = self.castling_rights_log.pop().unwrap();
+    }
+
+    fn undo_capture(&mut self, end_position: u64) {
+        match self.turn {
+            Turn::White => {
+                match self.capture_log.pop().unwrap() {
+                    Piece::Pawn => self.bitboards.white_pawns |= end_position,
+                    Piece::Knight => self.bitboards.white_knights |= end_position,
+                    Piece::Bishop => self.bitboards.white_bishops |= end_position,
+                    Piece::Rook => self.bitboards.white_rooks |= end_position,
+                    Piece::Queen => self.bitboards.white_queens |= end_position,
+                    _ => ()
+                }
+            },
+            Turn::Black => {
+                match self.capture_log.pop().unwrap() {
+                    Piece::Pawn => self.bitboards.black_pawns |= end_position,
+                    Piece::Knight => self.bitboards.black_knights |= end_position,
+                    Piece::Bishop => self.bitboards.black_bishops |= end_position,
+                    Piece::Rook => self.bitboards.black_rooks |= end_position,
+                    Piece::Queen => self.bitboards.black_queens |= end_position,
+                    _ => ()
+                }
+            }
+        }
+    }
+    
+    fn undo_en_passant(&mut self, end_position: u64) {
+        match self.turn {
+            Turn::White => self.bitboards.white_pawns |= end_position << 8,
+            Turn::Black => self.bitboards.black_pawns |= end_position >> 8,
+        }
+    }
+    
+    fn undo_king_side_castling(&mut self, start_position: u64, end_position: u64) {
+        match self.turn {
+            Turn::White => {
+                self.bitboards.black_king &= !end_position;
+                self.bitboards.black_king |= start_position;
+                self.bitboards.black_rooks &= !(1 << Square::F8 as u8);
+                self.bitboards.black_rooks |= 1 << Square::H8 as u8
+            },
+            Turn::Black => {
+                self.bitboards.white_king &= !end_position;
+                self.bitboards.white_king |= start_position;
+                self.bitboards.white_rooks &= !(1 << Square::F1 as u8);
+                self.bitboards.white_rooks |= 1 << Square::H1 as u8
+            },
+        }
+    }
+    
+    fn undo_queen_side_castling(&mut self, start_position: u64, end_position: u64) {
+        match self.turn {
+            Turn::White => {
+                self.bitboards.black_king &= !end_position;
+                self.bitboards.black_king |= start_position;
+                self.bitboards.black_rooks &= !(1 << Square::D8 as u8);
+                self.bitboards.black_rooks |= 1 << Square::A8 as u8
+            },
+            Turn::Black => {
+                self.bitboards.white_king &= !end_position;
+                self.bitboards.white_king |= start_position;
+                self.bitboards.white_rooks &= !(1 << Square::D1 as u8);
+                self.bitboards.white_rooks |= 1 << Square::A1 as u8
+            },
+        }
+    }
+    
     pub fn generate_legal_moves(&mut self) -> Vec<Move> {
         let (checks, pins) = self.checks_and_pins();
-        let mut moves = Vec::new();
+        let moves;
         if checks.len() == 1 { // you have to block the check or capture the piece checking, keeping pins in mind
             moves = self.generate_moves(&pins, checks[0]);
             if moves.len() == 0{

@@ -1,5 +1,6 @@
 use crate::board::Turn;
 
+#[derive(Debug, Clone, Copy)]
 pub struct CastlingRights {
     pub white_king_side: bool,
     pub white_queen_side: bool,
