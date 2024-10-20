@@ -686,7 +686,7 @@ impl Board {
         let all_pieces = enemy_bitboard | ally_bitboard;
 
         let blocker = all_pieces & bishop_mask; 
-        let key = ((blocker & bishop_mask).wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+        let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
 
         let mut valid_bitboard = self.bishop_attacks[start_square as usize][key as usize];
         valid_bitboard &= !ally_bitboard;
@@ -709,7 +709,7 @@ impl Board {
             let bishop_mask = Bitboards::bishop_mask_ex(start_square);
 
             let blocker = all_pieces & bishop_mask & !king_bitboard; 
-            let key = ((blocker & bishop_mask).wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+            let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
 
             moves_bitboard |= self.bishop_attacks[start_square as usize][key as usize];
             
@@ -742,7 +742,7 @@ impl Board {
         let all_pieces = enemy_bitboard | ally_bitboard;
 
         let blocker = all_pieces & rook_mask; 
-        let key = ((blocker & rook_mask).wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+        let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
         let mut valid_bitboard = self.rook_attacks[start_square as usize][key as usize];
         valid_bitboard &= !ally_bitboard;
 
@@ -764,7 +764,7 @@ impl Board {
             let rook_mask = Bitboards::rook_mask_ex(start_square);
 
             let blocker = all_pieces & rook_mask & !king_bitboard; 
-            let key = ((blocker & rook_mask).wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+            let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
 
             moves_bitboard |= self.rook_attacks[start_square as usize][key as usize];
             
