@@ -1,4 +1,5 @@
 use core::panic;
+use std::collections::HashMap;
 
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
@@ -17,7 +18,11 @@ pub struct Board{
     pub move_log: Vec<(u8, u8)>,
     pub is_en_passant: bool,
     pub castling_rights: CastlingRights,
-
+    pub checkmate: bool,
+    pub board_hashes: HashMap<u64, u8>,
+    pub stalemate: bool,
+    pub draw: bool,
+    pub half_move_clock: u8,
 }
 
 impl Board {
@@ -32,6 +37,11 @@ impl Board {
             move_log: Vec::new(),
             is_en_passant: false,
             castling_rights: CastlingRights::new(),
+            checkmate: false,
+            board_hashes: HashMap::new(),
+            stalemate: false,
+            draw: false,
+            half_move_clock: 0,
         }
     }
     
@@ -45,7 +55,12 @@ impl Board {
             bishop_attacks,
             move_log: Vec::new(),
             is_en_passant: false, 
-            castling_rights: CastlingRights::empty()
+            castling_rights: CastlingRights::empty(),
+            checkmate: false,
+            board_hashes: HashMap::new(),
+            stalemate: false,
+            draw: false,
+            half_move_clock:0
         }
     }
     
@@ -94,8 +109,6 @@ impl Board {
             }
         };
         
-        // add fifty move rule later
-
         Board {
             bitboards: Bitboards::from_fen(fen_vec[0]),
             turn,
@@ -103,7 +116,12 @@ impl Board {
             bishop_attacks,
             move_log,
             is_en_passant, 
-            castling_rights
+            castling_rights,
+            checkmate: false,
+            board_hashes: HashMap::new(),
+            stalemate: false,
+            draw: false,
+            half_move_clock: fen_vec[4].parse().unwrap(),
         }
     }
     
@@ -119,6 +137,8 @@ impl Board {
                     }
                     self.bitboards.white_pawns &= !start_square;      
                     self.bitboards.white_pawns |= end_square;
+                    self.board_hashes = HashMap::new();
+                    self.half_move_clock = 0;
 
                 }else if start_square & self.bitboards.white_knights != 0 {
                     self.bitboards.white_knights &= !start_square;
@@ -153,6 +173,8 @@ impl Board {
                     }
                     self.bitboards.black_pawns &= !start_square;      
                     self.bitboards.black_pawns |= end_square;
+                    self.board_hashes = HashMap::new();
+                    self.half_move_clock = 0;
 
                 }else if start_square & self.bitboards.black_knights != 0 {
                     self.bitboards.black_knights &= !start_square;
@@ -178,13 +200,24 @@ impl Board {
                     self.bitboards.black_king |= end_square;
 
                 }
+                self.half_move_clock +=1;
                 self.turn = Turn::White;
-                
             }
         }
+
         self.move_log.push((move_to_make.0, move_to_make.1));
         self.is_en_passant = false;
+
+        if self.half_move_clock >=50 {
+            self.draw = true;
+        }
+
+        let count = self.board_hashes.entry(self::Bitboards::hash_board(&self.bitboards)).or_insert(0);
+        *count +=1;
         
+        if *count == 3 {
+            self.draw = true; // should probably be turned into a function to stop game
+        }
     }
     
     fn make_en_passant(&mut self, move_to_make: (u8, u8)) {
@@ -205,7 +238,7 @@ impl Board {
         }
     }
     
-    fn make_capture(&mut self, move_to_make: (u8, u8)) {
+    fn make_capture(&mut self, move_to_make: (u8, u8)) { //don't forget move_clock and hashes
         let square_captured = !(1 << move_to_make.1);
         
         match self.turn {
@@ -301,13 +334,25 @@ impl Board {
     
     pub fn generate_legal_moves(&mut self) -> Vec<(u8, u8)> {
         let (checks, pins) = self.checks_and_pins();
+        let mut moves= Vec::new();
         if checks.len() == 1 { // you have to block the check or capture the piece checking, keeping pins in mind
-            self.generate_moves(&pins, checks[0])
+            moves.append(&mut self.generate_moves(&pins, checks[0]));
+            if moves.len() == 0{
+                self.checkmate =true
+            }
         }else if checks.len() == 2 { // double check, have to move the king
-            self.king_moves()
+            moves.append(&mut self.king_moves());
+            if moves.len() == 0{
+                self.checkmate =true
+            }
         }else { // there is no check, you just have to take care of pins
-            self.generate_moves(&pins, !0)
+            moves.append(&mut self.generate_moves(&pins, !0));
+            if moves.len() == 0{
+                self.stalemate =true;
+                self.draw = true;
+            } 
         }
+        moves
     }
     
     pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
@@ -364,7 +409,7 @@ impl Board {
         (checks, pins)
     } 
     
-    fn get_checks_and_pins(&self, checks: &mut Vec<u64>, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, ally_bitboard: u64, move_fn: fn(u64) -> u64 , ) {
+    fn get_checks_and_pins(&self, checks: &mut Vec<u64>, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, ally_bitboard: u64, move_fn: fn(u64) -> u64) {
         let mut next_bitboard = move_fn(king_bitboard);
         let mut possible_check = next_bitboard;
         let mut pins_ctr = 0 ;
@@ -934,3 +979,4 @@ impl Board {
         }
     }
 }
+

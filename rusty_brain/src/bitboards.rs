@@ -1,3 +1,4 @@
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::u64;
 use std::collections::HashMap;
 use crate::board::Turn;
@@ -146,6 +147,25 @@ impl Bitboards {
                 self.black_rooks 
             }
         }
+    }
+
+    pub fn hash_board(&self) -> u64{
+        let mut hasher = DefaultHasher::new();
+        self.white_bishops.hash(&mut hasher);
+        self.white_king.hash(&mut hasher);
+        self.white_knights.hash(&mut hasher);
+        self.white_pawns.hash(&mut hasher);
+        self.white_queens.hash(&mut hasher);
+        self.white_rooks.hash(&mut hasher);
+
+        self.black_bishops.hash(&mut hasher);
+        self.black_king.hash(&mut hasher);
+        self.black_knights.hash(&mut hasher);
+        self.black_pawns.hash(&mut hasher);
+        self.black_queens.hash(&mut hasher);
+        self.black_rooks.hash(&mut hasher);
+       
+        hasher.finish()
     }
     
     pub fn get_empty_squares(&self) -> u64 {
