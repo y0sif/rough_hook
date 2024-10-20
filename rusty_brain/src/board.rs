@@ -27,13 +27,11 @@ pub struct Board{
 
 impl Board {
     pub fn new() -> Self {
-        let rook_attacks = Magic::piece_attacks(true);
-        let bishop_attacks = Magic::piece_attacks(false);
         Board{
             bitboards: Bitboards::new(),
             turn: Turn::White,
-            rook_attacks,
-            bishop_attacks,
+            rook_attacks: Magic::piece_attacks(true),
+            bishop_attacks: Magic::piece_attacks(false),
             move_log: Vec::new(),
             is_en_passant: false,
             castling_rights: CastlingRights::new(),
@@ -46,13 +44,11 @@ impl Board {
     }
     
     pub fn empty() -> Self{
-        let rook_attacks = Magic::piece_attacks(true);
-        let bishop_attacks = Magic::piece_attacks(false);
         Board {
             bitboards: Bitboards::empty(),
             turn: Turn::White,
-            rook_attacks,
-            bishop_attacks,
+            rook_attacks: Magic::piece_attacks(true),
+            bishop_attacks: Magic::piece_attacks(false),
             move_log: Vec::new(),
             is_en_passant: false, 
             castling_rights: CastlingRights::empty(),
@@ -65,8 +61,6 @@ impl Board {
     }
     
     pub fn from_fen(fen: String) -> Self {
-        let rook_attacks = Magic::piece_attacks(true);
-        let bishop_attacks = Magic::piece_attacks(false);
         let fen_vec: Vec<&str> = fen.split_whitespace().collect();
         
         let turn = match fen_vec[1] {
@@ -112,8 +106,8 @@ impl Board {
         Board {
             bitboards: Bitboards::from_fen(fen_vec[0]),
             turn,
-            rook_attacks,
-            bishop_attacks,
+            rook_attacks: Magic::piece_attacks(true),
+            bishop_attacks: Magic::piece_attacks(false),
             move_log,
             is_en_passant, 
             castling_rights,
@@ -133,7 +127,7 @@ impl Board {
             Turn::White => {
                 if start_square & self.bitboards.white_pawns != 0 {
                     let promotion_rank:u64 = 0xFF00000000000000;
-                    let curr_rank: u64 = Bitboards::rank_mask(move_to_make.1);
+                    let curr_rank: u64 = Bitboards::rank_mask_to_end(move_to_make.1);
                     if self.is_en_passant {
                         self.make_en_passant(move_to_make);
                         self.bitboards.white_pawns &= !start_square;      
@@ -180,7 +174,7 @@ impl Board {
             Turn::Black => {
                 if start_square & self.bitboards.black_pawns != 0 {
                     let promotion_rank:u64 = 0x00000000000000FF;
-                    let curr_rank: u64 = Bitboards::rank_mask(move_to_make.1);
+                    let curr_rank: u64 = Bitboards::rank_mask_to_end(move_to_make.1);
                     if self.is_en_passant {
                         self.make_en_passant(move_to_make);
                         self.bitboards.black_pawns &= !start_square;      
@@ -557,7 +551,7 @@ impl Board {
         {
             let end_square = push_bitboard.trailing_zeros() as i32 ; 
             let start_square = end_square + (steps*8*push_direction); 
-            let curr_rank: u64 = Bitboards::rank_mask(end_square as u8);
+            let curr_rank: u64 = Bitboards::rank_mask_to_end(end_square as u8);
             let valid_position = *push_bitboard & (!*push_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
             //promotion
@@ -582,7 +576,7 @@ impl Board {
         while *capture_bitboard != 0 {
             let end_square = capture_bitboard.trailing_zeros() as i32;
             let start_square = end_square + (capture_mask*push_direction);
-            let curr_rank: u64 = Bitboards::rank_mask(end_square as u8);
+            let curr_rank: u64 = Bitboards::rank_mask_to_end(end_square as u8);
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
             //promotion with capture
@@ -700,9 +694,8 @@ impl Board {
         let bishop_mask = Bitboards::bishop_mask_ex(start_square);
         let all_pieces = enemy_bitboard | ally_bitboard;
 
-
         let blocker = all_pieces & bishop_mask; 
-        let key = ((blocker & bishop_mask).wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+        let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
 
         let mut valid_bitboard = self.bishop_attacks[start_square as usize][key as usize];
         valid_bitboard &= !ally_bitboard;
@@ -725,10 +718,9 @@ impl Board {
             let bishop_mask = Bitboards::bishop_mask_ex(start_square);
 
             let blocker = all_pieces & bishop_mask & !king_bitboard; 
-            let key = ((blocker & bishop_mask).wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+            let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
 
             moves_bitboard |= self.bishop_attacks[start_square as usize][key as usize];
-            
         }
         
         moves_bitboard       
@@ -758,9 +750,10 @@ impl Board {
         let all_pieces = enemy_bitboard | ally_bitboard;
 
         let blocker = all_pieces & rook_mask; 
-        let key = ((blocker & rook_mask).wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+        let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
         let mut valid_bitboard = self.rook_attacks[start_square as usize][key as usize];
         valid_bitboard &= !ally_bitboard;
+
         let mut legal_bitboard = Self::get_legal_bitboard(self, &start_square, pins, &valid_bitboard) & check_bitboard;
         Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
     }
@@ -779,7 +772,7 @@ impl Board {
             let rook_mask = Bitboards::rook_mask_ex(start_square);
 
             let blocker = all_pieces & rook_mask & !king_bitboard; 
-            let key = ((blocker & rook_mask).wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+            let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
 
             moves_bitboard |= self.rook_attacks[start_square as usize][key as usize];
             
