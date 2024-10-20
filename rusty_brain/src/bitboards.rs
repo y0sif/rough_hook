@@ -201,7 +201,11 @@ impl Bitboards {
     }
     
     pub fn rank_mask(square: u8) -> u64 {
-        0xFFu64 << ((square / 8) * 8)
+        0x7E << (square & 56)
+    }
+
+    pub fn rank_mask_to_end(square: u8) -> u64 {
+        0xFF << ((square / 8) * 8)
     }
     
     pub fn file_mask(square: u8) -> u64 {

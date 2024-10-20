@@ -17,6 +17,8 @@ mod tests {
                 assert_eq!(moves.len(), 2);
             }else if rank == Rank::Eighth{
                 assert_eq!(moves.len(), 0);
+            }else if rank == Rank::Seventh {
+                assert_eq!(moves.len(), 4)
             }else{
                 assert_eq!(moves.len(), 1);
             }
@@ -38,6 +40,8 @@ mod tests {
                 assert_eq!(moves.len(), 2);
             }else if rank == Rank::First{
                 assert_eq!(moves.len(), 0);
+            }else if rank == Rank::Second {
+                assert_eq!(moves.len(), 4)
             }else{
                 assert_eq!(moves.len(), 1);
             }
