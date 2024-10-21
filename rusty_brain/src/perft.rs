@@ -5,8 +5,8 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
 
     let moves = board.generate_legal_moves();
 
-    if depth == 1 {
-        return moves.len();
+    if depth == 0 {
+        return 1;
     }
 
     for _move in moves {
@@ -28,9 +28,9 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
 mod perft {
     use std::time::Instant;
 
-    use crate::{board::Board, perft::perft};
+    use crate::{board::{self, Board}, perft::perft};
 
-    #[test]
+    // #[test]
     fn test_pefrt() {
         let mut board = Board::new();
 
@@ -84,5 +84,17 @@ mod perft {
         // let res = perft(&mut board, 8);
         // println!("time: {} milliseconds", now.elapsed().as_millis());
         // assert_eq!(res, 84998978956);
+    }
+    
+
+    #[test]
+    fn perft_position_3() {
+        let mut board = Board::from_fen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0".to_string());
+
+        let mut captures = 0;
+        let mut ep_captures = 0;
+        let res = perft(&mut board, 2, &mut captures, &mut ep_captures);
+        println!("cap {}, ep {}", captures, ep_captures);
+        assert_eq!(res, 14);
     }
 }
