@@ -6,3 +6,4 @@ pub mod magic;
 pub mod castling;
 pub mod movement;
 pub mod piece;
+pub mod perft;

@@ -1,3 +1,7 @@
+use core::fmt;
+
+use crate::square::Square;
+
 
 
 // Each move is represented in 16 bits
@@ -107,5 +111,14 @@ impl Move {
     }
     pub fn is_queen_promo_capture(&self) -> bool {
         (self.encoded_move & (Move::QUEEN_PROMO_CAPTURE as u16) << 12) != 0
+    }
+}
+
+impl  fmt::Display for Move {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let start = self.get_from();
+        let end = self.get_to();
+        let flag = self.get_flags();
+        write!(f, "{}{}  {}", Square::from(start), Square::from(end), flag)
     }
 }
