@@ -25,6 +25,9 @@ pub struct Board{
     pub half_move_clock: u8,
     pub capture_log: Vec<Piece>,
     pub castling_rights_log: Vec<CastlingRights>,
+    pub white_prev_pins: Vec<u8>,
+    pub black_prev_pins: Vec<u8>,
+    pub check: bool
 }
 
 impl Board {
@@ -42,7 +45,10 @@ impl Board {
             draw: false,
             half_move_clock: 0,
             capture_log: Vec::new(),
-            castling_rights_log: Vec::new()
+            castling_rights_log: Vec::new(),
+            white_prev_pins: Vec::new(),
+            black_prev_pins: Vec::new(),
+            check: false,
         }
     }
     
@@ -60,7 +66,10 @@ impl Board {
             draw: false,
             half_move_clock:0,
             capture_log: Vec::new(),
-            castling_rights_log: Vec::new()
+            castling_rights_log: Vec::new(),
+            white_prev_pins: Vec::new(),
+            black_prev_pins: Vec::new(),
+            check: false,
         }
     }
     
@@ -121,7 +130,10 @@ impl Board {
             draw: false,
             half_move_clock: fen_vec[4].parse().unwrap(),
             capture_log: Vec::new(),
-            castling_rights_log: Vec::new()
+            castling_rights_log: Vec::new(),
+            white_prev_pins: Vec::new(),
+            black_prev_pins: Vec::new(),
+            check: false,
         }
     }
     
@@ -130,6 +142,10 @@ impl Board {
         let end_position = 1 << move_to_make.get_to();
         let not_starting_position = !start_position;
         let flag = move_to_make.get_flags();
+
+        self.move_log.push(move_to_make);
+        self.castling_rights_log.push(self.castling_rights);
+        
 
         match flag {
             Move::CAPTURE | Move::QUEEN_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE |
@@ -268,8 +284,6 @@ impl Board {
                 
             }
         }
-        self.move_log.push(move_to_make);
-        self.castling_rights_log.push(self.castling_rights);
 
         let count = self.board_hashes.entry(self::Bitboards::hash_board(&self.bitboards)).or_insert(0);
         *count +=1; 
@@ -478,7 +492,10 @@ impl Board {
                 
             }
         }
-        
+        self.checkmate = false;
+        self.stalemate = false;
+        self.draw = false;
+        self.check = false;
         self.castling_rights = self.castling_rights_log.pop().unwrap();
     }
 
@@ -616,17 +633,24 @@ impl Board {
             if moves.len() == 0{
                 self.checkmate =true
             }
+            self.check = true;
         }else if checks.len() == 2 { // double check, have to move the king
             moves = self.king_moves();
             if moves.len() == 0{
                 self.checkmate =true
             }
+            self.check = true;
         }else { // there is no check, you just have to take care of pins
             moves = self.generate_moves(&pins, !0);
             if moves.len() == 0{
                 self.stalemate =true;
                 self.draw = true;
             }    
+            self.check = false;
+        }
+        match self.turn {
+            Turn::White => self.white_prev_pins = pins,
+            Turn::Black => self.black_prev_pins = pins,
         }
         moves
     }
@@ -656,9 +680,9 @@ impl Board {
     }
     
     pub fn checks_and_pins(&self) -> (Vec<u64>, Vec<u8>) {
-        let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard) = match self.turn {
-            Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights),
-            Turn::Black => (self.bitboards.black_king, self.bitboards.white_rooks, self.bitboards.white_bishops, self.bitboards.white_queens, self.bitboards.white_knights)
+        let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard, pawn_bitboard) = match self.turn {
+            Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights, self.bitboards.black_pawns),
+            Turn::Black => (self.bitboards.black_king, self.bitboards.white_rooks, self.bitboards.white_bishops, self.bitboards.white_queens, self.bitboards.white_knights, self.bitboards.white_pawns)
         };
 
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -678,6 +702,22 @@ impl Board {
 
         for direction in diag_directions {
             self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, diag_bitboard, ally_bitboard, direction);
+        }
+        
+        // handle pawn checks
+        let opp_pawn_square = match self.turn {
+            Turn::Black => {
+                let pawn_checks_bitboard = Bitboards::move_south_east(king_bitboard) | Bitboards::move_south_west(king_bitboard);
+                pawn_checks_bitboard & pawn_bitboard 
+            },
+            Turn::White => {
+                let pawn_checks_bitboard = Bitboards::move_north_east(king_bitboard) | Bitboards::move_north_east(king_bitboard);
+                pawn_checks_bitboard & pawn_bitboard 
+            }
+        };
+        
+        if opp_pawn_square != 0 {
+            checks.push(opp_pawn_square);
         }
         
         let king_as_knight = self.get_knight_attacked_squares(king_bitboard);
@@ -870,13 +910,17 @@ impl Board {
     }
     
     fn get_en_passant_moves(&self, moves: &mut Vec<Move>, capture_bitboard: &mut u64, end_square: u8, pins: &Vec<u8>) {
+        let prev_pins = match self.turn {
+            Turn::White => &self.white_prev_pins,
+            Turn::Black => &self.black_prev_pins,
+        };
         while *capture_bitboard != 0 {
             let start_square = capture_bitboard.trailing_zeros() as u8;
 
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1);
             let legal_position = Self::get_legal_bitboard(&self, &start_square, pins, &valid_position);
             
-            if legal_position != 0 {
+            if legal_position != 0 && Self::is_pined_square(&start_square, prev_pins){
                 moves.push(Move::encode(start_square, end_square, Move::EP_CAPTURE));
             }
 
@@ -1175,30 +1219,32 @@ impl Board {
     pub fn get_castling_moves(&self, moves : &mut Vec<Move> , king_position: &u64) {
         let occupied_bitboard = self.bitboards.get_ally_pieces(self.turn) | self.bitboards.get_enemy_pieces(self.turn);
 
-        if self.castling_rights.check_king_side(self.turn){ //  true :  will be changes after the castling rights is done 
-            Self::get_king_side_move(moves, &king_position, &occupied_bitboard);
+        if self.castling_rights.check_king_side(self.turn){ 
+            Self::get_king_side_move(self, moves, &king_position, &occupied_bitboard);
         }
 
         if self.castling_rights.check_queen_side(self.turn){
-            Self::get_queen_side_move(moves, &king_position, &occupied_bitboard);
+            Self::get_queen_side_move(self, moves, &king_position, &occupied_bitboard);
         }
     }
 
-    fn get_king_side_move(moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
+    fn get_king_side_move(&self, moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
         let square_between = king_position <<1 | king_position << 2;
+        let castling_squares = square_between & self.get_attacked_squares();
         let can_castle = square_between & occupied_bitboard == 0;
 
-        if can_castle {
+        if can_castle && castling_squares == 0{
             let start_square = king_position.trailing_zeros() as u8;
             moves.push(Move::encode(start_square, start_square + 2, Move::KING_CASTLE));
         }
     }
 
-    fn get_queen_side_move(moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
+    fn get_queen_side_move(&self, moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
         let square_between = king_position >> 1 | king_position >> 2 | king_position >> 3;
+        let castling_squares = (king_position >> 1 | king_position >> 2) & self.get_attacked_squares();
         let can_castle = square_between & occupied_bitboard == 0;
 
-        if can_castle {
+        if can_castle && castling_squares == 0{
             let start_square = king_position.trailing_zeros() as u8;
             moves.push(Move::encode(start_square, start_square - 2, Move::QUEEN_CASTLE));
         }
@@ -1311,5 +1357,6 @@ impl Board {
         for _move in self.generate_legal_moves() {
             print!("({}, {}) ", Square::from(_move.get_from()), Square::from(_move.get_to()));
         }
+        println!("\n");
     }
 }

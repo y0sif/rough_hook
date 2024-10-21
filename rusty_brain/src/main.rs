@@ -8,12 +8,22 @@ fn main() {
         println!("{}",m);
     }
     board.print_board();
+    
 
-    board.make_move(moves[2]);
+    board.make_move(moves[0]);
     let moves = board.generate_legal_moves();
     for m in &moves {
         println!("{}",m);
     }
     board.print_board();
 
+    board.make_move(moves[12]);
+    let moves = board.generate_legal_moves();
+    for m in &moves {
+        println!("{}",m);
+    }
+    board.print_board();
+    
+    board.undo_move();
+    board.print_board();
 }
