@@ -1,5 +1,6 @@
 use core::panic;
 use std::collections::HashMap;
+use std::pin;
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
@@ -631,7 +632,7 @@ impl Board {
         if checks.len() == 1 { // you have to block the check or capture the piece checking, keeping pins in mind
             moves = self.generate_moves(&pins, checks[0]);
             if moves.len() == 0{
-                self.checkmate =true
+                self.checkmate = true
             }
             self.check = true;
         }else if checks.len() == 2 { // double check, have to move the king
@@ -657,7 +658,7 @@ impl Board {
     
     pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
-
+        self.print_board();
         let mut pawn_moves = self.pawn_moves(pins, check_bitboard);
         moves.append(&mut pawn_moves);
 
@@ -914,13 +915,19 @@ impl Board {
             Turn::White => &self.white_prev_pins,
             Turn::Black => &self.black_prev_pins,
         };
+        match  self.turn {
+            Turn::White=>println!("white Turn") , 
+            Turn::Black=>println!("Black Turn")
+        }
         while *capture_bitboard != 0 {
             let start_square = capture_bitboard.trailing_zeros() as u8;
-
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1);
             let legal_position = Self::get_legal_bitboard(&self, &start_square, pins, &valid_position);
-            
-            if legal_position != 0 && Self::is_pined_square(&start_square, prev_pins){
+            println!("the pinsssssssssssssssssssssssssssssss =  {:?} ",prev_pins);
+            println!("legal position = {}" , legal_position);
+            if legal_position != 0 && Self::is_pined_square(&start_square, prev_pins)==false{
+                println!("start sqaure  u= {}" , start_square);
+                println!("end sqaure  u = {}" , end_square);
                 moves.push(Move::encode(start_square, end_square, Move::EP_CAPTURE));
             }
 
@@ -947,7 +954,6 @@ impl Board {
                         Turn::Black => (self.bitboards.black_pawns, end_square - 8)
                     };
                     let mut ep_captures = pawns & (east_bitboard | west_bitboard);
-                    
                     Self::get_en_passant_moves(&self, moves, &mut ep_captures, end_square, pins);
                 }
             }
@@ -1163,7 +1169,6 @@ impl Board {
             Turn::White=> self.bitboards.white_king.trailing_zeros() as u8,
             Turn::Black=> self.bitboards.black_king.trailing_zeros() as u8
         };
-
         if Self::is_pined_square(&start_square, pins) {
             let direction_mask = Self::get_direction_mask_ex_using(&start_square, &king_square);
             legal_bitboard &= direction_mask;
@@ -1353,10 +1358,12 @@ impl Board {
             Turn::Black => println!("\nTurn: Black",),
         };
         
-        println!("\nPossible moves:");
-        for _move in self.generate_legal_moves() {
-            print!("({}, {}) ", Square::from(_move.get_from()), Square::from(_move.get_to()));
-        }
-        println!("\n");
+        // println!("\nPossible moves:");
+        // let x  = self.generate_legal_moves();
+        // println!("x = {}" , x.len());
+        // for _move in self.generate_legal_moves() {
+        //     print!("({}, {}) ", Square::from(_move.get_from()), Square::from(_move.get_to()));
+        // }
+        // println!("\n");
     }
 }
