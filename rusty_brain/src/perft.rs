@@ -1,12 +1,10 @@
 use crate::{board::Board, castling, movement::Move};
 
 pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mut i32, checks: &mut i32, checkmates: &mut i32, castling: &mut i32, promotion: &mut i32) -> usize {
-    //println!("Here we Again !!!!!!!!!!!");
     let mut nodes = 0;
 
-   // println!("depth {}", depth);
     let moves = board.generate_legal_moves();
-    //println!("legal moves = {}" , moves.len());
+
     if board.checkmate{
         *checkmates += 1;
     }
@@ -17,27 +15,12 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
     if depth == 0 {
         return 1;
     }
+
     for _move in &moves {
-        //println!("y = {}" , moves.len());
-         //board.print_board();
-        //  println!("Len = {}" , moves.len());
-        //  for m in &moves {
-        //     print!("{}",m);
-        //     print!("  Flag= {}" , m.get_flags());
-        //     println!();
-        // }
-         println!("move : {}", _move);
-         println!("move from = {}  ,move to = {}" , _move.get_from() , _move.get_to());
-        // println!("flag = {} " , _move.get_flags());
-       
         match _move.get_flags() {
             Move::CAPTURE => {*captures += 1},
             Move::EP_CAPTURE => {
-                //board.print_board();
-                println!("en passant {}   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", _move);
-                //board.print_board();
                 *ep_captures += 1;
-               // println!("EN passant Capture yyyyyyyyyyyyyyyyyyyyy yyyyyyyyyyyyyyyyyyyyy yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy yyyyyyyyyyyyyyyyyy")
             },
             Move::KING_CASTLE | Move::QUEEN_CASTLE => {*castling += 1},
             Move::BISHOP_PROMOTION | Move::QUEEN_PROMOTION | Move::ROOK_PROMOTION | Move::KNIGHT_PROMOTION 
@@ -46,31 +29,16 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
             => {
                 *promotion += 1;
                 *captures += 1;
-               // println!("Capture Promotion")
             },
             _ => (),
         }
-        // println!("capture log = {}" ,board.capture_log.len()) ;
-        // println!("castling_rights_log = {}" ,board.castling_rights_log.len());
-        // println!("move_log = {}" ,board.move_log.len()) ;
-         println!("white prev pin before = {:?}" ,board.white_prev_pins);
-         println!("black prev pin before = {:?}" ,board.black_prev_pins);
-        // println!("board before move ");
-        //board.print_board();
         board.make_move(*_move);
-        println!("white prev pin after = {:?}" ,board.white_prev_pins);
-        println!("black prev pin after = {:?}" ,board.black_prev_pins);
-       // println!("board after move ");
-        //board.print_board();
-        println!("-------------------------------------------------------");
         let res = perft(board, depth-1, captures, ep_captures, checks, checkmates, castling, promotion);
-        println!("white prev pin undo = {:?}" ,board.white_prev_pins);
-        println!("black prev pin undo = {:?}" ,board.black_prev_pins);
         nodes += res;
         board.undo_move();
         
     }
-    //board.undo_move();
+
     nodes
 }
 
@@ -84,11 +52,16 @@ mod perft {
     fn test_pefrt() {
         let mut board = Board::new();
 
-        // print!("depth 1 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 1);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 20);
+        let mut captures = 0;
+        let mut ep_captures = 0;
+        let mut checksmates = 0;
+        let mut checks = 0;
+        let mut castling = 0;
+        let mut promotions = 0;
+
+        let res = perft(&mut board, 5, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
+        println!("cap {}, ep {}, checks {}, checkmates {}, castling {}, promotions {}", captures, ep_captures, checks, checksmates, castling, promotions);
+        assert_eq!(res, 6);
 
         // print!("depth 2 \t");
         // let now = Instant::now();
@@ -139,9 +112,7 @@ mod perft {
 
     #[test]
     fn perft_position_3() {
-        // 8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - -
-        let mut board = Board::from_fen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0".to_string());
-        //board.print_board();
+        let mut board = Board::from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0".to_string());
 
         let mut captures = 0;
         let mut ep_captures = 0;
@@ -149,6 +120,7 @@ mod perft {
         let mut checks = 0;
         let mut castling = 0;
         let mut promotions = 0;
+
         let res = perft(&mut board, 2, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
         println!("cap {}, ep {}, checks {}, checkmates {}, castling {}, promotions {}", captures, ep_captures, checks, checksmates, castling, promotions);
         assert_eq!(res, 6);

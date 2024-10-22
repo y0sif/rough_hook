@@ -1,6 +1,5 @@
 use core::panic;
 use std::collections::HashMap;
-use std::pin;
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
@@ -26,8 +25,6 @@ pub struct Board{
     pub half_move_clock: u8,
     pub capture_log: Vec<Piece>,
     pub castling_rights_log: Vec<CastlingRights>,
-    pub white_prev_pins: Vec<u8>,
-    pub black_prev_pins: Vec<u8>,
     pub check: bool
 }
 
@@ -47,8 +44,6 @@ impl Board {
             half_move_clock: 0,
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
-            white_prev_pins: Vec::new(),
-            black_prev_pins: Vec::new(),
             check: false,
         }
     }
@@ -68,8 +63,6 @@ impl Board {
             half_move_clock:0,
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
-            white_prev_pins: Vec::new(),
-            black_prev_pins: Vec::new(),
             check: false,
         }
     }
@@ -132,8 +125,6 @@ impl Board {
             half_move_clock: fen_vec[4].parse().unwrap(),
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
-            white_prev_pins: Vec::new(),
-            black_prev_pins: Vec::new(),
             check: false,
         }
     }
@@ -164,7 +155,7 @@ impl Board {
                 if start_position & self.bitboards.white_pawns != 0 {
                     match flag {
                         Move::EP_CAPTURE => {
-                            self.make_en_passant();
+                            self.make_en_passant(end_position);
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
                         },
@@ -225,7 +216,7 @@ impl Board {
                 if start_position & self.bitboards.black_pawns != 0 {
                     match flag {
                         Move::EP_CAPTURE => {
-                            self.make_en_passant();
+                            self.make_en_passant(end_position);
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
                         },
@@ -293,17 +284,15 @@ impl Board {
         }        
     }
     
-    fn make_en_passant(&mut self) {
-        let last_move = self.move_log.last().unwrap();
-        let capture_square = last_move.get_to();
+    fn make_en_passant(&mut self, end_position: u64) {
         self.capture_log.push(Piece::Pawn);
         match self.turn {
             Turn::White => {
-                let black_pawn = 1 << capture_square;
+                let black_pawn = end_position >> 8;
                 self.bitboards.black_pawns &= !black_pawn;
             },
             Turn::Black => {
-                let white_pawn = 1 << capture_square;
+                let white_pawn = end_position << 8;
                 self.bitboards.white_pawns &= !white_pawn;
             }
         }
@@ -496,7 +485,6 @@ impl Board {
         self.checkmate = false;
         self.stalemate = false;
         self.draw = false;
-        self.check = false;
         self.castling_rights = self.castling_rights_log.pop().unwrap();
     }
 
@@ -649,16 +637,12 @@ impl Board {
             }    
             self.check = false;
         }
-        match self.turn {
-            Turn::White => self.white_prev_pins = pins,
-            Turn::Black => self.black_prev_pins = pins,
-        }
         moves
     }
     
     pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
-        self.print_board();
+
         let mut pawn_moves = self.pawn_moves(pins, check_bitboard);
         moves.append(&mut pawn_moves);
 
@@ -910,25 +894,33 @@ impl Board {
         }
     }
     
-    fn get_en_passant_moves(&self, moves: &mut Vec<Move>, capture_bitboard: &mut u64, end_square: u8, pins: &Vec<u8>) {
-        let prev_pins = match self.turn {
-            Turn::White => &self.white_prev_pins,
-            Turn::Black => &self.black_prev_pins,
-        };
-        match  self.turn {
-            Turn::White=>println!("white Turn") , 
-            Turn::Black=>println!("Black Turn")
-        }
+    fn get_en_passant_moves(&mut self, moves: &mut Vec<Move>, capture_bitboard: &mut u64, end_square: u8, pins: &Vec<u8>) {
         while *capture_bitboard != 0 {
             let start_square = capture_bitboard.trailing_zeros() as u8;
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1);
             let legal_position = Self::get_legal_bitboard(&self, &start_square, pins, &valid_position);
-            println!("the pinsssssssssssssssssssssssssssssss =  {:?} ",prev_pins);
-            println!("legal position = {}" , legal_position);
-            if legal_position != 0 && Self::is_pined_square(&start_square, prev_pins)==false{
-                println!("start sqaure  u= {}" , start_square);
-                println!("end sqaure  u = {}" , end_square);
+            if legal_position != 0 {
                 moves.push(Move::encode(start_square, end_square, Move::EP_CAPTURE));
+
+                self.make_move(*moves.last().unwrap());
+
+                self.turn = match self.turn {
+                    Turn::White => Turn::Black,
+                    Turn::Black => Turn::White,
+                };
+                
+                let (checks, _) = self.checks_and_pins();
+                
+                if !checks.is_empty() {
+                    moves.pop();
+                }
+                
+                self.turn = match self.turn {
+                    Turn::White => Turn::Black,
+                    Turn::Black => Turn::White,
+                };
+
+                self.undo_move();
             }
 
             *capture_bitboard &= *capture_bitboard - 1;
@@ -954,7 +946,7 @@ impl Board {
                         Turn::Black => (self.bitboards.black_pawns, end_square - 8)
                     };
                     let mut ep_captures = pawns & (east_bitboard | west_bitboard);
-                    Self::get_en_passant_moves(&self, moves, &mut ep_captures, end_square, pins);
+                    Self::get_en_passant_moves(self, moves, &mut ep_captures, end_square, pins);
                 }
             }
         }
