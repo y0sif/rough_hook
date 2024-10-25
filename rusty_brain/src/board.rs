@@ -574,6 +574,7 @@ impl Board {
     }
     
     fn undo_en_passant(&mut self, end_position: u64) {
+        self.capture_log.pop();
         match self.turn {
             Turn::White => self.bitboards.white_pawns |= end_position << 8,
             Turn::Black => self.bitboards.black_pawns |= end_position >> 8,

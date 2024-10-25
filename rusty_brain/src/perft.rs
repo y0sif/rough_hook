@@ -21,6 +21,7 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
             Move::CAPTURE => {*captures += 1},
             Move::EP_CAPTURE => {
                 *ep_captures += 1;
+                *captures += 1;
             },
             Move::KING_CASTLE | Move::QUEEN_CASTLE => {*castling += 1},
             Move::BISHOP_PROMOTION | Move::QUEEN_PROMOTION | Move::ROOK_PROMOTION | Move::KNIGHT_PROMOTION 
@@ -112,7 +113,7 @@ mod perft {
 
     #[test]
     fn perft_position_3() {
-        let mut board = Board::from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0".to_string());
+        let mut board = Board::from_fen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0".to_string());
 
         let mut captures = 0;
         let mut ep_captures = 0;
@@ -121,7 +122,7 @@ mod perft {
         let mut castling = 0;
         let mut promotions = 0;
 
-        let res = perft(&mut board, 2, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
+        let res = perft(&mut board, 6, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
         println!("cap {}, ep {}, checks {}, checkmates {}, castling {}, promotions {}", captures, ep_captures, checks, checksmates, castling, promotions);
         assert_eq!(res, 6);
     }

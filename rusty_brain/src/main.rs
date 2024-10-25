@@ -10,7 +10,7 @@ fn main() {
         println!("{}",m);
     }
     
-    board.make_move(moves[11]);
+    board.make_move(moves[4]);
     board.print_board();
     let moves = board.generate_legal_moves();
     println!("Len = {}" , moves.len());
@@ -18,12 +18,31 @@ fn main() {
         println!("{}",m);
     }
     
-    board.undo_move();
+    board.make_move(moves[3]);
     board.print_board();
     let moves = board.generate_legal_moves();
     println!("Len = {}" , moves.len());
     for m in &moves {
         println!("{}",m);
     }
+
+    board.make_move(moves[3]);
+    board.print_board();
+    let moves = board.generate_legal_moves();
+    println!("Len = {}" , moves.len());
+    for m in &moves {
+        println!("{}",m);
+    }
+    
+    board.make_move(moves[3]);
+    board.print_board();
+    let moves = board.generate_legal_moves();
+    println!("Len = {}" , moves.len());
+    for m in &moves {
+        println!("{}",m);
+    }
+
+    board.undo_move();
+    board.print_board(); 
 
 }
