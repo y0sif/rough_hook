@@ -130,6 +130,7 @@ impl Board {
     }
     
     pub fn make_move(&mut self, move_to_make: Move) {
+        self.checkmate = false;
         let start_position = 1 << move_to_make.get_from();
         let end_position = 1 << move_to_make.get_to();
         let not_starting_position = !start_position;
