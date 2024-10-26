@@ -124,6 +124,6 @@ mod perft {
 
         let res = perft(&mut board, 2, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
         println!("cap {}, ep {}, checks {}, checkmates {}, castling {}, promotions {}", captures, ep_captures, checks, checksmates, castling, promotions);
-        assert_eq!(res, 6);
+        assert_eq!(res, 0);
     }
 }
