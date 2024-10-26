@@ -1228,7 +1228,7 @@ impl Board {
 
     fn get_king_side_move(&self, moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
         let square_between = king_position <<1 | king_position << 2;
-        let castling_squares = square_between & self.get_attacked_squares();
+        let castling_squares = (king_position | square_between) & self.get_attacked_squares();
         let can_castle = square_between & occupied_bitboard == 0;
 
         if can_castle && castling_squares == 0{
@@ -1239,7 +1239,7 @@ impl Board {
 
     fn get_queen_side_move(&self, moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
         let square_between = king_position >> 1 | king_position >> 2 | king_position >> 3;
-        let castling_squares = (king_position >> 1 | king_position >> 2) & self.get_attacked_squares();
+        let castling_squares = (king_position >> 1 | king_position >> 2 | king_position) & self.get_attacked_squares();
         let can_castle = square_between & occupied_bitboard == 0;
 
         if can_castle && castling_squares == 0{
