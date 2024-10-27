@@ -1,6 +1,6 @@
-use crate::{board::Board, castling, movement::Move};
+use crate::{board::Board, movement::Move};
 
-pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mut i32, checks: &mut i32, checkmates: &mut i32, castling: &mut i32, promotion: &mut i32) -> usize {
+pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mut i32, checks: &mut i32, checkmates: &mut i32, castling: &mut i32, promotion: &mut i32, double_checks: &mut i32) -> usize {
     let mut nodes = 0;
 
     let moves = board.generate_legal_moves();
@@ -11,6 +11,9 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
     if board.check {
         *checks += 1;
     }
+    if board.double_check {
+        *double_checks += 1;
+    }
 
     if depth == 0 {
         return 1;
@@ -18,10 +21,10 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
 
     for _move in &moves {
         match _move.get_flags() {
-            Move::CAPTURE => {*captures += 1},
+            Move::CAPTURE => {*captures += 1;},
             Move::EP_CAPTURE => {
                 *ep_captures += 1;
-                *captures += 1;
+                *captures += 1; 
             },
             Move::KING_CASTLE | Move::QUEEN_CASTLE => {*castling += 1},
             Move::BISHOP_PROMOTION | Move::QUEEN_PROMOTION | Move::ROOK_PROMOTION | Move::KNIGHT_PROMOTION 
@@ -34,7 +37,10 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
             _ => (),
         }
         board.make_move(*_move);
-        let res = perft(board, depth-1, captures, ep_captures, checks, checkmates, castling, promotion);
+        let res = perft(board, depth-1, captures, ep_captures, checks, checkmates, castling, promotion, double_checks);
+        if depth == 4 {
+            println!("{}: {}", _move, res);
+        }
         nodes += res;
         board.undo_move();
         
@@ -43,87 +49,136 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
     nodes
 }
 
+pub fn perft_bulk(board: &mut Board, depth: i32, start: i32) -> usize {
+    let moves = board.generate_legal_moves();
+
+    if depth == 1 {
+        return moves.len();
+    }
+
+    let mut nodes = 0;
+
+    for _move in moves {
+        board.make_move(_move);
+        let res = perft_bulk(board, depth - 1, start);
+        if depth == start {
+            println!("{}: {}", _move, res);
+        }
+        nodes += res;
+        board.undo_move();
+    }
+    
+    nodes
+}
+
 #[cfg(test)]
 mod perft {
     use std::time::Instant;
 
-    use crate::{board::{self, Board}, castling, perft::perft};
+    use crate::board::Board;
 
-    // #[test]
+    use super::perft_bulk;
+
+    #[test]
     fn test_pefrt() {
+        let depth_node_vec = [20, 400, 8902, 197281, 4865609, 119060324];
+        
         let mut board = Board::new();
 
-        let mut captures = 0;
-        let mut ep_captures = 0;
-        let mut checksmates = 0;
-        let mut checks = 0;
-        let mut castling = 0;
-        let mut promotions = 0;
-
-        let res = perft(&mut board, 5, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
-        println!("cap {}, ep {}, checks {}, checkmates {}, castling {}, promotions {}", captures, ep_captures, checks, checksmates, castling, promotions);
-        assert_eq!(res, 6);
-
-        // print!("depth 2 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 2);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 400);
-
-        // print!("depth 3 \t");
-        // let now = Instant::now();
-        // let mut captures = 0;
-        // let mut ep_captures = 0;
-        // let res = perft(&mut board, 3, &mut captures, &mut ep_captures);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // println!("captures {}, ep_captures {}", captures, ep_captures);
-        // assert_eq!(res, 8902);
-
-        // print!("depth 4 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 4);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 197281);
-
-        // print!("depth 5 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 5);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 4865609);
-
-        // print!("depth 6 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 6);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 119060324);
-
-        // print!("depth 7 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 7);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 3195901860);
-
-        // print!("depth 8 \t");
-        // let now = Instant::now();
-        // let res = perft(&mut board, 8);
-        // println!("time: {} milliseconds", now.elapsed().as_millis());
-        // assert_eq!(res, 84998978956);
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
     }
     
 
     #[test]
-    fn perft_position_3() {
+    fn perft_position_2() {
+        let depth_node_vec = [48, 2039, 97862, 4085603, 193690690, 8031647685];
+        
         let mut board = Board::from_fen("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 0".to_string());
 
-        let mut captures = 0;
-        let mut ep_captures = 0;
-        let mut checksmates = 0;
-        let mut checks = 0;
-        let mut castling = 0;
-        let mut promotions = 0;
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
+    }
 
-        let res = perft(&mut board, 2, &mut captures, &mut ep_captures, &mut checks, &mut checksmates, &mut castling, &mut promotions);
-        println!("cap {}, ep {}, checks {}, checkmates {}, castling {}, promotions {}", captures, ep_captures, checks, checksmates, castling, promotions);
-        assert_eq!(res, 0);
+    #[test]
+    fn perft_position_3() {
+        let depth_node_vec = [14, 191, 2812, 43238, 674624, 11030083, 178633661, 3009794393];
+        
+        let mut board = Board::from_fen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0".to_string());
+
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
+    }
+
+    #[test]
+    fn perft_position_4() {
+        let depth_node_vec = [6, 264, 9467, 422333, 15833292, 706045033];
+        
+        let mut board = Board::from_fen("r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1".to_string());
+
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
+
+        let depth_node_vec = [6, 264, 9467, 422333, 15833292, 706045033];
+        
+        let mut board = Board::from_fen("r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1".to_string());
+
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
+    }
+
+    #[test]
+    fn perft_position_5() {
+        let depth_node_vec = [44, 1486, 62379, 2103487, 89941194];
+        
+        let mut board = Board::from_fen("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8".to_string());
+
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
+    }
+
+    #[test]
+    fn perft_position_6() {
+        let depth_node_vec = [46, 2079, 89890, 3894594, 164075551];
+        
+        let mut board = Board::from_fen("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10 ".to_string());
+
+        for depth in 0..depth_node_vec.len() as i32{
+            println!("depth: {}", depth + 1);
+            let time = Instant::now();
+            let res = perft_bulk(&mut board, depth + 1, depth + 1);
+            assert_eq!(res, depth_node_vec[depth as usize]);
+            println!("elapsed time: {} ms", time.elapsed().as_millis());
+        }
     }
 }

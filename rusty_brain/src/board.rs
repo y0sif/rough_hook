@@ -25,7 +25,8 @@ pub struct Board{
     pub half_move_clock: u8,
     pub capture_log: Vec<Piece>,
     pub castling_rights_log: Vec<CastlingRights>,
-    pub check: bool
+    pub check: bool,
+    pub double_check: bool
 }
 
 impl Board {
@@ -45,6 +46,7 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             check: false,
+            double_check: false
         }
     }
     
@@ -64,6 +66,7 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             check: false,
+            double_check: false
         }
     }
     
@@ -126,6 +129,7 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             check: false,
+            double_check: false
         }
     }
     
@@ -625,12 +629,14 @@ impl Board {
                 self.checkmate = true
             }
             self.check = true;
+            self.double_check = false;
         }else if checks.len() == 2 { // double check, have to move the king
             moves = self.king_moves();
             if moves.len() == 0{
                 self.checkmate =true
             }
             self.check = true;
+            self.double_check = true;
         }else { // there is no check, you just have to take care of pins
             moves = self.generate_moves(&pins, !0);
             if moves.len() == 0{
@@ -638,6 +644,7 @@ impl Board {
                 self.draw = true;
             }    
             self.check = false;
+            self.double_check = false;
         }
         moves
     }
@@ -698,7 +705,7 @@ impl Board {
                 pawn_checks_bitboard & pawn_bitboard 
             },
             Turn::White => {
-                let pawn_checks_bitboard = Bitboards::move_north_east(king_bitboard) | Bitboards::move_north_east(king_bitboard);
+                let pawn_checks_bitboard = Bitboards::move_north_east(king_bitboard) | Bitboards::move_north_west(king_bitboard);
                 pawn_checks_bitboard & pawn_bitboard 
             }
         };

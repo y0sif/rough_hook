@@ -5,7 +5,7 @@ mod tests {
     use crate::square::File;
     use crate::{board::Board, square::{Rank, Square}};
 
-    //#[test]
+    #[test]
     fn test_pawns() {
         let mut board = Board::empty();
         board.bitboards.white_pawns = 1;
@@ -88,7 +88,7 @@ mod tests {
               
     }
     
-    //#[test]
+    #[test]
     fn test_knights() {
         let mut board = Board::empty();
         board.bitboards.white_knights = 1;
@@ -175,7 +175,7 @@ mod tests {
         assert_eq!(moves.len(), 168);
     }
 
-    // #[test]
+    #[test]
     fn test_bishops() {
         let mut board = Board::empty();
         board.bitboards.white_bishops = 1;
@@ -255,7 +255,7 @@ mod tests {
         
 }
 
-    // #[test]
+    #[test]
     fn test_rooks() {
         let mut board = Board::empty();
         board.bitboards.white_rooks = 1;
@@ -307,7 +307,7 @@ mod tests {
         assert_eq!(moves.len(), 2);
     }
 
-    // #[test]
+    #[test]
     fn test_queens() {
         let mut board = Board::empty();
         board.bitboards.white_queens = 1;
@@ -388,7 +388,7 @@ mod tests {
         
     }
     
-    // #[test]
+    #[test]
     fn test_king() {
         let mut board = Board::empty();
         board.bitboards.white_king = 1;
