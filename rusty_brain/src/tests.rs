@@ -81,8 +81,14 @@ mod tests {
         board.bitboards.white_pawns = 0x0200;
 
         board.make_move(Move::encode(Square::B2 as u8, Square::B4 as u8, Move::DOUBLE_PAWN_PUSH));
+        board.print_board();
 
         let moves = board.pawn_moves(&Vec::new(), !0);
+        
+        for m in &moves {
+            println!("move {}", m);
+
+        }
 
         assert_eq!(moves.len(), 4);
               

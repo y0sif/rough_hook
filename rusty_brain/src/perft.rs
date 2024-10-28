@@ -8,12 +8,6 @@ pub fn perft(board: &mut Board, depth: i32, captures: &mut i32, ep_captures: &mu
     if board.checkmate{
         *checkmates += 1;
     }
-    if board.check {
-        *checks += 1;
-    }
-    if board.double_check {
-        *double_checks += 1;
-    }
 
     if depth == 0 {
         return 1;
