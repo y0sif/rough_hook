@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::board::Turn;
+    use crate::movement::Move;
     use crate::square::File;
     use crate::{board::Board, square::{Rank, Square}};
 
@@ -70,7 +71,7 @@ mod tests {
         board.turn = Turn::Black;
         board.bitboards.white_pawns = 0x0800000000;
         board.bitboards.black_pawns = 0x10000000000000;
-        board.make_move((Square::E7 as u8, Square::E5 as u8));
+        board.make_move(Move::encode(Square::E7 as u8, Square::E5 as u8, Move::DOUBLE_PAWN_PUSH));
 
         let moves = board.pawn_moves(&Vec::new(), !0);
         
@@ -79,9 +80,15 @@ mod tests {
         board.bitboards.black_pawns = 0x05000000;
         board.bitboards.white_pawns = 0x0200;
 
-        board.make_move((Square::B2 as u8, Square::B4 as u8));
+        board.make_move(Move::encode(Square::B2 as u8, Square::B4 as u8, Move::DOUBLE_PAWN_PUSH));
+        board.print_board();
 
         let moves = board.pawn_moves(&Vec::new(), !0);
+        
+        for m in &moves {
+            println!("move {}", m);
+
+        }
 
         assert_eq!(moves.len(), 4);
               
@@ -452,7 +459,7 @@ mod tests {
 
         assert_eq!(moves.len(), 4);
         
-        board.make_move((Square::E1 as u8, Square::G1 as u8)); 
+        board.make_move(Move::encode(Square::E1 as u8, Square::G1 as u8, Move::KING_CASTLE)); 
         
         assert_eq!(board.bitboards.white_king.trailing_zeros() as u8, Square::G1 as u8);
         assert_eq!((board.bitboards.white_rooks & (1 << Square::F1 as u8)).trailing_zeros() as u8, Square::F1 as u8);
@@ -461,7 +468,7 @@ mod tests {
 
         assert_eq!(moves.len(), 4);
 
-        board.make_move((Square::E8 as u8, Square::C8 as u8));
+        board.make_move(Move::encode(Square::E8 as u8, Square::C8 as u8, Move::QUEEN_CASTLE));
         
         assert_eq!(board.bitboards.black_king.trailing_zeros() as u8, Square::C8 as u8);
         assert_eq!((board.bitboards.black_rooks & (1 << Square::D8 as u8)).trailing_zeros() as u8, Square::D8 as u8);

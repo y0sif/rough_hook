@@ -227,7 +227,7 @@ impl Bitboards {
     pub fn rank_mask(square: u8) -> u64 {
         0x7E  << (square & 56)
     }
-    
+
     pub fn file_mask(square: u8) -> u64 {
         0x0001010101010100  << (square & 7)
     }

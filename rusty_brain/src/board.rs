@@ -1,10 +1,11 @@
 use core::panic;
 use std::collections::HashMap;
-
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
-use crate::square::{Rank, Square};
+use crate::movement::Move;
+use crate::piece::Piece;
+use crate::square::Square;
 #[derive(Clone, Copy)]
 pub enum Turn {
    White,
@@ -15,14 +16,16 @@ pub struct Board{
     pub turn: Turn,
     pub rook_attacks: [Vec<u64>; 64],
     pub bishop_attacks: [Vec<u64>; 64],
-    pub move_log: Vec<(u8, u8)>,
-    pub is_en_passant: bool,
+    pub move_log: Vec<Move>,
     pub castling_rights: CastlingRights,
     pub checkmate: bool,
     pub board_hashes: HashMap<u64, u8>,
     pub stalemate: bool,
     pub draw: bool,
     pub half_move_clock: u8,
+    pub capture_log: Vec<Piece>,
+    pub castling_rights_log: Vec<CastlingRights>,
+    pub en_passant_square: Option<Square>,
 }
 
 impl Board {
@@ -33,13 +36,15 @@ impl Board {
             rook_attacks: Magic::piece_attacks(true),
             bishop_attacks: Magic::piece_attacks(false),
             move_log: Vec::new(),
-            is_en_passant: false,
             castling_rights: CastlingRights::new(),
             checkmate: false,
             board_hashes: HashMap::new(),
             stalemate: false,
             draw: false,
             half_move_clock: 0,
+            capture_log: Vec::new(),
+            castling_rights_log: Vec::new(),
+            en_passant_square: None,
         }
     }
     
@@ -50,13 +55,15 @@ impl Board {
             rook_attacks: Magic::piece_attacks(true),
             bishop_attacks: Magic::piece_attacks(false),
             move_log: Vec::new(),
-            is_en_passant: false, 
             castling_rights: CastlingRights::empty(),
             checkmate: false,
             board_hashes: HashMap::new(),
             stalemate: false,
             draw: false,
-            half_move_clock:0
+            half_move_clock:0,
+            capture_log: Vec::new(),
+            castling_rights_log: Vec::new(),
+            en_passant_square: None,
         }
     }
     
@@ -80,26 +87,11 @@ impl Board {
             }
         }
         
-        let mut move_log = Vec::new();
 
-        let is_en_passant = match fen_vec[3] {
-            "-" => false,
+        let en_passant_square = match fen_vec[3] {
+            "-" => None,
             _ => {
-                let square = Square::from(fen_vec[3]) as u8;
-                let last_move = match turn {
-                    Turn::White => {
-                        let start_square = square + 8;
-                        let end_square = square - 8;
-                        (start_square, end_square)
-                    },
-                    Turn::Black => {
-                        let start_square = square - 8;
-                        let end_square = square + 8;
-                        (start_square, end_square)                    
-                    }
-                };
-                move_log.push(last_move);
-                true
+                Some(Square::from(fen_vec[3]))
             }
         };
         
@@ -108,112 +100,171 @@ impl Board {
             turn,
             rook_attacks: Magic::piece_attacks(true),
             bishop_attacks: Magic::piece_attacks(false),
-            move_log,
-            is_en_passant, 
+            move_log: Vec::new(),
             castling_rights,
             checkmate: false,
             board_hashes: HashMap::new(),
             stalemate: false,
             draw: false,
             half_move_clock: fen_vec[4].parse().unwrap(),
+            capture_log: Vec::new(),
+            castling_rights_log: Vec::new(),
+            en_passant_square
         }
     }
     
-    pub fn make_move(&mut self, move_to_make: (u8, u8)) {
-        let start_square = 1 << move_to_make.0;
-        let end_square = 1 << move_to_make.1;
-        self.make_capture(move_to_make);
+    pub fn make_move(&mut self, move_to_make: Move) {
+        self.checkmate = false;
+        let start_position = 1 << move_to_make.get_from();
+        let end_position = 1 << move_to_make.get_to();
+        let not_starting_position = !start_position;
+        let flag = move_to_make.get_flags();
+
+        self.move_log.push(move_to_make);
+        self.castling_rights_log.push(self.castling_rights);
+        self.en_passant_square = None;
+        
+
+        match flag {
+            Move::CAPTURE | Move::QUEEN_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE |
+            Move::ROOK_PROMO_CAPTURE | Move::BISHOP_PROMO_CAPTURE 
+             => {               
+                self.board_hashes = HashMap::new();
+                self.half_move_clock =0;
+                self.make_capture(&move_to_make)
+             },
+            _ => (),
+        }
+
         match self.turn {
             Turn::White => {
-                if start_square & self.bitboards.white_pawns != 0 {
-                    let promotion_rank:u64 = 0xFF00000000000000;
-                    let curr_rank: u64 = Bitboards::rank_mask_to_end(move_to_make.1);
-                    if self.is_en_passant {
-                        self.make_en_passant(move_to_make);
-                        self.bitboards.white_pawns &= !start_square;      
-                        self.bitboards.white_pawns |= end_square;
-                    }
-                    //promote to queen
-                    else if curr_rank == promotion_rank {
-                        self.bitboards.white_pawns &= !start_square;
-                        self.bitboards.white_queens |= end_square;
-                    }
-                    else {
-                        self.bitboards.white_pawns &= !start_square;      
-                        self.bitboards.white_pawns |= end_square;
+                if start_position & self.bitboards.white_pawns != 0 {
+                    match flag {
+                        Move::EP_CAPTURE => {
+                            self.make_en_passant(end_position);
+                            self.bitboards.white_pawns &= not_starting_position;      
+                            self.bitboards.white_pawns |= end_position;
+                        },
+                        Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
+                            self.bitboards.white_pawns &= not_starting_position;
+                            self.bitboards.white_queens |= end_position;
+                        },
+                        Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
+                            self.bitboards.white_pawns &= not_starting_position;
+                            self.bitboards.white_knights |= end_position;
+                        },
+                        Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
+                            self.bitboards.white_pawns &= not_starting_position;
+                            self.bitboards.white_rooks |= end_position;
+                        },
+                        Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
+                            self.bitboards.white_pawns &= not_starting_position;
+                            self.bitboards.white_bishops |= end_position;
+                        },
+                        Move::DOUBLE_PAWN_PUSH => {
+                            self.en_passant_square = Some(Square::from(move_to_make.get_to() - 8));   
+                            self.bitboards.white_pawns &= not_starting_position;      
+                            self.bitboards.white_pawns |= end_position;
+                        },
+                        _ => {
+                            self.bitboards.white_pawns &= not_starting_position;      
+                            self.bitboards.white_pawns |= end_position;
+                        },
                     }
                     self.board_hashes = HashMap::new();
-                    self.half_move_clock = 0;
+                    self.half_move_clock =0;
+                }else if start_position & self.bitboards.white_knights != 0 {
+                    self.bitboards.white_knights &= not_starting_position;
+                    self.bitboards.white_knights |= end_position;
 
-                }else if start_square & self.bitboards.white_knights != 0 {
-                    self.bitboards.white_knights &= !start_square;
-                    self.bitboards.white_knights |= end_square;
+                }else if start_position & self.bitboards.white_bishops != 0 {
+                    self.bitboards.white_bishops &= not_starting_position;
+                    self.bitboards.white_bishops |= end_position;
 
-                }else if start_square & self.bitboards.white_bishops != 0 {
-                    self.bitboards.white_bishops &= !start_square;
-                    self.bitboards.white_bishops |= end_square;
+                }else if start_position & self.bitboards.white_rooks != 0 {
+                    self.check_rook(&move_to_make);
+                    self.bitboards.white_rooks &= not_starting_position;
+                    self.bitboards.white_rooks |= end_position;
 
-                }else if start_square & self.bitboards.white_rooks != 0 {
-                    self.check_rook(move_to_make);
-                    self.bitboards.white_rooks &= !start_square;
-                    self.bitboards.white_rooks |= end_square;
+                }else if start_position & self.bitboards.white_queens != 0 {
+                    self.bitboards.white_queens &= not_starting_position;
+                    self.bitboards.white_queens |= end_position;
 
-                }else if start_square & self.bitboards.white_queens != 0 {
-                    self.bitboards.white_queens &= !start_square;
-                    self.bitboards.white_queens |= end_square;
-
-                }else if start_square & self.bitboards.white_king != 0 {
-                    self.make_castling_move(move_to_make);
+                }else if start_position & self.bitboards.white_king != 0 {
+                    match flag {
+                        Move::KING_CASTLE => self.make_king_side_move(),
+                        Move::QUEEN_CASTLE => self.make_queen_side_move(),
+                        _ => ()
+                    }
                     self.castling_rights.reset_rights(self.turn);
-                    self.bitboards.white_king &= !start_square;
-                    self.bitboards.white_king |= end_square;
+                    self.bitboards.white_king &= not_starting_position;
+                    self.bitboards.white_king |= end_position;
 
                 }
                 self.turn = Turn::Black;
             },
             Turn::Black => {
-                if start_square & self.bitboards.black_pawns != 0 {
-                    let promotion_rank:u64 = 0x00000000000000FF;
-                    let curr_rank: u64 = Bitboards::rank_mask_to_end(move_to_make.1);
-                    if self.is_en_passant {
-                        self.make_en_passant(move_to_make);
-                        self.bitboards.black_pawns &= !start_square;      
-                        self.bitboards.black_pawns |= end_square;
-                    }
-                    //promote to queen
-                    else if curr_rank == promotion_rank {
-                        self.bitboards.black_pawns &= !start_square;
-                        self.bitboards.black_queens |= end_square;
-                    }
-                    else {
-                        self.bitboards.black_pawns &= !start_square;      
-                        self.bitboards.black_pawns |= end_square;
+                if start_position & self.bitboards.black_pawns != 0 {
+                    match flag {
+                        Move::EP_CAPTURE => {
+                            self.make_en_passant(end_position);
+                            self.bitboards.black_pawns &= not_starting_position;      
+                            self.bitboards.black_pawns |= end_position;
+                        },
+                        Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
+                            self.bitboards.black_pawns &= not_starting_position;
+                            self.bitboards.black_queens |= end_position;
+                        },
+                        Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
+                            self.bitboards.black_pawns &= not_starting_position;
+                            self.bitboards.black_knights |= end_position;
+                        },
+                        Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
+                            self.bitboards.black_pawns &= not_starting_position;
+                            self.bitboards.black_rooks |= end_position;
+                        },
+                        Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
+                            self.bitboards.black_pawns &= not_starting_position;
+                            self.bitboards.black_bishops |= end_position;
+                        },
+                        Move::DOUBLE_PAWN_PUSH => {
+                            self.en_passant_square = Some(Square::from(move_to_make.get_to() + 8));   
+                            self.bitboards.black_pawns &= not_starting_position;      
+                            self.bitboards.black_pawns |= end_position;
+                        },
+                        _ => {
+                            self.bitboards.black_pawns &= not_starting_position;      
+                            self.bitboards.black_pawns |= end_position;
+                        },
                     }
                     self.board_hashes = HashMap::new();
-                    self.half_move_clock = 0;
+                    self.half_move_clock =0;
+                }else if start_position & self.bitboards.black_knights != 0 {
+                    self.bitboards.black_knights &= not_starting_position;
+                    self.bitboards.black_knights |= end_position;
 
-                }else if start_square & self.bitboards.black_knights != 0 {
-                    self.bitboards.black_knights &= !start_square;
-                    self.bitboards.black_knights |= end_square;
+                }else if start_position & self.bitboards.black_bishops != 0 {
+                    self.bitboards.black_bishops &= not_starting_position;
+                    self.bitboards.black_bishops |= end_position;
 
-                }else if start_square & self.bitboards.black_bishops != 0 {
-                    self.bitboards.black_bishops &= !start_square;
-                    self.bitboards.black_bishops |= end_square;
+                }else if start_position & self.bitboards.black_rooks != 0 {
+                    self.check_rook(&move_to_make);
+                    self.bitboards.black_rooks &= not_starting_position;
+                    self.bitboards.black_rooks |= end_position;
 
-                }else if start_square & self.bitboards.black_rooks != 0 {
-                    self.check_rook(move_to_make);
-                    self.bitboards.black_rooks &= !start_square;
-                    self.bitboards.black_rooks |= end_square;
+                }else if start_position & self.bitboards.black_queens != 0 {
+                    self.bitboards.black_queens &= not_starting_position;
+                    self.bitboards.black_queens |= end_position;
 
-                }else if start_square & self.bitboards.black_queens != 0 {
-                    self.bitboards.black_queens &= !start_square;
-                    self.bitboards.black_queens |= end_square;
-
-                }else if start_square & self.bitboards.black_king != 0 {
-                    self.make_castling_move(move_to_make);
+                }else if start_position & self.bitboards.black_king != 0 {
+                    match flag {
+                        Move::KING_CASTLE => self.make_king_side_move(),
+                        Move::QUEEN_CASTLE => self.make_queen_side_move(),
+                        _ => ()
+                    }
                     self.castling_rights.reset_rights(self.turn);
-                    self.bitboards.black_king &= !start_square;
-                    self.bitboards.black_king |= end_square;
+                    self.bitboards.black_king &= not_starting_position;
+                    self.bitboards.black_king |= end_position;
 
                 }
                 self.half_move_clock +=1;
@@ -221,97 +272,73 @@ impl Board {
             }
         }
 
-        self.move_log.push((move_to_make.0, move_to_make.1));
-        self.is_en_passant = false;
-
-        if self.half_move_clock >=50 {
-            self.draw = true;
-        }
-
         let count = self.board_hashes.entry(self::Bitboards::hash_board(&self.bitboards)).or_insert(0);
-        *count +=1;
-        
+        *count +=1; 
         if *count == 3 {
             self.draw = true; // should probably be turned into a function to stop game
-        }
+        }        
     }
     
-    fn make_en_passant(&mut self, move_to_make: (u8, u8)) {
-        let last_move = self.move_log.last().unwrap();
+    fn make_en_passant(&mut self, end_position: u64) {
         match self.turn {
             Turn::White => {
-                if move_to_make.1 - 8 == last_move.1 {
-                    let black_pawn = 1 << last_move.1;
-                    self.bitboards.black_pawns &= !black_pawn;
-                } 
+                let black_pawn = end_position >> 8;
+                self.bitboards.black_pawns &= !black_pawn;
             },
             Turn::Black => {
-                if move_to_make.1 + 8 == last_move.1 {
-                    let white_pawn = 1 << last_move.1;
-                    self.bitboards.white_pawns &= !white_pawn;
-                } 
+                let white_pawn = end_position << 8;
+                self.bitboards.white_pawns &= !white_pawn;
             }
         }
     }
     
-    fn make_capture(&mut self, move_to_make: (u8, u8)) {
-        let square_captured = !(1 << move_to_make.1);
-        
+    fn make_capture(&mut self, move_to_make: &Move) {
+        let square_captured = 1 << move_to_make.get_to();
         match self.turn {
             Turn::White => {
                 if self.bitboards.black_pawns & square_captured != 0 {
-                    self.bitboards.black_pawns &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.black_pawns &= !square_captured;
+                    self.capture_log.push(Piece::Pawn);
                 }else if self.bitboards.black_knights & square_captured != 0 {
-                    self.bitboards.black_knights &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.black_knights &= !square_captured;
+                    self.capture_log.push(Piece::Knight);
                 }else if self.bitboards.black_bishops & square_captured != 0 {
-                    self.bitboards.black_bishops &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.black_bishops &= !square_captured;
+                    self.capture_log.push(Piece::Bishop);
                 }else if self.bitboards.black_queens & square_captured != 0 {
-                    self.bitboards.black_queens &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.black_queens &= !square_captured;
+                    self.capture_log.push(Piece::Queen);
                 }else if self.bitboards.black_rooks & square_captured != 0 {
-                    self.bitboards.black_rooks &= square_captured;
+                    self.bitboards.black_rooks &= !square_captured;
+                    self.capture_log.push(Piece::Rook);
                     self.check_captured_rook(move_to_make, self.bitboards.black_rooks);
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
                 }
             },
             Turn::Black => {
                 if self.bitboards.white_pawns & square_captured != 0 {
-                    self.bitboards.white_pawns &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.white_pawns &= !square_captured;
+                    self.capture_log.push(Piece::Pawn);
                 }else if self.bitboards.white_knights & square_captured != 0 {
-                    self.bitboards.white_knights &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.white_knights &= !square_captured;
+                    self.capture_log.push(Piece::Knight);
                 }else if self.bitboards.white_bishops & square_captured != 0 {
-                    self.bitboards.white_bishops &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.white_bishops &= !square_captured;
+                    self.capture_log.push(Piece::Bishop);
                 }else if self.bitboards.white_queens & square_captured != 0 {
-                    self.bitboards.white_queens &= square_captured;
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
+                    self.bitboards.white_queens &= !square_captured;
+                    self.capture_log.push(Piece::Queen);
                 }else if self.bitboards.white_rooks & square_captured != 0 {
-                    self.bitboards.white_rooks &= square_captured;
+                    self.bitboards.white_rooks &= !square_captured;
+                    self.capture_log.push(Piece::Rook);
                     self.check_captured_rook(move_to_make, self.bitboards.white_rooks);
-                    self.half_move_clock = 0;
-                    self.board_hashes = HashMap::new();
                 }
             }
         }
     }
     
-    fn check_captured_rook(&mut self, move_to_make: (u8, u8), rook_bitboard: u64) {
-        let square_captured = !(1 << move_to_make.1);
-        let end_square = move_to_make.1;
+    fn check_captured_rook(&mut self, move_to_make: &Move, rook_bitboard: u64) {
+        let end_square = move_to_make.get_to();
+        let square_captured = !(1 << end_square);
         
         if square_captured & rook_bitboard != 0 {
             match Square::from(end_square) {
@@ -325,8 +352,8 @@ impl Board {
         
     }
 
-    fn check_rook(&mut self, move_to_make: (u8, u8)) {
-        let rook_square = move_to_make.0;
+    fn check_rook(&mut self, move_to_make: &Move) {
+        let rook_square = move_to_make.get_from();
         match self.turn {
             Turn::White => {
                 if rook_square == Square::H1 as u8 {
@@ -342,15 +369,6 @@ impl Board {
                     self.castling_rights.reset_queen_side_rights(self.turn);
                 }
             }
-        }
-    }
-
-    fn make_castling_move(&mut self, move_to_make: (u8, u8)) {
-        // king side
-        if move_to_make.0 == move_to_make.1 - 2 {
-            self.make_king_side_move();
-        }else if move_to_make.0 == move_to_make.1 + 2 { // queen side
-            self.make_queen_side_move();
         }
     }
 
@@ -380,30 +398,241 @@ impl Board {
         }
     }
     
-    pub fn generate_legal_moves(&mut self) -> Vec<(u8, u8)> {
+    pub fn undo_move(&mut self) {
+        let last_move = self.move_log.pop().unwrap();
+        let end_position = 1 << last_move.get_to();
+        let start_position = 1 << last_move.get_from();
+        let flag = last_move.get_flags();
+        
+        match flag {
+            Move::CAPTURE => self.undo_capture(end_position), 
+            Move::EP_CAPTURE => self.undo_en_passant(end_position),
+            Move::KING_CASTLE => self.undo_king_side_castling(start_position, end_position),
+            Move::QUEEN_CASTLE => self.undo_queen_side_castling(start_position, end_position),
+            Move::BISHOP_PROMOTION | Move::ROOK_PROMOTION | Move::QUEEN_PROMOTION | Move::KNIGHT_PROMOTION | 
+            Move::ROOK_PROMO_CAPTURE | Move::BISHOP_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE | Move::QUEEN_PROMO_CAPTURE 
+            => {
+                self.undo_promotion(start_position, end_position, flag);
+                self.castling_rights = self.castling_rights_log.pop().unwrap();
+                return; //ignore the rest of the code
+            },
+            _ => ()
+        }
+        
+        match self.turn {
+            Turn::Black => {
+                if end_position & self.bitboards.white_pawns != 0 {
+                    self.bitboards.white_pawns &= !end_position;
+                    self.bitboards.white_pawns |= start_position;
+                }else if end_position & self.bitboards.white_knights != 0 {
+                    self.bitboards.white_knights &= !end_position;
+                    self.bitboards.white_knights |= start_position;
+
+                }else if end_position & self.bitboards.white_bishops != 0 {
+                    self.bitboards.white_bishops &= !end_position;
+                    self.bitboards.white_bishops |= start_position;
+
+                }else if end_position & self.bitboards.white_rooks != 0 {
+                    self.bitboards.white_rooks &= !end_position;
+                    self.bitboards.white_rooks |= start_position;
+
+                }else if end_position & self.bitboards.white_queens != 0 {
+                    self.bitboards.white_queens &= !end_position;
+                    self.bitboards.white_queens |= start_position;
+
+                }else if end_position & self.bitboards.white_king != 0 {
+                    self.bitboards.white_king &= !end_position;
+                    self.bitboards.white_king |= start_position;
+
+                }
+                self.turn = Turn::White;
+            },
+            Turn::White => {
+                if end_position & self.bitboards.black_pawns != 0 {
+                    self.bitboards.black_pawns &= !end_position;
+                    self.bitboards.black_pawns |= start_position;
+                }else if end_position & self.bitboards.black_knights != 0 {
+                    self.bitboards.black_knights &= !end_position;
+                    self.bitboards.black_knights |= start_position;
+
+                }else if end_position & self.bitboards.black_bishops != 0 {
+                    self.bitboards.black_bishops &= !end_position;
+                    self.bitboards.black_bishops |= start_position;
+
+                }else if end_position & self.bitboards.black_rooks != 0 {
+                    self.bitboards.black_rooks &= !end_position;
+                    self.bitboards.black_rooks |= start_position;
+
+                }else if end_position & self.bitboards.black_queens != 0 {
+                    self.bitboards.black_queens &= !end_position;
+                    self.bitboards.black_queens |= start_position;
+
+                }else if end_position & self.bitboards.black_king != 0 {
+                    self.bitboards.black_king &= !end_position;
+                    self.bitboards.black_king |= start_position;
+
+                }
+                self.turn = Turn::Black;
+                
+            }
+        }
+        self.checkmate = false;
+        self.stalemate = false;
+        self.draw = false;
+        self.castling_rights = self.castling_rights_log.pop().unwrap();
+    }
+
+    fn undo_promotion(&mut self, start_position: u64, end_position: u64, flag: u8) {
+        
+        //handle promo captures
+        match flag {
+            Move::ROOK_PROMO_CAPTURE | Move::BISHOP_PROMO_CAPTURE | 
+            Move::KNIGHT_PROMO_CAPTURE | Move::QUEEN_PROMO_CAPTURE =>
+             self.undo_capture(end_position),
+            _ => ()
+        }
+        //reset board, remove the promoted piece and revert the pawns
+        match self.turn {
+            Turn::Black => {
+                match flag {
+                    Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
+                        self.bitboards.white_queens &= !end_position;
+                        self.bitboards.white_pawns |= start_position;
+                    },
+                    Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
+                        self.bitboards.white_rooks &= !end_position;
+                        self.bitboards.white_pawns |= start_position;
+                    },
+                    Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
+                        self.bitboards.white_knights &= !end_position;
+                        self.bitboards.white_pawns |= start_position;
+                    },
+                    Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
+                        self.bitboards.white_bishops &= !end_position;
+                        self.bitboards.white_pawns |= start_position;
+                    },
+                    _ => ()
+                }
+                self.turn = Turn::White;
+            },
+            Turn::White => {
+                match flag {
+                    Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
+                        self.bitboards.black_queens &= !end_position;
+                        self.bitboards.black_pawns |= start_position;
+                    },
+                    Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
+                        self.bitboards.black_rooks &= !end_position;
+                        self.bitboards.black_pawns |= start_position;
+                    },
+                    Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
+                        self.bitboards.black_knights &= !end_position;
+                        self.bitboards.black_pawns |= start_position;
+                    },
+                    Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
+                        self.bitboards.black_bishops &= !end_position;
+                        self.bitboards.black_pawns |= start_position;
+                    },
+                    _ => ()
+                }
+                self.turn = Turn::Black;
+            }
+        }
+
+
+    }
+
+    fn undo_capture(&mut self, end_position: u64) {
+        match self.turn {
+            Turn::White => {
+                match self.capture_log.pop().unwrap() {
+                    Piece::Pawn => self.bitboards.white_pawns |= end_position,
+                    Piece::Knight => self.bitboards.white_knights |= end_position,
+                    Piece::Bishop => self.bitboards.white_bishops |= end_position,
+                    Piece::Rook => self.bitboards.white_rooks |= end_position,
+                    Piece::Queen => self.bitboards.white_queens |= end_position,
+                    _ => ()
+                }
+            },
+            Turn::Black => {
+                match self.capture_log.pop().unwrap() {
+                    Piece::Pawn => self.bitboards.black_pawns |= end_position,
+                    Piece::Knight => self.bitboards.black_knights |= end_position,
+                    Piece::Bishop => self.bitboards.black_bishops |= end_position,
+                    Piece::Rook => self.bitboards.black_rooks |= end_position,
+                    Piece::Queen => self.bitboards.black_queens |= end_position,
+                    _ => ()
+                }
+            }
+        }
+    }
+    
+    fn undo_en_passant(&mut self, end_position: u64) {
+        self.en_passant_square = Some(Square::from(end_position.trailing_zeros() as u8));
+        match self.turn {
+            Turn::White => self.bitboards.white_pawns |= end_position << 8,
+            Turn::Black => self.bitboards.black_pawns |= end_position >> 8,
+        }
+    }
+    
+    fn undo_king_side_castling(&mut self, start_position: u64, end_position: u64) {
+        match self.turn {
+            Turn::White => {
+                self.bitboards.black_king &= !end_position;
+                self.bitboards.black_king |= start_position;
+                self.bitboards.black_rooks &= !(1 << Square::F8 as u8);
+                self.bitboards.black_rooks |= 1 << Square::H8 as u8
+            },
+            Turn::Black => {
+                self.bitboards.white_king &= !end_position;
+                self.bitboards.white_king |= start_position;
+                self.bitboards.white_rooks &= !(1 << Square::F1 as u8);
+                self.bitboards.white_rooks |= 1 << Square::H1 as u8
+            },
+        }
+    }
+    
+    fn undo_queen_side_castling(&mut self, start_position: u64, end_position: u64) {
+        match self.turn {
+            Turn::White => {
+                self.bitboards.black_king &= !end_position;
+                self.bitboards.black_king |= start_position;
+                self.bitboards.black_rooks &= !(1 << Square::D8 as u8);
+                self.bitboards.black_rooks |= 1 << Square::A8 as u8
+            },
+            Turn::Black => {
+                self.bitboards.white_king &= !end_position;
+                self.bitboards.white_king |= start_position;
+                self.bitboards.white_rooks &= !(1 << Square::D1 as u8);
+                self.bitboards.white_rooks |= 1 << Square::A1 as u8
+            },
+        }
+    }
+    
+    pub fn generate_legal_moves(&mut self) -> Vec<Move> {
         let (checks, pins) = self.checks_and_pins();
-        let mut moves= Vec::new();
+        let moves;
         if checks.len() == 1 { // you have to block the check or capture the piece checking, keeping pins in mind
-            moves.append(&mut self.generate_moves(&pins, checks[0]));
+            moves = self.generate_moves(&pins, checks[0]);
             if moves.len() == 0{
-                self.checkmate =true
+                self.checkmate = true
             }
         }else if checks.len() == 2 { // double check, have to move the king
-            moves.append(&mut self.king_moves());
+            moves = self.king_moves();
             if moves.len() == 0{
                 self.checkmate =true
             }
         }else { // there is no check, you just have to take care of pins
-            moves.append(&mut self.generate_moves(&pins, !0));
+            moves = self.generate_moves(&pins, !0);
             if moves.len() == 0{
                 self.stalemate =true;
                 self.draw = true;
-            } 
+            }    
         }
         moves
     }
     
-    pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
+    pub fn generate_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
 
         let mut pawn_moves = self.pawn_moves(pins, check_bitboard);
@@ -420,16 +649,17 @@ impl Board {
 
         let mut knight_moves = self.knight_moves(pins, check_bitboard);
         moves.append(&mut knight_moves);
+
         let mut king_moves = self.king_moves();
         moves.append(&mut king_moves);
 
         moves
     }
     
-    pub fn checks_and_pins(&self) -> (Vec<u64>, Vec<u8>){
-        let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard) = match self.turn {
-            Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights),
-            Turn::Black => (self.bitboards.black_king, self.bitboards.white_rooks, self.bitboards.white_bishops, self.bitboards.white_queens, self.bitboards.white_knights)
+    pub fn checks_and_pins(&self) -> (Vec<u64>, Vec<u8>) {
+        let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard, pawn_bitboard) = match self.turn {
+            Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights, self.bitboards.black_pawns),
+            Turn::Black => (self.bitboards.black_king, self.bitboards.white_rooks, self.bitboards.white_bishops, self.bitboards.white_queens, self.bitboards.white_knights, self.bitboards.white_pawns)
         };
 
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -440,12 +670,31 @@ impl Board {
         let orth_directions = [Bitboards::move_north, Bitboards::move_east, Bitboards::move_south, Bitboards::move_west];
         let diag_directions = [Bitboards::move_north_west, Bitboards::move_north_east, Bitboards::move_south_east, Bitboards::move_south_west]; 
         
+        let orth_bitboard = rooks_bitboard | queen_bitboard;
+        let diag_bitboard = bishops_bitboard | queen_bitboard;
+        
         for direction in orth_directions {
-            self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, rooks_bitboard | queen_bitboard, ally_bitboard, direction);
+            self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, orth_bitboard, ally_bitboard, direction);
         }
 
         for direction in diag_directions {
-            self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, bishops_bitboard | queen_bitboard, ally_bitboard, direction);
+            self.get_checks_and_pins(&mut checks, &mut pins, king_bitboard, diag_bitboard, ally_bitboard, direction);
+        }
+        
+        // handle pawn checks
+        let opp_pawn_square = match self.turn {
+            Turn::Black => {
+                let pawn_checks_bitboard = Bitboards::move_south_east(king_bitboard) | Bitboards::move_south_west(king_bitboard);
+                pawn_checks_bitboard & pawn_bitboard 
+            },
+            Turn::White => {
+                let pawn_checks_bitboard = Bitboards::move_north_east(king_bitboard) | Bitboards::move_north_west(king_bitboard);
+                pawn_checks_bitboard & pawn_bitboard 
+            }
+        };
+        
+        if opp_pawn_square != 0 {
+            checks.push(opp_pawn_square);
         }
         
         let king_as_knight = self.get_knight_attacked_squares(king_bitboard);
@@ -454,10 +703,12 @@ impl Board {
         if opp_knight_square != 0 {
             checks.push(opp_knight_square);
         }
+
         (checks, pins)
     } 
     
     fn get_checks_and_pins(&self, checks: &mut Vec<u64>, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, ally_bitboard: u64, move_fn: fn(u64) -> u64) {
+        let non_attacking_enemy = self.bitboards.get_enemy_pieces(self.turn);
         let mut next_bitboard = move_fn(king_bitboard);
         let mut possible_check = next_bitboard;
         let mut pins_ctr = 0 ;
@@ -477,6 +728,8 @@ impl Board {
                 if pins_ctr == 0 {
                     checks.push(possible_check);
                 }
+                break;
+            }else if next_bitboard & non_attacking_enemy != 0 {
                 break;
             }
             next_bitboard = move_fn(next_bitboard);
@@ -508,14 +761,16 @@ impl Board {
         }
     }
     
-    pub fn pawn_moves(&mut self ,pins :&Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
+    pub fn pawn_moves(&mut self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new(); 
 
         let not_a_file : u64 = 0xfefefefefefefefe;
         let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
 
         let empty_bitboard = self.bitboards.get_empty_squares();
-        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn);
+
+        // AND with checkbitboard
+        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn) & check_bitboard;
 
         let (mut single_push_bitboard, mut double_push_bitboard, push_direction, right_capture_mask, left_capture_mask, mut right_captures_bitboard, mut left_captures_bitboard) =
         match self.turn {
@@ -528,8 +783,8 @@ impl Board {
                     -1,
                     9,
                     7,
-                    (self.bitboards.white_pawns << 9) & not_a_file & enemy_bitboard & check_bitboard,
-                    (self.bitboards.white_pawns << 7) & not_h_file & enemy_bitboard & check_bitboard         
+                    (self.bitboards.white_pawns << 9) & not_a_file,
+                    (self.bitboards.white_pawns << 7) & not_h_file        
                 )
             },
             Turn::Black => {
@@ -541,17 +796,30 @@ impl Board {
                     1,
                     7,
                     9,
-                    (self.bitboards.black_pawns >> 7) & not_a_file & enemy_bitboard & check_bitboard,
-                    (self.bitboards.black_pawns >> 9) & not_h_file & enemy_bitboard & check_bitboard 
+                    (self.bitboards.black_pawns >> 7) & not_a_file,
+                    (self.bitboards.black_pawns >> 9) & not_h_file
                 )
             }
         };
         
-        Self::get_push_moves(self, &mut moves ,  &mut single_push_bitboard , 1 , push_direction ,pins); 
-        Self::get_push_moves(self, &mut moves ,  &mut double_push_bitboard , 2,  push_direction ,pins); 
-        Self::get_capture_moves(self,&mut moves , &mut right_captures_bitboard , right_capture_mask , push_direction,pins); 
-        Self::get_capture_moves(self,&mut moves , &mut left_captures_bitboard  , left_capture_mask  , push_direction ,pins); 
-        Self::check_en_passant(self, &mut moves);
+        let promotion_rank:u64 = match push_direction {
+            1 => 0x00000000000000FF, // black, so promotion is 1st rank
+            _ => 0xFF00000000000000, // -1 is white so promotion is 8th rank
+        };
+        
+        Self::get_push_moves(self, &mut moves, &mut single_push_bitboard, push_direction, pins, promotion_rank); 
+        Self::get_double_push_moves(self, &mut moves, &mut double_push_bitboard, push_direction, pins); 
+
+        if let Some(en_passant_capture) = self.en_passant_square {
+            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut right_captures_bitboard, right_capture_mask, push_direction, pins);
+            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut left_captures_bitboard, left_capture_mask, push_direction, pins);
+        }
+        
+        right_captures_bitboard &= enemy_bitboard;
+        left_captures_bitboard &= enemy_bitboard;
+
+        Self::get_capture_moves(self,&mut moves , &mut right_captures_bitboard, right_capture_mask, push_direction, pins); 
+        Self::get_capture_moves(self,&mut moves , &mut left_captures_bitboard, left_capture_mask, push_direction, pins); 
         moves
     }
 
@@ -574,37 +842,53 @@ impl Board {
 
     }
 
-    fn get_push_moves(&self,moves : &mut Vec<(u8, u8)> , push_bitboard  : & mut u64 ,  steps : i32 , push_direction : i32 ,pins :&Vec<u8>) {
-        let promotion_rank:u64 = match push_direction {
-            1 => 0x00000000000000FF, // black, so promotion is 1st rank
-            _ => 0xFF00000000000000, // -1 is white so promotion is 8th rank
-        };
+    fn get_push_moves(&self, moves: &mut Vec<Move>, push_bitboard: &mut u64, push_direction: i32, pins: &Vec<u8>, promotion_rank: u64) {
         while *push_bitboard != 0
         {
-            let end_square = push_bitboard.trailing_zeros() as i32 ; 
-            let start_square = end_square + (steps*8*push_direction); 
+            let end_square = push_bitboard.trailing_zeros() as i32; 
+            let start_square = end_square + (8*push_direction); 
             let curr_rank: u64 = Bitboards::rank_mask_to_end(end_square as u8);
             let valid_position = *push_bitboard & (!*push_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
-            //promotion
-            if legal_position != 0 && curr_rank == promotion_rank {
-                moves.push((start_square as u8 , end_square as u8));            
-                moves.push((start_square as u8 , end_square as u8));            
-                moves.push((start_square as u8 , end_square as u8));            
-                moves.push((start_square as u8 , end_square as u8));
+            
+            if legal_position != 0 {
+                //promotion
+                if curr_rank == promotion_rank {
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::QUEEN_PROMOTION));            
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::KNIGHT_PROMOTION));            
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::ROOK_PROMOTION));            
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::BISHOP_PROMOTION));            
+
+                }else {
+                    moves.push(Move::encode(start_square as u8, end_square as u8, 0));            
+                }
             }
-            else if legal_position!=0 {
-                moves.push((start_square as u8 , end_square as u8));            
-            }
+
             *push_bitboard &= *push_bitboard - 1;
         }
     }
 
-    fn get_capture_moves(&self,moves : &mut Vec<(u8, u8)> , capture_bitboard : &mut u64 , capture_mask : i32 , push_direction : i32, pins :&Vec<u8>) {
-        let promotion_rank:u64 = match push_direction {
+    fn get_double_push_moves(&self, moves: &mut Vec<Move>, push_bitboard: &mut u64, push_direction: i32, pins: &Vec<u8>) {
+        while *push_bitboard != 0 {
+            let end_square = push_bitboard.trailing_zeros() as i32; 
+            let start_square = end_square + (2*8*push_direction); 
+            let valid_position = *push_bitboard & (!*push_bitboard + 1); 
+            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+            
+            if legal_position != 0 {
+                moves.push(Move::encode(start_square as u8, end_square as u8, Move::DOUBLE_PAWN_PUSH));            
+            }
+
+            *push_bitboard &= *push_bitboard - 1;
+        }
+    }
+
+    fn get_capture_moves(&mut self, moves: &mut Vec<Move>, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32, pins: &Vec<u8>) {
+        let promotion_rank = match push_direction {
             1 => 0x00000000000000FF, // black, so promotion is 1st rank
             _ => 0xFF00000000000000, // -1 is white so promotion is 8th rank
         };
+
         while *capture_bitboard != 0 {
             let end_square = capture_bitboard.trailing_zeros() as i32;
             let start_square = end_square + (capture_mask*push_direction);
@@ -612,55 +896,63 @@ impl Board {
             let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
             let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
             //promotion with capture
-            if legal_position != 0 && curr_rank == promotion_rank {
-                moves.push((start_square as u8 , end_square as u8));            
-                moves.push((start_square as u8 , end_square as u8));            
-                moves.push((start_square as u8 , end_square as u8));            
-                moves.push((start_square as u8 , end_square as u8));            
-            }
-            else if legal_position!=0 {
-                moves.push((start_square as u8 , end_square as u8));            
+            if legal_position != 0 {
+                //promotion
+                if curr_rank == promotion_rank {
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::QUEEN_PROMO_CAPTURE));            
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::KNIGHT_PROMO_CAPTURE));            
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::ROOK_PROMO_CAPTURE));            
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::BISHOP_PROMO_CAPTURE));            
+
+                }else {
+                    moves.push(Move::encode(start_square as u8, end_square as u8, Move::CAPTURE));            
+                }
             }
             *capture_bitboard &= *capture_bitboard - 1;
         }
     }
     
-    fn get_en_passant_moves(moves: &mut Vec<(u8, u8)>, capture_bitboard : &mut u64, end_square: u8) {
-        while *capture_bitboard != 0 {
-            let start_square = capture_bitboard.trailing_zeros() as u8;
+    fn get_en_passant_moves(&mut self, moves: &mut Vec<Move>, en_passant_capture: Square, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32, pins: &Vec<u8>) {
+        
+        // en passant handling
+        let en_passant_position = 1 << en_passant_capture as u8;
 
-            moves.push((start_square, end_square));
-
-            *capture_bitboard &= *capture_bitboard - 1;
-        }
-    }
-
-    pub fn check_en_passant(&mut self, moves: &mut Vec<(u8,u8)>){
-        if let Some(last_move) = self.move_log.last() {
-            let (pawn_bitboard, start_rank, end_rank) = match self.turn {
-                Turn::White => (self.bitboards.black_pawns, Rank::Seventh, Rank::Fifth),
-                Turn::Black => (self.bitboards.white_pawns, Rank::Second, Rank::Forth)
-            };
+        if en_passant_position & *capture_bitboard != 0 {
+            let start_square = en_passant_capture as i32 + (capture_mask*push_direction);
             
-            if (1 << last_move.1) & pawn_bitboard != 0 {
-                if Square::from(last_move.0).rank() == start_rank && Square::from(last_move.1).rank() == end_rank {
-                    let east_bitboard = Bitboards::move_east(1 << last_move.1);
-                    let west_bitboard = Bitboards::move_west(1 << last_move.1);
-                    let (pawns, end_square) = match self.turn {
-                        Turn::White => (self.bitboards.white_pawns, last_move.1 + 8),
-                        Turn::Black => (self.bitboards.black_pawns, last_move.1 - 8)
-                    };
-                    let mut ep_captures = pawns & (east_bitboard | west_bitboard);
-                    
-                    Self::get_en_passant_moves(moves, &mut ep_captures, end_square);
+            let en_passant_move = Move::encode(start_square as u8, en_passant_capture as u8, Move::EP_CAPTURE); 
 
-                    self.is_en_passant = true
+            let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
+            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+            
+            if legal_position != 0 {
+                self.make_move(en_passant_move);
+                
+                self.turn = match self.turn {
+                    Turn::Black => Turn::White,
+                    Turn::White => Turn::Black,
+                };
+                
+                let king_bitboard = match self.turn {
+                    Turn::White => self.bitboards.white_king,
+                    Turn::Black => self.bitboards.black_king,
+                };
+                
+                if king_bitboard & self.get_attacked_squares() == 0 {
+                    moves.push(en_passant_move);
                 }
+
+                self.turn = match self.turn {
+                    Turn::Black => Turn::White,
+                    Turn::White => Turn::Black,
+                };
+                
+                self.undo_move();
             }
         }
     }
 
-    pub fn knight_moves(&self ,pins :&Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
+    pub fn knight_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
 
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -676,12 +968,12 @@ impl Board {
         moves 
     }
 
-    fn get_knight_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
+    fn get_knight_moves(&self, moves: &mut Vec<Move>, piece_position: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
         let mut valid_bitboard = self.get_knight_attacked_squares(piece_position);
         valid_bitboard &= !ally_bitboard;
         let start_square = piece_position.trailing_zeros() as u8;
-        let mut legal_bitboard = Self::get_legal_bitboard(self ,&start_square ,pins , &valid_bitboard) & check_bitboard;
-        Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
+        let mut legal_bitboard = Self::get_legal_bitboard(self, &start_square, pins, &valid_bitboard) & check_bitboard;
+        Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
     
     fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
@@ -702,8 +994,8 @@ impl Board {
         valid_bitboard
     }
     
-    pub fn bishop_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
-        let mut moves : Vec<(u8 ,u8)> = Vec::new();
+    pub fn bishop_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
+        let mut moves= Vec::new();
     
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -721,7 +1013,7 @@ impl Board {
         return moves;
     }
 
-    fn get_bishop_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, enemy_bitboard: u64, ally_bitboard: u64 , pins: &Vec<u8>, check_bitboard: u64) {
+    fn get_bishop_moves(&self, moves: &mut Vec<Move>, piece_position: u64, enemy_bitboard: u64, ally_bitboard: u64 , pins: &Vec<u8>, check_bitboard: u64) {
         let start_square = piece_position.trailing_zeros() as u8;
         let bishop_mask = Bitboards::bishop_mask_ex(start_square);
         let all_pieces = enemy_bitboard | ally_bitboard;
@@ -733,7 +1025,7 @@ impl Board {
         valid_bitboard &= !ally_bitboard;
         let mut legal_bitboard = Self::get_legal_bitboard(self, &start_square, pins, &valid_bitboard) & check_bitboard;
 
-        Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
+        Self::construct_moves_squares(&self, moves, start_square, &mut legal_bitboard); 
     }
     
     fn get_bishop_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
@@ -758,8 +1050,8 @@ impl Board {
         moves_bitboard       
     }
     
-    pub fn rook_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
-        let mut moves : Vec<(u8 ,u8)> = Vec::new();
+    pub fn rook_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
+        let mut moves = Vec::new();
     
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -776,7 +1068,7 @@ impl Board {
         return  moves;
     }
 
-    fn get_rook_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64 ,enemy_bitboard: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
+    fn get_rook_moves(&self, moves: &mut Vec<Move>, piece_position: u64 ,enemy_bitboard: u64, ally_bitboard: u64, pins: &Vec<u8>, check_bitboard: u64) {
         let start_square = piece_position.trailing_zeros() as u8;
         let rook_mask = Bitboards::rook_mask_ex(start_square);
         let all_pieces = enemy_bitboard | ally_bitboard;
@@ -787,7 +1079,7 @@ impl Board {
         valid_bitboard &= !ally_bitboard;
 
         let mut legal_bitboard = Self::get_legal_bitboard(self, &start_square, pins, &valid_bitboard) & check_bitboard;
-        Self::construct_moves_squares(moves, start_square, &mut legal_bitboard); 
+        Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
 
     fn get_rook_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
@@ -813,8 +1105,8 @@ impl Board {
         moves_bitboard       
     }
 
-    pub fn queen_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<(u8, u8)> {
-        let mut moves : Vec<(u8 ,u8)> = Vec::new();
+    pub fn queen_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
+        let mut moves = Vec::new();
     
         let enemy_bitboard= self.bitboards.get_enemy_pieces(self.turn);
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
@@ -862,16 +1154,17 @@ impl Board {
         }
         panic!("Impossible")
     }
-    fn get_legal_bitboard(&self , start_square: &u8 , pins: &Vec<u8> ,valid_bitboard : &u64)->u64{
+    fn get_legal_bitboard(&self, start_square: &u8, pins: &Vec<u8>, valid_bitboard: &u64) -> u64 {
         let mut legal_bitboard = *valid_bitboard;
         let king_square = match self.turn {
             Turn::White=> self.bitboards.white_king.trailing_zeros() as u8,
             Turn::Black=> self.bitboards.black_king.trailing_zeros() as u8
         };
-        if Self::is_pined_square(&start_square , pins) {
-            let direction_mask = Self::get_direction_mask_ex_using(&start_square , &king_square);
+        if Self::is_pined_square(&start_square, pins) {
+            let direction_mask = Self::get_direction_mask_ex_using(&start_square, &king_square);
             legal_bitboard &= direction_mask;
         }
+
         return legal_bitboard;
     }
     // get the bit board of valid positions that the piece can move to (in specific direction)
@@ -885,25 +1178,27 @@ impl Board {
             bitboard |= next_position;               // Add the current square to the list of possible positions
             next_position = move_fn(next_position);   // Keep moving in the same direction
         }
-        if next_position&enemy_bitboard != 0 {   // If the next square is occupied by an enemy piece, add it to the list of possible positions
+        if next_position & enemy_bitboard != 0 {   // If the next square is occupied by an enemy piece, add it to the list of possible positions
             bitboard |= next_position;
         }
         bitboard
     }
     
-    pub fn king_moves(&self) -> Vec<(u8, u8)> {
-        let mut moves: Vec<(u8, u8)> = Vec::new();
+    pub fn king_moves(&self) -> Vec<Move> {
+        let mut moves = Vec::new();
         let ally_bitboard = self.bitboards.get_ally_pieces(self.turn);
+
         let piece_bitboard = match self.turn { 
             Turn::White => self.bitboards.white_king,
             Turn::Black => self.bitboards.black_king,
         };
+
         Self::get_king_moves(self, &mut moves, piece_bitboard, ally_bitboard);
         Self::get_castling_moves(self ,&mut moves ,&piece_bitboard);    
         moves
     }
 
-    fn get_king_moves(&self, moves: &mut Vec<(u8,u8)>, piece_position: u64, ally_bitboard: u64){
+    fn get_king_moves(&self, moves: &mut Vec<Move>, piece_position: u64, ally_bitboard: u64){
         let mut king_bitboard= piece_position;
         
         let mut valid_bitboard = Bitboards::move_east(king_bitboard) | Bitboards::move_west(king_bitboard);
@@ -914,36 +1209,40 @@ impl Board {
         valid_bitboard &= !self.get_attacked_squares();
 
         let start_square = piece_position.trailing_zeros() as u8;
-        Self::construct_moves_squares(moves, start_square, &mut valid_bitboard);
+        Self::construct_moves_squares(self, moves, start_square, &mut valid_bitboard);
     }
 
-    pub fn get_castling_moves(&self, moves : &mut Vec<(u8,u8)> , king_position: &u64) {
+    pub fn get_castling_moves(&self, moves : &mut Vec<Move> , king_position: &u64) {
         let occupied_bitboard = self.bitboards.get_ally_pieces(self.turn) | self.bitboards.get_enemy_pieces(self.turn);
-        if self.castling_rights.check_king_side(self.turn){ //  true :  will be changes after the castling rights is done 
-            Self::get_king_side_move(moves ,&king_position , &occupied_bitboard);
+
+        if self.castling_rights.check_king_side(self.turn){ 
+            Self::get_king_side_move(self, moves, &king_position, &occupied_bitboard);
         }
+
         if self.castling_rights.check_queen_side(self.turn){
-            Self::get_queen_side_move(moves ,&king_position , &occupied_bitboard);
+            Self::get_queen_side_move(self, moves, &king_position, &occupied_bitboard);
         }
     }
 
-    fn get_king_side_move(moves : &mut Vec<(u8,u8)>, king_position : &u64 , occupied_bitboard: &u64){
+    fn get_king_side_move(&self, moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
         let square_between = king_position <<1 | king_position << 2;
+        let castling_squares = (king_position | square_between) & self.get_attacked_squares();
         let can_castle = square_between & occupied_bitboard == 0;
 
-        if can_castle {
+        if can_castle && castling_squares == 0{
             let start_square = king_position.trailing_zeros() as u8;
-            moves.push((start_square, start_square + 2));
+            moves.push(Move::encode(start_square, start_square + 2, Move::KING_CASTLE));
         }
     }
 
-    fn get_queen_side_move(moves : &mut Vec<(u8,u8)>, king_position : &u64 , occupied_bitboard: &u64){
-        let square_between = king_position >>1 | king_position >> 2 | king_position >> 3;
+    fn get_queen_side_move(&self, moves: &mut Vec<Move>, king_position: &u64, occupied_bitboard: &u64) {
+        let square_between = king_position >> 1 | king_position >> 2 | king_position >> 3;
+        let castling_squares = (king_position >> 1 | king_position >> 2 | king_position) & self.get_attacked_squares();
         let can_castle = square_between & occupied_bitboard == 0;
 
-        if can_castle {
+        if can_castle && castling_squares == 0{
             let start_square = king_position.trailing_zeros() as u8;
-            moves.push((start_square, start_square - 2));
+            moves.push(Move::encode(start_square, start_square - 2, Move::QUEEN_CASTLE));
         }
     }
     
@@ -966,26 +1265,33 @@ impl Board {
     fn get_piece_positions_from(piece_bitboard: &u64) -> Vec<u64> {
         let mut bitboard  =  *piece_bitboard; 
         let mut positions = Vec::new();
+
         while bitboard != 0 {
             let position = bitboard & (!bitboard + 1); 
             positions.push(position);
             bitboard &= bitboard - 1;
         }
+
         positions
     }
     
-    fn construct_moves_squares(moves : &mut Vec<(u8,u8)>  , start_square : u8 , valid_bitboard : &mut u64){
+    fn construct_moves_squares(&self, moves: &mut Vec<Move>, start_square: u8, valid_bitboard: &mut u64) {
+        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn);
+
         while *valid_bitboard != 0 {
             let end_squares = valid_bitboard.trailing_zeros() as u8;
-            moves.push((start_square  , end_squares));        
+            let end_bitboard = 1 << end_squares;
+            let flag = match end_bitboard & enemy_bitboard {
+                0 => 0,
+                _ => Move::CAPTURE,
+            };
+
+            moves.push(Move::encode(start_square, end_squares, flag));        
             *valid_bitboard &= *valid_bitboard - 1;
         }
     }
 
     pub fn print_board(&mut self) {
-        let(checks , pins)  = Self::checks_and_pins(self);
-        println!("pins : {:?}" , pins);
-        println!("checks : {:?}" , checks);
         println!("\nWhite:♚ - Black:♔\n");
 
         for rank in (0..8).rev() {
@@ -1043,10 +1349,13 @@ impl Board {
             Turn::Black => println!("\nTurn: Black",),
         };
         
-        println!("\nPossible moves:");
-        for (start, end) in self.generate_legal_moves() {
-            print!("({}, {}) ", Square::from(start), Square::from(end));
-        }
+        // println!("\nPossible moves:");
+        // let x  = self.generate_legal_moves();
+        // println!("x = {}" , x.len());
+        // for _move in self.generate_legal_moves() {
+        //     print!("({}, {}) ", Square::from(_move.get_from()), Square::from(_move.get_to()));
+        // }
+        // println!("\n");
     }
 }
 
