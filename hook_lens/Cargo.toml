@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+burn = { version = "0.14.0", features = ["train", "wgpu", "vision"] }
+serde = "*"
+image = "*"
