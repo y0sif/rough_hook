@@ -1,7 +1,6 @@
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::u64;
 use std::collections::HashMap;
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
 use crate::board::Turn;
 pub struct Bitboards{
     pub white_pawns: u64,
@@ -221,14 +220,14 @@ impl Bitboards {
         0x0080808080808080 >> (square ^ 63)
     }
     
-    pub fn rank_mask(square: u8) -> u64 {
-        0x7E << (square & 56)
-    }
-
     pub fn rank_mask_to_end(square: u8) -> u64 {
         0xFF << ((square / 8) * 8)
     }
-    
+
+    pub fn rank_mask(square: u8) -> u64 {
+        0x7E  << (square & 56)
+    }
+
     pub fn file_mask(square: u8) -> u64 {
         0x0001010101010100  << (square & 7)
     }

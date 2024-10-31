@@ -95,8 +95,6 @@ impl Board {
             }
         };
         
-        // add fifty move rule later
-
         Board {
             bitboards: Bitboards::from_fen(fen_vec[0]),
             turn,
@@ -271,7 +269,6 @@ impl Board {
                 }
                 self.half_move_clock +=1;
                 self.turn = Turn::White;
-                
             }
         }
 
@@ -1048,7 +1045,6 @@ impl Board {
             let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
 
             moves_bitboard |= self.bishop_attacks[start_square as usize][key as usize];
-            
         }
         
         moves_bitboard       
@@ -1362,3 +1358,4 @@ impl Board {
         // println!("\n");
     }
 }
+
