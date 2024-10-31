@@ -7,3 +7,4 @@ edition = "2021"
 burn = { version = "0.14.0", features = ["train", "wgpu", "vision"] }
 serde = "*"
 image = "*"
+imageproc = "*"
