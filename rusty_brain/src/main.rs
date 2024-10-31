@@ -1,11 +1,19 @@
-use rusty_brain::board::{self, Board};
+use rusty_brain::{bitboards::{self, Bitboards}, board::{self, Board}};
 
 fn main() {
-    println!("Core Engine");
-    
-    let mut board = Board::from_fen("8/8/3p4/1Pp4r/1K5k/5p2/4P1P1/1R6 w - c6 0 1".to_string());
+    // println!("Core Engine");
+     let mut board = Board::from_fen("8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 0".to_string());
     board.print_board();
-    for m in board.generate_legal_moves() {
+    let moves = board.generate_legal_moves();
+    for m in &moves {
         println!("move {}", m);
     }
+    board.make_move(moves[2]);
+    
+    board.print_board();
+    let moves = board.generate_legal_moves();
+    for m in &moves {
+        println!("move {}", m);
+    }
+    
 }
