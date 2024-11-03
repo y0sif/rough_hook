@@ -4,5 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-hook_lens = { path = "../hook_lens" }
 rough_guard = { path = "../rough_guard" }
