@@ -1,92 +1,110 @@
 use std::f32::consts::PI;
-use std::f32::EPSILON;
-
-use burn::prelude::Backend;
+// use burn::prelude::Backend;
 use image::{DynamicImage, Rgb};
 use imageproc::edges::canny;
-use imageproc::hough::{self, LineDetectionOptions, PolarLine};
+use imageproc::hough::{self, LineDetectionOptions};
 
 pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: DynamicImage) {
     
     // apply canny edge
     let luma_board = board.to_luma8();
-    let low_threshold = 1.0;
-    let high_threshold = 50.0;
+    let low_threshold = 44.0;
+    let high_threshold = 55.0;
     let canny_board = canny(&luma_board, low_threshold, high_threshold);
-    canny_board.save("hook_lens\\canny_board.png");
+    canny_board.save("hook_lens\\canny_board.png").unwrap();
 
     // apply hough line detection
     let options = LineDetectionOptions {
         vote_threshold: 120,
         suppression_radius: 8,
     };
-    let mut polar_lines = hough::detect_lines(&canny_board, options);
-    let mut polar_lines2  : Vec<PolarLine> = Vec::new();
 
-    let mut horizontal_lines : Vec<PolarLine> = Vec::new();
-    let mut vertical_lines  :  Vec<PolarLine> = Vec::new();
-    for line in &polar_lines { 
-        // in this part of code we  must separate the polar lines to horizontals and vertical 
-        // to pass it to the function that create intersection points
+    let polar_lines = hough::detect_lines(&canny_board, options);
+    let mut vert_lines = Vec::new();
+    let mut hor_lines = Vec::new();
 
-        // the logic is not correct  so correct this part
-        println!("r = {} , angle = {}" , line.r , line.angle_in_degrees);
-        if line.angle_in_degrees >100 && line.angle_in_degrees < 130  { 
-            horizontal_lines.push(*line);
-        }
-        else if line.angle_in_degrees < 77 {
-            vertical_lines.push(*line);
+    for line in &polar_lines {
+        if (line.angle_in_degrees < 15) || (line.angle_in_degrees > 165) {
+            println!("vertical lines");
+            println!("angle = {}", line.angle_in_degrees);
+            println!("r = {}", line.r);
+            vert_lines.push(line.clone());
+        }else if (line.angle_in_degrees < 105) && (line.angle_in_degrees > 75) {
+            println!("horizontal lines");
+            println!("angle = {}", line.angle_in_degrees);
+            println!("r = {}", line.r);
+            hor_lines.push(line.clone());
         }
     }
+    
+    println!("horizontal distance");
+    let mut h = Vec::new();
+    for i in 0..hor_lines.len() -1 {
+        let r1 = hor_lines[i].r;
+        let r2 = hor_lines[i+1].r;
+        let theta1 = hor_lines[i].angle_in_degrees as f32 * PI/180.0;
+        let theta2 = hor_lines[i].angle_in_degrees as f32 * PI/180.0;
+
+        let distance = f32::sqrt(r1.powi(2) + r2.powi(2) - 2.0 * r1 * r2 * f32::cos(theta1 - theta2)); 
+        if distance > 50.0 && distance < 60.0 {
+            h.push(i+1);
+        }
+        println!("distance = {}", distance);
+    }
+    
+    for i in h {
+        hor_lines.remove(i);
+    }
+    
+    println!("vertical distance");
+    let mut v = Vec::new();
+    for i in 0..vert_lines.len() -1 {
+        let r1 = vert_lines[i].r;
+        let r2 = vert_lines[i+1].r;
+        let theta1 = vert_lines[i].angle_in_degrees as f32 * PI/180.0;
+        let theta2 = vert_lines[i].angle_in_degrees as f32 * PI/180.0;
+
+        let distance = f32::sqrt(r1.powi(2) + r2.powi(2) - 2.0 * r1 * r2 * f32::cos(theta1 - theta2)); 
+        if distance > 50.0 && distance < 60.0 {
+            v.push(i+1);
+        }
+        println!("distance = {}", distance);
+    }
+
+    for i in v {
+        vert_lines.remove(i);
+    }
+    
+    // calc intersections 
+    for vert in &vert_lines {
+        for hor in &hor_lines {
+            let r1 = vert.r;
+            let theta1 = vert.angle_in_degrees as f32 * PI/180.0;
+            let r2 = hor.r;
+            let theta2 = hor.angle_in_degrees as f32 * PI/180.0;
+
+            let x1 = r1 * f32::cos(theta1);
+            let y1 = r1 * f32::sin(theta1);
+
+            let x2 = r2 * f32::cos(theta2);
+            let y2 = r2 * f32::sin(theta2);
+            
+            let c1 = r1 * (f32::cos(theta1) - f32::sin(theta1));
+            let c2 = r2 * (f32::cos(theta2) - f32::sin(theta2));
+            
+            let slope1 = y1 / x1;
+            let slope2 = y2 / x2;
+            
+        }
+    }
+
+    let hor_hough = hough::draw_polar_lines(&board.to_rgb8(), &hor_lines, Rgb([255, 0, 0]));
+    hor_hough.save("hook_lens\\hor_hough.png").unwrap();
+
+    let vert_hough = hough::draw_polar_lines(&board.to_rgb8(), &vert_lines, Rgb([255, 0, 0]));
+    vert_hough.save("hook_lens\\vert_hough.png").unwrap();
+
     let hough_board = hough::draw_polar_lines(&board.to_rgb8(), &polar_lines, Rgb([255, 0, 0]));
-    hough_board.save("hook_lens\\hough_board.png");
+    hough_board.save("hook_lens\\hough_board.png").unwrap();
     
-    let intersections = find_intersections(&horizontal_lines, &vertical_lines);
-    println!("len = {}" , intersections.len());
-    // // split image to 64 square images so it can be passed to CNN
-    // for i in 0..64 {
-
-
-    // }
-    
-
-
-}
-struct Point {
-    x: f32,
-    y: f32,
-}
-// Calculate intersection between two lines in polar coordinates
-fn calculate_intersection(line1: PolarLine, line2: PolarLine) -> Option<Point> {
-    let theta1 = (line1.angle_in_degrees as f32) * PI / 180.0;
-    let theta2 = (line2.angle_in_degrees as f32) * PI / 180.0;
-
-    let sin1 = theta1.sin();
-    let cos1 = theta1.cos();
-    let sin2 = theta2.sin();
-    let cos2 = theta2.cos();
-
-    let determinant = cos1 * sin2 - sin1 * cos2;
-
-    if determinant.abs() < EPSILON {
-        // Lines are parallel
-        return None;
-    }
-
-    let x = (line2.r * sin1 - line1.r * sin2) / determinant;
-    let y = (line1.r * cos2 - line2.r * cos1) / determinant;
-    Some(Point { x, y })
-}
-// Find intersections for horizontal and vertical lines
-fn find_intersections(horizontal_lines: &Vec<PolarLine>, vertical_lines: &Vec<PolarLine>) -> Vec<Point> {
-    let mut intersections = Vec::new();
-
-    for &h_line in horizontal_lines {
-        for &v_line in vertical_lines {
-            if let Some(intersection) = calculate_intersection(h_line, v_line) {
-                intersections.push(intersection);
-            }
-        }
-    }
-    intersections
 }
