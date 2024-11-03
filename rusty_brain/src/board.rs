@@ -291,6 +291,173 @@ impl Board {
             }
         }
     }
+    pub fn get_en_passant_check(&self ,king_position: &u64, pawn_position1: &u64 , pawn_position2:&u64 , en_passant_position : u64)->bool{
+        let mut mask:u64 =0;
+        let king_square = king_position.trailing_zeros() as u8;
+        let pawn_sqaure = pawn_position1.trailing_zeros() as u8;
+        let mut pawns_to_remove = 0;
+        let mut dangerous_bitboard :u64 = 0;
+        if Bitboards::same_rank(king_square, pawn_sqaure){
+            match self.turn {
+                Turn::White=>dangerous_bitboard = self.bitboards.black_rooks | self.bitboards.black_queens,
+                Turn::Black=>dangerous_bitboard = self.bitboards.white_rooks | self.bitboards.white_queens,
+            } 
+            mask = Bitboards::rank_mask_to_end(king_square as u8);
+            pawns_to_remove = pawn_position1 | pawn_position2;
+        }
+        else if Bitboards::same_file(king_square, pawn_sqaure){
+            match self.turn {
+                Turn::White=>dangerous_bitboard = self.bitboards.black_rooks | self.bitboards.black_queens,
+                Turn::Black=>dangerous_bitboard = self.bitboards.white_rooks | self.bitboards.white_queens,
+            } 
+            mask = Bitboards::file_mask_to_end(king_square as u8);
+            pawns_to_remove = *pawn_position1;
+        } 
+        else if Bitboards::same_diagonal(king_square, pawn_sqaure){
+            match self.turn {
+                Turn::White=>{
+                    if pawn_position1 < pawn_position2{
+                        return false;
+                    }
+                    dangerous_bitboard = self.bitboards.black_bishops | self.bitboards.black_queens
+                },
+                Turn::Black=>{
+                    if pawn_position1 > pawn_position2{
+                        return false;
+                    }
+                    dangerous_bitboard = self.bitboards.white_bishops | self.bitboards.white_queens
+                }
+            } 
+            mask = Bitboards::diagonal_mask(king_square as u8);
+            pawns_to_remove = *pawn_position1;
+        }
+        else if Bitboards::same_anti_diagonal(king_square, pawn_sqaure){
+            
+            match self.turn {
+                Turn::White=>{
+                    if pawn_position1 > pawn_position2  {
+                        return false;
+                    }
+                    dangerous_bitboard = self.bitboards.black_bishops | self.bitboards.black_queens
+                },
+                Turn::Black=>{
+                    if pawn_position1 < pawn_position2  {
+                        return false;
+                    }
+                    dangerous_bitboard = self.bitboards.white_bishops | self.bitboards.white_queens
+                }
+            } 
+            mask = Bitboards::anti_diagonal_mask(king_square as u8);
+            pawns_to_remove = *pawn_position1;
+
+        }
+        let all_pieces_on_rank = (self.bitboards.get_ally_pieces(self.turn) |self.bitboards.get_enemy_pieces(self.turn)) & mask;
+        let queen_and_rook_bitboard_on_rank:u64 =  mask & dangerous_bitboard;
+        let flag =  pawn_sqaure < king_square;
+        if queen_and_rook_bitboard_on_rank == 0 {
+            return false;
+        }
+        let related_position ;
+            if flag{
+                related_position= Bitboards::get_lsb(&queen_and_rook_bitboard_on_rank);
+            }
+            else {
+                related_position= Bitboards::get_msp(&queen_and_rook_bitboard_on_rank);
+            }
+            
+            if (flag ==true && related_position > king_square ) // for example king is in 20 and queen in 22
+            || (flag == false && related_position < king_square) { // for example  knig in 22 and queen in 20
+                return false;
+            }
+        
+        
+        if flag == false {
+            let all_pieces_mask_right =Bitboards::get_right_mask(all_pieces_on_rank, king_square);
+            let pieces_right_king = all_pieces_on_rank & all_pieces_mask_right &!king_position;
+
+           
+            let rook_queen_mask_right =  Bitboards::get_right_mask(dangerous_bitboard, king_square);
+            let queen_rook_bitboard_right_of_king = queen_and_rook_bitboard_on_rank&rook_queen_mask_right;
+            let closest_index = Bitboards::get_lsb(&queen_rook_bitboard_right_of_king);
+
+            let all_pieces_mask_left = Bitboards::get_left_mask(closest_index);
+            let pieces_left_closest_index = all_pieces_on_rank &all_pieces_mask_left;
+
+            let closest_position = 1<<closest_index;
+            
+            let pieces_between = pieces_right_king & pieces_left_closest_index &!king_position&!closest_position;
+            let pieces_between_without_pawns = pieces_between &!pawns_to_remove;
+            if pieces_between_without_pawns == 0 {
+                return true;
+            }
+            else {
+                return false;
+            }
+
+        }
+        if flag {
+            let all_pieces_mask_left =Bitboards::get_left_mask(king_square);
+            let pieces_left_king = all_pieces_on_rank & all_pieces_mask_left &!king_position;
+
+            let rook_queen_mask_left =  Bitboards::get_left_mask(king_square);
+            let queen_rook_bitboard_left_of_king = queen_and_rook_bitboard_on_rank&rook_queen_mask_left;
+            let closest_index = Bitboards::get_msp(&queen_rook_bitboard_left_of_king);
+
+            let all_pieces_mask_right = Bitboards::get_right_mask(all_pieces_on_rank , closest_index);
+            let pieces_right_closest_index = all_pieces_on_rank &all_pieces_mask_right;
+            let closest_position = 1<<closest_index;
+
+            let pieces_between = pieces_left_king & pieces_right_closest_index &!king_position&!closest_position;
+            let pieces_between_without_pawns = pieces_between &!pawns_to_remove;
+            
+            if pieces_between_without_pawns == 0 {
+                return true;
+            }
+            else {
+                return false;
+            }
+            
+        }
+     
+        // if Bitboards::same_rank(king_square, pawn_sqaure){
+        //     println!("king position = {}" , king_position);
+        //     mask = Bitboards::rank_mask_to_end(king_square as u8);
+        //     let queen_and_rook_bitboard_on_rank:u64 =  mask & rook_queen_bitboard;
+        //     println!("{:b}" ,mask);
+        //     println!("{:b}" ,rook_queen_bitboard);
+        //     println!("{:b}" , queen_and_rook_bitboard_on_rank);
+     
+        //     let related_position ;
+        //     if flag{
+        //         related_position= Bitboards::get_lsb(&rook_queen_bitboard);
+        //     }
+        //     else {
+        //         related_position= Bitboards::get_msp(&rook_queen_bitboard);
+        //     }
+        //     if queen_and_rook_bitboard_on_rank == 0 
+        //     || (flag ==true && related_position > king_square ) // for example king is in 20 and queen in 22
+        //     || (flag == false && related_position < king_square) { // for example  knig in 22 and queen in 20
+        //         return false;
+        //     }
+        //     let all_pieces_on_rank = (self.bitboards.get_ally_pieces(self.turn) |self.bitboards.get_enemy_pieces(self.turn)) & mask;
+
+        //     let pieces_after_removal = all_pieces_on_rank & !queen_and_rook_bitboard_on_rank&!pawn_position1&!pawn_position2;
+
+        //     let res;
+        //     if flag{
+        //         res = Bitboards::get_lsb(&pieces_after_removal);
+        //     }else {
+        //         res = Bitboards::get_msp(&pieces_after_removal);
+        //     }
+        //     if res == king_square {
+        //         return true;
+        //     }
+        //     else {
+        //         return false
+        //     }
+        // }
+        return false;
+    }
     
     fn make_capture(&mut self, move_to_make: &Move) {
         let square_captured = 1 << move_to_make.get_to();
@@ -811,8 +978,8 @@ impl Board {
         Self::get_double_push_moves(self, &mut moves, &mut double_push_bitboard, push_direction, pins); 
 
         if let Some(en_passant_capture) = self.en_passant_square {
-            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut right_captures_bitboard, right_capture_mask, push_direction, pins);
-            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut left_captures_bitboard, left_capture_mask, push_direction, pins);
+            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut right_captures_bitboard, right_capture_mask, push_direction, check_bitboard, pins);
+            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut left_captures_bitboard, left_capture_mask, push_direction, check_bitboard, pins);
         }
         
         right_captures_bitboard &= enemy_bitboard;
@@ -911,43 +1078,39 @@ impl Board {
             *capture_bitboard &= *capture_bitboard - 1;
         }
     }
-    
-    fn get_en_passant_moves(&mut self, moves: &mut Vec<Move>, en_passant_capture: Square, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32, pins: &Vec<u8>) {
-        
-        // en passant handling
-        let en_passant_position = 1 << en_passant_capture as u8;
 
+    fn get_en_passant_moves(&mut self, moves: &mut Vec<Move>, en_passant_capture: Square, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32, check_bitboard: u64, pins: &Vec<u8>) {
+        
+        let en_passant_position = 1 << en_passant_capture as u8;
+        
         if en_passant_position & *capture_bitboard != 0 {
             let start_square = en_passant_capture as i32 + (capture_mask*push_direction);
-            
-            let en_passant_move = Move::encode(start_square as u8, en_passant_capture as u8, Move::EP_CAPTURE); 
+            let king_position;
+            let ally_pawn_position;
+            let enemy_pawn_position;
+            let check_bitboard = match self.turn {
+                Turn::White=>{
+                    king_position = self.bitboards.white_king;
+                    ally_pawn_position =  1 << start_square;
+                    enemy_pawn_position = en_passant_position >> 8;
+                    check_bitboard << 8
+                }
+                Turn::Black=>{
+                    king_position = self.bitboards.black_king;
+                    ally_pawn_position =  1 << start_square;
+                    enemy_pawn_position = en_passant_position << 8;
+                    check_bitboard >> 8
+                }
+            };
 
-            let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
-            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
-            
+            let valid_position = en_passant_position & (!en_passant_position + 1); 
+            let legal_position = check_bitboard & Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+
             if legal_position != 0 {
-                self.make_move(en_passant_move);
-                
-                self.turn = match self.turn {
-                    Turn::Black => Turn::White,
-                    Turn::White => Turn::Black,
-                };
-                
-                let king_bitboard = match self.turn {
-                    Turn::White => self.bitboards.white_king,
-                    Turn::Black => self.bitboards.black_king,
-                };
-                
-                if king_bitboard & self.get_attacked_squares() == 0 {
+                if self.get_en_passant_check(&king_position, &ally_pawn_position, &enemy_pawn_position , en_passant_position) == false{
+                    let en_passant_move = Move::encode(start_square as u8, en_passant_capture as u8, Move::EP_CAPTURE); 
                     moves.push(en_passant_move);
                 }
-
-                self.turn = match self.turn {
-                    Turn::Black => Turn::White,
-                    Turn::White => Turn::Black,
-                };
-                
-                self.undo_move();
             }
         }
     }

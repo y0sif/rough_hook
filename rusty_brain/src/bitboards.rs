@@ -239,6 +239,9 @@ impl Bitboards {
     pub fn file_mask_to_end_ex(square: u8) -> u64 {
         (1 << square) ^ (0x0101010101010101 << (square & 7))
     }
+    pub fn file_mask_to_end(square: u8) -> u64 {
+         0x0101010101010101 << (square & 7)
+    }
     
     pub fn diagonal_mask(square: u8) -> u64 {
         let square = square as i32;
@@ -296,6 +299,39 @@ impl Bitboards {
     
     pub fn queen_mask_ex(square: u8) -> u64 {
         Bitboards::rook_mask(square) ^ Bitboards::bishop_mask(square)
+    }
+    pub fn same_rank(pos1: u8, pos2: u8) -> bool {
+        // Same rank if division by 8 gives the same result
+        pos1 / 8 == pos2 / 8
+    }
+    
+    pub fn same_file(pos1: u8, pos2: u8) -> bool {
+        // Same file if remainder when divided by 8 gives the same result
+        pos1 % 8 == pos2 % 8
+    }
+    
+    pub fn same_diagonal(pos1: u8, pos2: u8) -> bool {
+        // Same diagonal if (row - col) is the same
+        (pos1 / 8) as i8 - (pos1 % 8) as i8 == (pos2 / 8) as i8 - (pos2 % 8) as i8
+    }
+    
+    pub fn same_anti_diagonal(pos1: u8, pos2: u8) -> bool {
+        // Same anti-diagonal if (row + col) is the same
+        (pos1 / 8) as i8 + (pos1 % 8) as i8 == (pos2 / 8) as i8 + (pos2 % 8) as i8
+    }
+    pub fn get_lsb(number : &u64)->u8{
+        let lsb_index = number.trailing_zeros() as u8; // Counts zeros from the right
+        lsb_index
+    }
+    pub fn get_msp(number : &u64)->u8{
+        let msb_index = 63 - number.leading_zeros(); // Leading zeros from the left
+        return msb_index as u8;
+    }
+    pub fn get_right_mask(bitboard : u64 , square  :u8)->u64{
+        bitboard & !((1 << (square + 1)) - 1)
+    }
+    pub fn get_left_mask(sqaure : u8)->u64{
+        (1 << (sqaure + 1)) - 1
     }
 
 }
