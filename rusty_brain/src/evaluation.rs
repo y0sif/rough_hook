@@ -1,4 +1,4 @@
-use crate::board::{self, Board};
+use crate::board::{Board, Turn};
 
 impl Board {
     pub fn evaluate(&mut self) -> i32 {
@@ -17,6 +17,17 @@ impl Board {
         score -= (self.bitboards.black_bishops.count_ones() * 3) as i32;
         score -= (self.bitboards.black_rooks.count_ones() * 5) as i32;
         score -= (self.bitboards.black_queens.count_ones() * 9) as i32;
+
+        //checkmates and stalemates
+        if self.checkmate {
+            match self.turn {
+                Turn::White => score = i32::MIN,
+                Turn::Black => score = i32::MAX,
+            };
+        }
+        if self.draw || self.stalemate {
+            score = 0;
+        }
 
         score
     }

@@ -26,6 +26,7 @@ pub struct Board{
     pub capture_log: Vec<Piece>,
     pub castling_rights_log: Vec<CastlingRights>,
     pub en_passant_square: Option<Square>,
+    pub best_move: Option<Move>,
 }
 
 impl Board {
@@ -45,6 +46,7 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             en_passant_square: None,
+            best_move: None,
         }
     }
     
@@ -64,6 +66,7 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             en_passant_square: None,
+            best_move: None,
         }
     }
     
@@ -109,7 +112,8 @@ impl Board {
             half_move_clock: fen_vec[4].parse().unwrap(),
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
-            en_passant_square
+            en_passant_square,
+            best_move: None
         }
     }
     
