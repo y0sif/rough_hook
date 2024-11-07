@@ -938,7 +938,6 @@ impl Board {
             }
         }
         let king_square = king_position.trailing_zeros() as u8;
-
         let rank_mask = Bitboards::rank_mask_to_end(king_square);
         let file_mask = Bitboards::file_mask_to_end(king_square);
         let diagonal_mask = Bitboards::diagonal_mask(king_square);
@@ -1044,9 +1043,8 @@ impl Board {
             }
             else{
                 let between_mask = ((1u64 << (closest_index)) - 1) ^ ((1u64 <<king_square ) - 1);
-                check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
+                check_bitboard = (check_bitboard|between_mask) & mask & !king_position | closest_position;
             }
-            
             checks.push(check_bitboard);
             return;
         }else {
@@ -1084,9 +1082,8 @@ impl Board {
             }
             else{
                 let between_mask = ((1u64 << (closest_index)) - 1) ^ ((1u64 <<king_square ) - 1);
-                check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
+                check_bitboard = (check_bitboard|between_mask) & mask & !king_position|closest_position;
             }
-
             checks.push(check_bitboard);
             return;
         }

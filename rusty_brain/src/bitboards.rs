@@ -226,6 +226,7 @@ impl Bitboards {
     }
 
     pub fn rank_mask_to_end(square: u8) -> u64 {
+        println!("{}" ,square);
         0xFF << ((square / 8) * 8)
     }
     
