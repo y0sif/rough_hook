@@ -1168,8 +1168,8 @@ impl Board {
         Self::get_double_push_moves(self, &mut moves, &mut double_push_bitboard, push_direction, pins); 
 
         if let Some(en_passant_capture) = self.en_passant_square {
-            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut right_captures_bitboard, right_capture_mask, push_direction, pins);
-            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut left_captures_bitboard, left_capture_mask, push_direction, pins);
+            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut right_captures_bitboard, right_capture_mask, push_direction, check_bitboard, pins);
+            Self::get_en_passant_moves(self, &mut moves, en_passant_capture, &mut left_captures_bitboard, left_capture_mask, push_direction, check_bitboard, pins);
         }
         
         right_captures_bitboard &= enemy_bitboard;
@@ -1269,7 +1269,7 @@ impl Board {
         }
     }
 
-    fn get_en_passant_moves(&mut self, moves: &mut Vec<Move>, en_passant_capture: Square, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32, pins: &Vec<u8>) {
+    fn get_en_passant_moves(&mut self, moves: &mut Vec<Move>, en_passant_capture: Square, capture_bitboard: &mut u64, capture_mask: i32, push_direction: i32, check_bitboard: u64, pins: &Vec<u8>) {
         
         let en_passant_position = 1 << en_passant_capture as u8;
         
@@ -1278,21 +1278,23 @@ impl Board {
             let king_position;
             let ally_pawn_position;
             let enemy_pawn_position;
-            match self.turn {
+            let check_bitboard = match self.turn {
                 Turn::White=>{
                     king_position = self.bitboards.white_king;
                     ally_pawn_position =  1 << start_square;
                     enemy_pawn_position = en_passant_position >> 8;
+                    check_bitboard << 8
                 }
                 Turn::Black=>{
                     king_position = self.bitboards.black_king;
                     ally_pawn_position =  1 << start_square;
                     enemy_pawn_position = en_passant_position << 8;
+                    check_bitboard >> 8
                 }
-            }
+            };
 
-            let valid_position = *capture_bitboard & (!*capture_bitboard + 1); 
-            let legal_position = Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
+            let valid_position = en_passant_position & (!en_passant_position + 1); 
+            let legal_position = check_bitboard & Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
 
             if legal_position != 0 {
                 if self.get_en_passant_check(&king_position, &ally_pawn_position, &enemy_pawn_position , en_passant_position) == false{
