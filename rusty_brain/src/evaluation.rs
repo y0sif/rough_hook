@@ -19,6 +19,7 @@ impl Board {
         score -= (self.bitboards.black_queens.count_ones() * 9) as i32;
 
         //checkmates and stalemates
+        _ = self.generate_legal_moves(); //induce the legal moves check to have self.checkmate (or etc) set
         if self.checkmate {
             match self.turn {
                 Turn::White => score = i32::MIN,
