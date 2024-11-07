@@ -329,7 +329,7 @@ impl Bitboards {
         return msb_index as u8;
     }
     pub fn get_right_mask(bitboard : u64 , square  :u8)->u64{
-        bitboard & !((1 << (square + 1)) - 1)
+        bitboard & !((1 << (square)) - 1)
     }
     pub fn get_left_mask(sqaure : u8)->u64{
         (1 << (sqaure)) - 1

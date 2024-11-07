@@ -1036,22 +1036,24 @@ impl Board {
 
         if pieces_between == 0 {
             let mut check_bitboard = 0;
+            //println!("King sqaure = {} , Bishop sqaure = {}" , king_square , closest_index);
             if  closest_index < king_square
             {
-                let between_mask = ((1u64 << (king_square + 1)) - 1) ^ ((1u64 <<closest_index ) - 1);
+                let between_mask = ((1u64 << (king_square)) - 1) ^ ((1u64 <<closest_index ) - 1);
                 check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
             }
             else{
-                let between_mask = ((1u64 << (closest_index + 1)) - 1) ^ ((1u64 <<king_square ) - 1);
+                let between_mask = ((1u64 << (closest_index)) - 1) ^ ((1u64 <<king_square ) - 1);
                 check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
             }
-            //println!("Check bit board = {:b}" ,check_bitboard);
+            
             checks.push(check_bitboard);
             return;
         }else {
             let pin1 = Bitboards::get_lsb(&pieces_between);
             let pin2 = Bitboards::get_msp(&pieces_between);
             if (pin1 == pin2) && (1<<pin1 as u64 & ally_bitboard != 0) {
+               
                 pins.push(pin1);
             }
         }
@@ -1077,14 +1079,14 @@ impl Board {
             let mut check_bitboard = 0;
             if closest_index < king_square
             {
-                let between_mask = ((1u64 << (king_square + 1)) - 1) ^ ((1u64 <<closest_index ) - 1);
+                let between_mask = ((1u64 << (king_square)) - 1) ^ ((1u64 <<closest_index ) - 1);
                 check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
             }
             else{
-                let between_mask = ((1u64 << (closest_index + 1)) - 1) ^ ((1u64 <<king_square ) - 1);
+                let between_mask = ((1u64 << (closest_index)) - 1) ^ ((1u64 <<king_square ) - 1);
                 check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
             }
-            //println!("Check bit board = {:b}" ,check_bitboard);
+
             checks.push(check_bitboard);
             return;
         }
