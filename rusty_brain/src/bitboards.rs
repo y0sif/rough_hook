@@ -332,7 +332,7 @@ impl Bitboards {
         bitboard & !((1 << (square + 1)) - 1)
     }
     pub fn get_left_mask(sqaure : u8)->u64{
-        (1 << (sqaure + 1)) - 1
+        (1 << (sqaure)) - 1
     }
 
 }

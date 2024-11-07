@@ -1,5 +1,6 @@
 use core::panic;
 use std::collections::HashMap;
+use std::pin;
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
@@ -826,7 +827,7 @@ impl Board {
         moves
     }
     
-    pub fn checks_and_pins(&self) -> (Vec<u64>, Vec<u8>) {
+    pub fn checks_and_pins2(&self) -> (Vec<u64>, Vec<u8>) {
         let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard, pawn_bitboard) = match self.turn {
             Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights, self.bitboards.black_pawns),
             Turn::Black => (self.bitboards.black_king, self.bitboards.white_rooks, self.bitboards.white_bishops, self.bitboards.white_queens, self.bitboards.white_knights, self.bitboards.white_pawns)
@@ -909,7 +910,193 @@ impl Board {
             pins.pop();
         }
     }
+    
+    pub fn checks_and_pins(&self)->(Vec<u64> , Vec<u8>){
+        let mut checks : Vec<u64> = Vec::new();
+        let mut pins : Vec<u8> = Vec::new();
+        let king_position;
+        let pawn_bitboard;
+        let knight_bitboard;
+        let orth_dangerous_bitboard;
+        let diag_dangerous_bitboard;
+        let ally_bitboard =self.bitboards.get_ally_pieces(self.turn);
+        let enemy_bitboard = self.bitboards.get_enemy_pieces(self.turn);
+        match self.turn{
+            Turn::White=>{
+                king_position = self.bitboards.white_king;
+                orth_dangerous_bitboard = self.bitboards.black_queens | self.bitboards.black_rooks;
+                diag_dangerous_bitboard = self.bitboards.black_queens | self.bitboards.black_bishops;
+                pawn_bitboard = self.bitboards.black_pawns;
+                knight_bitboard = self.bitboards.black_knights;
+            },
+            Turn::Black=>{
+                king_position = self.bitboards.black_king;
+                orth_dangerous_bitboard = self.bitboards.white_queens | self.bitboards.white_rooks;
+                diag_dangerous_bitboard = self.bitboards.white_queens | self.bitboards.white_bishops;
+                pawn_bitboard = self.bitboards.white_pawns;
+                knight_bitboard = self.bitboards.white_knights;
+            }
+        }
+        let king_square = king_position.trailing_zeros() as u8;
 
+        let rank_mask = Bitboards::rank_mask_to_end(king_square);
+        let file_mask = Bitboards::file_mask_to_end(king_square);
+        let diagonal_mask = Bitboards::diagonal_mask(king_square);
+        let anti_diagonal_mask = Bitboards::anti_diagonal_mask(king_square);
+        Self::get_left_checks_pins(&mut checks , &mut pins ,rank_mask , ally_bitboard , enemy_bitboard , orth_dangerous_bitboard , king_position);
+        Self::get_left_checks_pins(&mut checks , &mut pins,file_mask, ally_bitboard, enemy_bitboard, orth_dangerous_bitboard, king_position);
+        Self::get_left_checks_pins(&mut checks , &mut pins,diagonal_mask, ally_bitboard, enemy_bitboard, diag_dangerous_bitboard, king_position);
+        Self::get_left_checks_pins(&mut checks , &mut pins ,anti_diagonal_mask, ally_bitboard, enemy_bitboard, diag_dangerous_bitboard, king_position);
+        
+        Self::get_right_checks_pins(&mut checks , &mut pins ,rank_mask , ally_bitboard , enemy_bitboard , orth_dangerous_bitboard , king_position);
+        Self::get_right_checks_pins(&mut checks , &mut pins,file_mask, ally_bitboard, enemy_bitboard, orth_dangerous_bitboard, king_position);
+        Self::get_right_checks_pins(&mut checks , &mut pins,diagonal_mask, ally_bitboard, enemy_bitboard, diag_dangerous_bitboard, king_position);
+        Self::get_right_checks_pins(&mut checks , &mut pins ,anti_diagonal_mask, ally_bitboard, enemy_bitboard, diag_dangerous_bitboard, king_position);
+
+        let opp_pawn_square = match self.turn {
+            Turn::Black => {
+                let pawn_checks_bitboard = Bitboards::move_south_east(king_position) | Bitboards::move_south_west(king_position);
+                pawn_checks_bitboard & pawn_bitboard 
+            },
+            Turn::White => {
+                let pawn_checks_bitboard = Bitboards::move_north_east(king_position) | Bitboards::move_north_west(king_position);
+                pawn_checks_bitboard & pawn_bitboard 
+            }
+        };
+        
+        if opp_pawn_square != 0 {
+            checks.push(opp_pawn_square);
+        }
+        
+        let king_as_knight = self.get_knight_attacked_squares(king_position);
+        let opp_knight_square = knight_bitboard & king_as_knight;
+        
+        if opp_knight_square != 0 {
+            checks.push(opp_knight_square);
+        }
+         
+        return (checks , pins);
+        // 1-get checks , pins in the same rank with the king : 
+        // 1-1 first_case  [King . . . . . . Queen . . .] 
+        // let all_pieces_on_rank = (ally_bitboard |enemy_bitboard) & rank_mask;
+        // let all_pieces_on_file = (ally_bitboard |enemy_bitboard) & file_mask;
+        // let all_pieces_on_diagonal = (ally_bitboard |enemy_bitboard) & diagonal_mask;
+        // let all_pieces_on_antidiagonal = (ally_bitboard |enemy_bitboard) & anti_diagonal_mask;
+        
+        // let queen_and_rook_bitboard_on_rank:u64 =  rank_mask & orth_dangerous_bitboard;
+        // if queen_and_rook_bitboard_on_rank == 0{
+        //     println!("Thre is no dangerous to the king");
+        //     return; 
+        // }
+        // let all_pieces_mask_right =Bitboards::get_right_mask(all_pieces_on_rank, king_square);
+        // let pieces_right_king = all_pieces_on_rank & all_pieces_mask_right &!king_position;
+
+        // let rook_queen_mask_right =  Bitboards::get_right_mask(orth_dangerous_bitboard, king_square);
+        // let queen_rook_bitboard_right_of_king = queen_and_rook_bitboard_on_rank&rook_queen_mask_right;
+        // let closest_index = Bitboards::get_lsb(&queen_rook_bitboard_right_of_king);
+
+        // let all_pieces_mask_left = Bitboards::get_left_mask(closest_index);
+        // let pieces_left_closest_index = all_pieces_on_rank &all_pieces_mask_left;
+
+        // let closest_position = 1<<closest_index;
+        // let pieces_between = pieces_right_king & pieces_left_closest_index &!king_position&!closest_position;
+
+        // if pieces_between == 0 {
+        //     println!("this is a check");
+        // }
+        // else {
+        //     let pin1 = Bitboards::get_lsb(&pieces_between);
+        //     let pin2 = Bitboards::get_msp(&pieces_between);
+        //     if (pin1 == pin2) && (1<<pin1 as u64 & ally_bitboard != 0) {
+        //         println!("There is a pin squared");
+        //     }
+        //     else {
+        //         println!("There is no check or pins");
+        //     }
+    }
+    //  king   ........... dangerous pieces   ( king is on left)
+    fn get_left_checks_pins( checks: &mut Vec<u64> ,pins :&mut Vec<u8>, mask : u64 ,ally_bitboard : u64 , enemy_bitboard : u64 , dangerous_bitboard : u64 ,king_position : u64){
+        let king_square = king_position.trailing_zeros() as u8;
+    
+        let all_pieces_in_direction = (ally_bitboard |enemy_bitboard) & mask;
+        let pieces_right_king = all_pieces_in_direction & Bitboards::get_right_mask(all_pieces_in_direction, king_square) &!king_position;
+        // dangerous bit board on the whole direction direction=  mask & dangerous_bitboard
+        // and when mask it with mask right ge the dangerous bit board right the kning
+        let dangerous_bitboard_right_of_king = mask & dangerous_bitboard&Bitboards::get_right_mask(dangerous_bitboard, king_square);
+        
+        if dangerous_bitboard_right_of_king == 0{           
+            return; 
+        }
+
+        let closest_index = Bitboards::get_lsb(&dangerous_bitboard_right_of_king);
+        let pieces_left_closest_index = all_pieces_in_direction & Bitboards::get_left_mask(closest_index);
+
+        let closest_position = 1<<closest_index;
+        let pieces_between = pieces_right_king & pieces_left_closest_index &!king_position&!closest_position;
+
+        if pieces_between == 0 {
+            let mut check_bitboard = 0;
+            if  closest_index < king_square
+            {
+                let between_mask = ((1u64 << (king_square + 1)) - 1) ^ ((1u64 <<closest_index ) - 1);
+                check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
+            }
+            else{
+                let between_mask = ((1u64 << (closest_index + 1)) - 1) ^ ((1u64 <<king_square ) - 1);
+                check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
+            }
+            //println!("Check bit board = {:b}" ,check_bitboard);
+            checks.push(check_bitboard);
+            return;
+        }else {
+            let pin1 = Bitboards::get_lsb(&pieces_between);
+            let pin2 = Bitboards::get_msp(&pieces_between);
+            if (pin1 == pin2) && (1<<pin1 as u64 & ally_bitboard != 0) {
+                pins.push(pin1);
+            }
+        }
+    }
+
+    fn get_right_checks_pins( checks: &mut Vec<u64> ,pins :&mut Vec<u8>, mask : u64 ,ally_bitboard : u64 , enemy_bitboard : u64 , dangerous_bitboard : u64 ,king_position : u64){
+        let king_square = king_position.trailing_zeros() as u8;
+    
+        let all_pieces_in_direction = (ally_bitboard |enemy_bitboard) & mask;
+        let pieces_left_king = all_pieces_in_direction & Bitboards::get_left_mask(king_square)&!king_position;
+
+        let dangerous_bitboard_left_of_king =mask & dangerous_bitboard &Bitboards::get_left_mask(king_square);
+        if dangerous_bitboard_left_of_king == 0{           
+            return; 
+        }
+        let closest_index = Bitboards::get_msp(&dangerous_bitboard_left_of_king);
+        let pieces_right_closest_index = all_pieces_in_direction &Bitboards::get_right_mask(all_pieces_in_direction , closest_index);
+
+        let closest_position = 1<<closest_index;
+        let pieces_between = pieces_left_king & pieces_right_closest_index &!king_position&!closest_position;
+        
+        if pieces_between == 0 {
+            let mut check_bitboard = 0;
+            if closest_index < king_square
+            {
+                let between_mask = ((1u64 << (king_square + 1)) - 1) ^ ((1u64 <<closest_index ) - 1);
+                check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
+            }
+            else{
+                let between_mask = ((1u64 << (closest_index + 1)) - 1) ^ ((1u64 <<king_square ) - 1);
+                check_bitboard = (check_bitboard|between_mask) & mask & !king_position;
+            }
+            //println!("Check bit board = {:b}" ,check_bitboard);
+            checks.push(check_bitboard);
+            return;
+        }
+        else {
+            let pin1 = Bitboards::get_lsb(&pieces_between);
+            let pin2 = Bitboards::get_msp(&pieces_between);
+            if (pin1 == pin2) && (1<<pin1 as u64 & ally_bitboard != 0) {
+                pins.push(pin1);
+            }
+        }
+    }
+       
     fn get_attacked_squares(&self) -> u64 {
         match self.turn {
             Turn::White => {
