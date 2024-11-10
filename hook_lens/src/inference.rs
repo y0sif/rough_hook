@@ -1,11 +1,13 @@
 use std::f32::consts::PI;
 // use burn::prelude::Backend;
-use image::{DynamicImage, GenericImageView, Rgb};
+use image::{DynamicImage, GenericImageView, Pixel, Rgb, Rgba};
+use imageproc::drawing::Canvas;
 use imageproc::edges::canny;
 use imageproc::hough::{self, LineDetectionOptions};
 
 pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: DynamicImage) {
     
+    let mut board = board;
     // apply canny edge
     let luma_board = board.to_luma8();
     let low_threshold = 44.0;
@@ -99,6 +101,7 @@ pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: 
             let x_intercept = (c2 - c1) / (slope1 - slope2);
             let y_intercept = x_intercept * slope1 + c1;
             
+            board.draw_pixel(x_intercept as u32, y_intercept as u32, Rgba([0, 255, 0, 255]));
             let sub = board.view(x_intercept as u32, y_intercept as u32, 38, 38);
 
             sub.to_image().save("hook_lens\\squares\\sub_image".to_owned() + &counter.to_string() + ".png").unwrap();
@@ -106,6 +109,8 @@ pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: 
         }
     }
 
+    let point_board = board.save("hook_lens\\points_img.png").unwrap();
+    
     let hor_hough = hough::draw_polar_lines(&board.to_rgb8(), &hor_lines, Rgb([255, 0, 0]));
     hor_hough.save("hook_lens\\hor_hough.png").unwrap();
 
