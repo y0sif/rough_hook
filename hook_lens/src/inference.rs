@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 // use burn::prelude::Backend;
-use image::{DynamicImage, Rgb};
+use image::{DynamicImage, GenericImageView, Rgb};
 use imageproc::edges::canny;
 use imageproc::hough::{self, LineDetectionOptions};
 
@@ -76,6 +76,7 @@ pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: 
     }
     
     // calc intersections 
+    let mut counter = 1;
     for vert in &vert_lines {
         for hor in &hor_lines {
             let r1 = vert.r;
@@ -95,6 +96,13 @@ pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: 
             let slope1 = y1 / x1;
             let slope2 = y2 / x2;
             
+            let x_intercept = (c2 - c1) / (slope1 - slope2);
+            let y_intercept = x_intercept * slope1 + c1;
+            
+            let sub = board.view(x_intercept as u32, y_intercept as u32, 38, 38);
+
+            sub.to_image().save("hook_lens\\squares\\sub_image".to_owned() + &counter.to_string() + ".png").unwrap();
+            counter += 1;
         }
     }
 
