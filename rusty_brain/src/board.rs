@@ -6,7 +6,7 @@ use crate::magic::Magic;
 use crate::movement::Move;
 use crate::piece::Piece;
 use crate::square::Square;
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Turn {
    White,
    Black, 

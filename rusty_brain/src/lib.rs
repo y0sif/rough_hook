@@ -9,3 +9,4 @@ pub mod piece;
 pub mod perft;
 pub mod alphabeta;
 pub mod evaluation;
+pub mod zobrist;
