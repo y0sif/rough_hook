@@ -1,123 +1,87 @@
-use std::f32::consts::PI;
 // use burn::prelude::Backend;
-use image::{DynamicImage, GenericImageView, Pixel, Rgb, Rgba};
-use imageproc::drawing::Canvas;
-use imageproc::edges::canny;
-use imageproc::hough::{self, LineDetectionOptions};
+use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector, CV_PI}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
+use std::f64::consts::PI;
 
-pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */board: DynamicImage) {
+pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */) {
+    let mut img = imgcodecs::imread("hook_lens\\input_img.png", imgcodecs::IMREAD_COLOR).unwrap();
     
-    let mut board = board;
-    // apply canny edge
-    let luma_board = board.to_luma8();
-    let low_threshold = 44.0;
-    let high_threshold = 55.0;
-    let canny_board = canny(&luma_board, low_threshold, high_threshold);
-    canny_board.save("hook_lens\\canny_board.png").unwrap();
+    let mut img_intersections = img.clone();
 
-    // apply hough line detection
-    let options = LineDetectionOptions {
-        vote_threshold: 120,
-        suppression_radius: 8,
-    };
+    let mut gray_scale = Mat::default();
 
-    let polar_lines = hough::detect_lines(&canny_board, options);
-    let mut vert_lines = Vec::new();
-    let mut hor_lines = Vec::new();
+    cvt_color_def(&img, &mut gray_scale, COLOR_BGR2GRAY).unwrap();
 
-    for line in &polar_lines {
-        if (line.angle_in_degrees < 15) || (line.angle_in_degrees > 165) {
-            println!("vertical lines");
-            println!("angle = {}", line.angle_in_degrees);
-            println!("r = {}", line.r);
-            vert_lines.push(line.clone());
-        }else if (line.angle_in_degrees < 105) && (line.angle_in_degrees > 75) {
-            println!("horizontal lines");
-            println!("angle = {}", line.angle_in_degrees);
-            println!("r = {}", line.r);
-            hor_lines.push(line.clone());
+    let mut canny_img: Mat = Default::default();
+    imgproc::canny_def(&gray_scale, &mut canny_img,  46.0, 250.0).unwrap();
+
+    imshow("canny", &canny_img).unwrap();
+    wait_key_def().unwrap();
+
+    let mut s_lines = Vector::<Vec2f>::new();
+    imgproc::hough_lines_def(&canny_img, &mut s_lines, 1.0, PI / 280.0, 160).unwrap();
+    // imgproc::hough_lines_p_def(&canny_img, &mut s_lines, 1.0, PI / 180.0, 150).unwrap();
+    
+    let mut vertical_lines_points = Vec::new();
+    let mut horizontal_lines_points = Vec::new();
+    
+    println!("lines {}", s_lines.len());
+    for s_line in s_lines {
+		let [r, t] = *s_line;
+		let cos_t = t.cos();
+		let sin_t = t.sin();
+		let x0 = r * cos_t;
+		let y0 = r * sin_t;
+		let alpha = 1000.;
+
+		let pt1 = Point2f::new(x0 + alpha * -sin_t, y0 + alpha * cos_t).to::<i32>().unwrap();
+		let pt2 = Point2f::new(x0 - alpha * -sin_t, y0 - alpha * cos_t).to::<i32>().unwrap();
+        
+        let t = t * 180. / PI as f32;
+        if t > 75.0 && t < 105.0 {
+            println!("horizontal = {:?}", s_line);
+            horizontal_lines_points.push((pt1, pt2));
+        }else if t < 15.0 || t > 165.0 {
+            vertical_lines_points.push((pt1, pt2));
+        }
+        imgproc::line(&mut img, pt1, pt2, (255, 0, 0).into(), 1, LINE_AA, 0).unwrap();
+	}
+    
+    for vert in &vertical_lines_points {
+        for hor in &horizontal_lines_points {
+            if (vert.1.x - vert.0.x) != 0 {
+                let m1 = (vert.1.y - vert.0.y) / (vert.1.x - vert.0.x);
+                let m2 = (hor.1.y - hor.0.y) / (hor.1.x - hor.0.x);
+                
+                let x1 = vert.0.x;
+                let x2 = hor.0.x;
+                let y1 = vert.0.y;
+                let y2 = hor.0.y;
+
+                let x_intersect = (m1 * x1 - m2 * x2 - y1 + y2) / (m1 - m2);
+                let y_intersect = m2 * (x_intersect - x2) + y2;
+
+                imgproc::circle_def(&mut img_intersections, Point::new(x_intersect, y_intersect), 3, (255, 0, 0).into()).unwrap();
+
+            }else {
+                let m2 = (hor.1.y - hor.0.y) / (hor.1.x - hor.0.x);
+                
+                let x1 = vert.0.x;
+                let x2 = hor.0.x;
+                let y2 = hor.0.y;
+
+                let x_intersect = x1;
+                let y_intersect = m2 * (x_intersect - x2) + y2;
+
+                imgproc::circle_def(&mut img_intersections, Point::new(x_intersect, y_intersect), 3, (255, 0, 0).into()).unwrap();
+                
+            }
         }
     }
     
-    println!("horizontal distance");
-    let mut h = Vec::new();
-    for i in 0..hor_lines.len() -1 {
-        let r1 = hor_lines[i].r;
-        let r2 = hor_lines[i+1].r;
-        let theta1 = hor_lines[i].angle_in_degrees as f32 * PI/180.0;
-        let theta2 = hor_lines[i].angle_in_degrees as f32 * PI/180.0;
+    imshow("hough", &img).unwrap();
+    wait_key_def().unwrap();
 
-        let distance = f32::sqrt(r1.powi(2) + r2.powi(2) - 2.0 * r1 * r2 * f32::cos(theta1 - theta2)); 
-        if distance > 50.0 && distance < 60.0 {
-            h.push(i+1);
-        }
-        println!("distance = {}", distance);
-    }
-    
-    for i in h {
-        hor_lines.remove(i);
-    }
-    
-    println!("vertical distance");
-    let mut v = Vec::new();
-    for i in 0..vert_lines.len() -1 {
-        let r1 = vert_lines[i].r;
-        let r2 = vert_lines[i+1].r;
-        let theta1 = vert_lines[i].angle_in_degrees as f32 * PI/180.0;
-        let theta2 = vert_lines[i].angle_in_degrees as f32 * PI/180.0;
-
-        let distance = f32::sqrt(r1.powi(2) + r2.powi(2) - 2.0 * r1 * r2 * f32::cos(theta1 - theta2)); 
-        if distance > 50.0 && distance < 60.0 {
-            v.push(i+1);
-        }
-        println!("distance = {}", distance);
-    }
-
-    for i in v {
-        vert_lines.remove(i);
-    }
-    
-    // calc intersections 
-    let mut counter = 1;
-    for vert in &vert_lines {
-        for hor in &hor_lines {
-            let r1 = vert.r;
-            let theta1 = vert.angle_in_degrees as f32 * PI/180.0;
-            let r2 = hor.r;
-            let theta2 = hor.angle_in_degrees as f32 * PI/180.0;
-
-            let x1 = r1 * f32::cos(theta1);
-            let y1 = r1 * f32::sin(theta1);
-
-            let x2 = r2 * f32::cos(theta2);
-            let y2 = r2 * f32::sin(theta2);
-            
-            let c1 = r1 * (f32::cos(theta1) - f32::sin(theta1));
-            let c2 = r2 * (f32::cos(theta2) - f32::sin(theta2));
-            
-            let slope1 = y1 / x1;
-            let slope2 = y2 / x2;
-            
-            let x_intercept = (c2 - c1) / (slope1 - slope2);
-            let y_intercept = x_intercept * slope1 + c1;
-            
-            board.draw_pixel(x_intercept as u32, y_intercept as u32, Rgba([0, 255, 0, 255]));
-            let sub = board.view(x_intercept as u32, y_intercept as u32, 38, 38);
-
-            sub.to_image().save("hook_lens\\squares\\sub_image".to_owned() + &counter.to_string() + ".png").unwrap();
-            counter += 1;
-        }
-    }
-
-    let point_board = board.save("hook_lens\\points_img.png").unwrap();
-    
-    let hor_hough = hough::draw_polar_lines(&board.to_rgb8(), &hor_lines, Rgb([255, 0, 0]));
-    hor_hough.save("hook_lens\\hor_hough.png").unwrap();
-
-    let vert_hough = hough::draw_polar_lines(&board.to_rgb8(), &vert_lines, Rgb([255, 0, 0]));
-    vert_hough.save("hook_lens\\vert_hough.png").unwrap();
-
-    let hough_board = hough::draw_polar_lines(&board.to_rgb8(), &polar_lines, Rgb([255, 0, 0]));
-    hough_board.save("hook_lens\\hough_board.png").unwrap();
-    
+    imshow("intersections", &img_intersections).unwrap();
+    wait_key_def().unwrap();
 }
+
