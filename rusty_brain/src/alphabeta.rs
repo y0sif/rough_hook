@@ -1,26 +1,38 @@
 use std::i32;
 use crate::board::{Board, Turn};
 use crate::movement::Move;
+use crate::transposition::{TranspositionTable, Node};
+
 
 impl Board {
 
-    pub fn find_best_move(&mut self, depth: i32) -> (Move, i32) {
+    pub fn find_best_move(&mut self, transposition_table: &mut TranspositionTable, depth: i32) -> (Move, i32) {
 
         //using vanilla minimax
-        /** 
+        /* 
         let eval = match self.turn {
             Turn::White => self.maxi(true, depth),
             Turn::Black => self.mini(true, depth)
         };
-        **/
+        */
 
-        //using alphabeta
+        //using normal alphabeta
+        /* 
         let eval = match self.turn {
             Turn::White => self.alpha_beta_max(true, i32::MIN, i32::MAX, depth),
             Turn::Black => self.alpha_beta_min(true, i32::MIN, i32::MAX, depth),
         };
+        */
         
+        //using alphabeta with transposition table
+        let eval = match self.turn {
+            Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
+            Turn::Black => self.alpha_beta_min_tt(transposition_table,true, i32::MIN, i32::MAX, depth),
+        };
+        
+
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
+
     }
 
     fn maxi(&mut self, maximazing: bool, depth: i32) -> i32 {
@@ -136,6 +148,147 @@ impl Board {
                 return score;
             }
         }
+        return best_value;
+    }
+
+
+    fn alpha_beta_max_tt(&mut self, transposition_table: &mut TranspositionTable, maximizing: bool, mut alpha: i32, mut beta: i32, depth_left: i32) -> i32 {
+
+        if let Some(entry) = transposition_table.retrieve_from_table(self) {
+            
+            if entry.depth >= depth_left {
+                match entry.node_type {
+                    Node::Exact => {
+                        if maximizing {
+                            self.best_move = entry.best_move;
+                        }
+                        return entry.score;
+                    },
+                    Node::LowerBound => {
+                        if entry.score > alpha {
+                            alpha = entry.score;
+                        }
+                    }
+                    Node::UpperBound => {
+                        if entry.score < beta {
+                            beta = entry.score;
+                        }
+                    }
+                }
+                if alpha >= beta {
+                    if maximizing {
+                        self.best_move = entry.best_move;
+                    }                    
+                    return entry.score;
+                }
+
+            }     
+
+        }
+
+        if depth_left == 0 {
+            return self.evaluate();
+        }
+
+        let mut best_value = i32::MIN;
+        let moves: Vec<Move> = self.generate_legal_moves();
+
+        for current_move in moves {
+
+            self.make_move(current_move);
+            let score: i32 = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
+            self.undo_move();
+            
+            if score > best_value {
+                best_value = score;
+                if maximizing {
+                    self.best_move = Some(current_move);
+                }
+                if score > alpha {
+                    alpha = score;
+                }
+            }
+            if score >= beta {
+                if maximizing {
+                    self.best_move = Some(current_move);
+                    transposition_table.store_in_table(self, self.best_move, depth_left, best_value, alpha, beta);
+                }
+                return score;
+            }
+        }
+
+        transposition_table.store_in_table(self, self.best_move, depth_left, best_value, alpha, beta);
+
+        return best_value;
+
+    }
+
+    
+    fn alpha_beta_min_tt(&mut self,  transposition_table: &mut TranspositionTable, minimizing: bool, mut alpha: i32, mut beta: i32, depth_left: i32) -> i32 {
+        
+        if let Some(entry) = transposition_table.retrieve_from_table(self) {
+    
+            if entry.depth >= depth_left {
+                match entry.node_type {
+                    Node::Exact => {
+                        if minimizing {
+                            self.best_move = entry.best_move;
+                        }
+                        return entry.score;
+                    },
+                    Node::LowerBound => {
+                        if entry.score > alpha {
+                            alpha = entry.score;
+                        }
+                    }
+                    Node::UpperBound => {
+                        if entry.score < beta {
+                            beta = entry.score;
+                        }
+                    }
+                }
+                if alpha >= beta {
+                    if minimizing {
+                        self.best_move = entry.best_move;
+                    }                    
+                    return entry.score;
+                }
+            }         
+        }
+        
+        if depth_left == 0 {
+            return self.evaluate();
+        }
+
+        let mut best_value = i32::MAX;
+        let moves: Vec<Move> = self.generate_legal_moves();
+
+        for current_move in moves {
+
+            self.make_move(current_move);
+            let score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
+            self.undo_move();
+
+            if score < best_value {
+                best_value = score;
+                if minimizing {
+                    self.best_move = Some(current_move);
+                }
+                if score < beta {
+                    beta = score;
+                }
+            }
+            if score <= alpha {
+                if minimizing {
+                    self.best_move = Some(current_move);
+                    transposition_table.store_in_table(self, self.best_move, depth_left, best_value, alpha, beta);
+                }
+                return score;
+            }
+        }
+
+        transposition_table.store_in_table(self, self.best_move, depth_left, best_value, alpha, beta);
+        
         return best_value;
     }
 }
