@@ -2,6 +2,8 @@ use std::hash::{DefaultHasher, Hash, Hasher};
 use std::u64;
 use std::collections::HashMap;
 use crate::board::Turn;
+
+#[derive(Clone, Copy, PartialEq)]
 pub struct Bitboards{
     pub white_pawns: u64,
     pub white_knights: u64,

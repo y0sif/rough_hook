@@ -1,27 +1,26 @@
-use crate::{board::{Board, Turn}, square};
+use crate::{board::{Board, Turn}, square::{self, Square}};
 
 impl Board {
     pub fn evaluate(&mut self) -> i32 {
-        let mg = 
-        middle_game_evaluation(self);
+        let mg = self.middle_game_evaluation(true);
         0
     }
     
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
         let mut v = 0;
         let color_flip_board = self.color_flip();
-        v += piece_value_mg(self, square) - piece_value_mg(color_flip_board, square);
-        v += psqt_mg(self) - psqt_mg(color_flip_board);
-        v += imbalance_total(self, color_flip_board);
-        v += pawns_mg(self) - pawns_mg(color_flip_board); 
-        v += mobility_mg(self) - mobility_mg(color_flip_board);
-        v += threats_mg(self) - threats_mg(color_flip_board);
-        v += passed_mg(self) - passed_mg(color_flip_board);
-        v += space(self) - space(color_flip_board);
-        v += king_mg(self) - king_mg(color_flip_board);
+        v += self.piece_value_mg() - color_flip_board.piece_value_mg();
+        v += self.psqt_mg() - color_flip_board.psqt_mg();
+        v += self.imbalance_total(&color_flip_board);
+        v += self.pawns_mg() - color_flip_board.pawns_mg(); 
+        v += self.mobility_mg() - color_flip_board.mobility_mg();
+        v += self.threats_mg() - color_flip_board.threats_mg();
+        v += self.passed_mg() - color_flip_board.passed_mg();
+        v += self.space() - color_flip_board.space();
+        v += self.king_mg() - color_flip_board.king_mg();
         
         if !nowinnable {
-            v += winnable_total_mg(self, v);
+            v += self.winnable_total_mg(Some(v));
         }
 
         v
@@ -29,46 +28,157 @@ impl Board {
     
     // PIECE VALUE MIDDLE GAME
     
-    fn piece_value_mg(&self, square: todo!()) -> i32 {
-        // sum function
-
-        piece_value_bonus(self, square, true)
-        
+    fn piece_value_mg(&self) -> i32 {
+        self.piece_value_bonus(true)
     }
 
-    fn piece_value_bonus(self, square: todo!(), is_middle_game: bool) -> i32 {
-        // sum function
-
+    fn piece_value_bonus(&self, is_middle_game: bool) -> i32 {
+        // pawn, knight, bishop, rook, queen
         let a = if is_middle_game {
             [124, 781, 825, 1276, 2538]
-        }else {
+        } else {
             [206, 854, 915, 1380, 2682]
         };
-        // should use square to add the bonus
 
-        0
+        let mut sum = 0;
+
+        match self.turn {
+            Turn::White => {
+                sum += self.bitboards.white_pawns.count_ones() as i32 * a[0];
+                sum += self.bitboards.white_knights.count_ones() as i32 * a[1];
+                sum += self.bitboards.white_bishops.count_ones() as i32 * a[2];
+                sum += self.bitboards.white_rooks.count_ones() as i32 * a[3];
+                sum += self.bitboards.white_queens.count_ones() as i32 * a[4];
+            }
+            Turn::Black => {
+                sum += self.bitboards.black_pawns.count_ones() as i32 * a[0];
+                sum += self.bitboards.black_knights.count_ones() as i32 * a[1];
+                sum += self.bitboards.black_bishops.count_ones() as i32 * a[2];
+                sum += self.bitboards.black_rooks.count_ones() as i32 * a[3];
+                sum += self.bitboards.black_queens.count_ones() as i32 * a[4];
+            }
+        }
+
+        sum
     }
     
     // PSQT MIDDLE GAME
 
-    fn psqt_mg(&self, square: todo!()) -> i32 {
-        // sum functions
-
-        psqt_bonus(self, square, true)
+    fn psqt_mg(&self) -> i32 {
+        self.psqt_bonus(true)
     }
     
-    fn psqt_bonus(&self, square: todo!(), is_middle_game: bool) -> i32 {
-        // apply bonus somehow
+    fn psqt_bonus(&self, is_middle_game: bool) -> i32 {
+        // knight, bishop, rook, queen, king
+        let bonus = if is_middle_game {
+            [
+                [[-175,-92,-74,-73],[-77,-41,-27,-15],[-61,-17,6,12],[-35,8,40,49],[-34,13,44,51],[-9,22,58,53],[-67,-27,4,37],[-201,-83,-56,-26]],
+                [[-53,-5,-8,-23],[-15,8,19,4],[-7,21,-5,17],[-5,11,25,39],[-12,29,22,31],[-16,6,1,11],[-17,-14,5,0],[-48,1,-14,-23]],
+                [[-31,-20,-14,-5],[-21,-13,-8,6],[-25,-11,-1,3],[-13,-5,-4,-6],[-27,-15,-4,3],[-22,-2,6,12],[-2,12,16,18],[-17,-19,-1,9]],
+                [[3,-5,-5,4],[-3,5,8,12],[-3,6,13,7],[4,5,9,8],[0,14,12,5],[-4,10,6,8],[-5,6,10,8],[-2,-2,1,-2]],
+                [[271,327,271,198],[278,303,234,179],[195,258,169,120],[164,190,138,98],[154,179,105,70],[123,145,81,31],[88,120,65,33],[59,89,45,-1]]
+            ]
+        }else {
+            [
+                [[-96,-65,-49,-21],[-67,-54,-18,8],[-40,-27,-8,29],[-35,-2,13,28],[-45,-16,9,39],[-51,-44,-16,17],[-69,-50,-51,12],[-100,-88,-56,-17]],
+                [[-57,-30,-37,-12],[-37,-13,-17,1],[-16,-1,-2,10],[-20,-6,0,17],[-17,-1,-14,15],[-30,6,4,6],[-31,-20,-1,1],[-46,-42,-37,-24]],
+                [[-9,-13,-10,-9],[-12,-9,-1,-2],[6,-8,-2,-6],[-6,1,-9,7],[-5,8,7,-6],[6,1,-7,10],[4,5,20,-5],[18,0,19,13]],
+                [[-69,-57,-47,-26],[-55,-31,-22,-4],[-39,-18,-9,3],[-23,-3,13,24],[-29,-6,9,21],[-38,-18,-12,1],[-50,-27,-24,-8],[-75,-52,-43,-36]],
+                [[1,45,85,76],[53,100,133,135],[88,130,169,175],[103,156,172,172],[96,166,199,199],[92,172,184,191],[47,121,116,131],[11,59,73,78]]
+            ]
+        };
+        
+        let p_bonus = if is_middle_game {
+            [
+                [0,0,0,0,0,0,0,0],
+                [3,3,10,19,16,19,7,-5],
+                [-9,-15,11,15,32,22,5,-22],
+                [-4,-23,6,20,40,17,4,-8],
+                [13,0,-13,1,11,-2,-13,5],
+                [5,-12,-7,22,-8,-5,-15,-8],
+                [-7,7,-3,-13,5,-16,10,-8],
+                [0,0,0,0,0,0,0,0]
+            ]
+        }else {
+            [
+                [0,0,0,0,0,0,0,0],
+                [-10,-6,10,0,14,7,-5,-19],
+                [-10,-10,-10,4,4,3,-6,-4],
+                [6,-2,-8,-4,-13,-12,-10,-9],
+                [10,5,4,-5,-5,-5,14,9],
+                [28,20,21,28,30,7,6,13],
+                [0,-11,12,21,25,19,4,7],
+                [0,0,0,0,0,0,0,0]
+            ]
+        };
+        
+        let mut sum = 0;
 
-        0
+        // Helper function to calculate piece bonuses
+        let calculate_bonus = |bitboard: u64, table: &[[_; 4]; 8], multiplier| {
+            let mut sum = 0;
+            let mut bb = bitboard;
+            while bb != 0 {
+                let square = bb.trailing_zeros() as u8;
+                let rank = Square::from(square).rank() as usize;
+                let file = Square::from(square).file() as usize;
+                let table_rank = if multiplier == 1 { 7 - rank as usize } else { rank as usize };
+                sum += table[table_rank][usize::min(file, 7 - file)];
+                bb &= bb - 1; // Clear the least significant bit
+            }
+            sum
+        };
+        
+        match self.turn {
+            Turn::White => {
+                let mut pawn_bitboard = self.bitboards.white_pawns;
+                 
+                while pawn_bitboard != 0 {
+                    let square = pawn_bitboard.trailing_zeros() as u8;
+                    let rank = Square::from(square).rank() as usize;
+                    let file = Square::from(square).file() as usize;
+                    
+                    sum += p_bonus[7 - rank][file];
+                    
+                    pawn_bitboard &= pawn_bitboard - 1;
+                }
+
+                sum += calculate_bonus(self.bitboards.white_knights, &bonus[0], 1);
+                sum += calculate_bonus(self.bitboards.white_bishops, &bonus[1], 1);
+                sum += calculate_bonus(self.bitboards.white_rooks, &bonus[2], 1);
+                sum += calculate_bonus(self.bitboards.white_queens, &bonus[3], 1);
+                sum += calculate_bonus(self.bitboards.white_king, &bonus[4], 1);
+            }
+            Turn::Black => {
+                let mut pawn_bitboard = self.bitboards.white_pawns;
+                 
+                while pawn_bitboard != 0 {
+                    let square = pawn_bitboard.trailing_zeros() as u8;
+                    let rank = Square::from(square).rank() as usize;
+                    let file = Square::from(square).file() as usize;
+                    
+                    sum += p_bonus[rank][file];
+                    
+                    pawn_bitboard &= pawn_bitboard - 1;
+                }
+
+                sum += calculate_bonus(self.bitboards.black_knights, &bonus[0], -1);
+                sum += calculate_bonus(self.bitboards.black_bishops, &bonus[1], -1);
+                sum += calculate_bonus(self.bitboards.black_rooks, &bonus[2], -1);
+                sum += calculate_bonus(self.bitboards.black_queens, &bonus[3], -1);
+                sum += calculate_bonus(self.bitboards.black_king, &bonus[4], -1);
+            }
+        }
+
+        sum
     }
 
     // IMBALANCE TOTAL
     
     fn imbalance_total(&self, flip: &Board) -> i32 {
         let mut v = 0;
-        v += imbalance(self) - imbalance(flip);
-        v += bishop_pair(self) - bishop_pair(flip);
+        v += self.imbalance() - flip.imbalance();
+        v += self.bishop_pair() - flip.bishop_pair();
 
         v / 16
     }
@@ -81,17 +191,19 @@ impl Board {
         0
     }
     
-    fn bishop_pair(&self, square: todo!()) -> i32 {
-        if bishop_count(self, todo!()) < 2 {
+    fn bishop_pair(&self) -> i32 {
+        if self.bishop_count() < 2 {
             return 0;
         }
         
         // if no square return 1438
 
         // if square is bishop return 1 else 0
+        
+        0
     }
     
-    fn bishop_count(&self, square: todo!()) -> i32 {
+    fn bishop_count(&self) -> i32 {
         // sum function
         
         // if square is bishop return 1
@@ -101,45 +213,45 @@ impl Board {
     
     // PAWNS MIDDLE GAME
     
-    fn pawns_mg(&self, square: todo!()) -> i32 {
+    fn pawns_mg(&self) -> i32 {
         // sum function
         
         let mut v = 0;
         
-        if self.doubled_isolated(square) {
+        if self.doubled_isolated() == 1{
             v -= 11;
-        }else if self.isolated(square) {
+        }else if self.isolated() == 1{
             v -= 5;
-        }else if self.backward(square) {
+        }else if self.backward() == 1{
             v -= 9;
         }
 
-        v -= doubled(self, square) * 11;
+        v -= self.doubled() * 11;
     
-        if connected_bonus(self, square) {
-            v += connected(self, square);
+        if self.connected_bonus() == 1{
+            v += self.connected();
         }
         
-        v -= 13 * weak_unopposeed_pawn(self, square);
+        v -= 13 * self.weak_unopposeed_pawn();
         
         // add something niggerlicious to v in case of blocked function
 
         v
     }
     
-    fn doubled_isolated(&self, square: todo!()) -> i32 {
+    fn doubled_isolated(&self) -> i32 {
         // sum function
 
         // if square not pawn return 0
 
-        if self.isolated(square) {
+        if self.isolated() == 1{
             // do niggerlicious stuff here
         }
 
         0
     }
 
-    fn isolated(&self, square: todo!()) -> i32 {
+    fn isolated(&self) -> i32 {
         // sum function
 
         // if square not pawn return 0
@@ -150,7 +262,7 @@ impl Board {
         1
     }
 
-    fn backward(&self, square: todo!()) -> i32 {
+    fn backward(&self) -> i32 {
         // sum function
 
         // if square not pawn return 0
@@ -161,7 +273,7 @@ impl Board {
         0
     }
 
-    fn doubled(&self, square: todo!()) -> i32 {
+    fn doubled(&self) -> i32 {
         // sum function
 
         // if square not pawn return 0
@@ -173,10 +285,10 @@ impl Board {
         1 
     }
 
-    fn connected_bonus(&self, square: todo!()) -> i32 {
+    fn connected_bonus(&self) -> i32 {
         // sum function
 
-        if !connected(self, square) {
+        if self.connected() == 0{
             return 0;
         }
 
@@ -185,7 +297,7 @@ impl Board {
         0
     }
 
-    fn connected(&self, square: todo!()) -> i32 {
+    fn connected(&self) -> i32 {
         // sum function
 
         // check for phalanx and supported
@@ -193,25 +305,25 @@ impl Board {
         0
     }
 
-    fn weak_unopposeed_pawn(&self, square: todo!()) -> i32 {
+    fn weak_unopposeed_pawn(&self) -> i32 {
         // sum function
 
-        if self.opposed(square) {
+        if self.opposed() == 1{
             return 0;
         }
 
         let mut v = 0;
 
-        if self.isolated(square) {
+        if self.isolated() == 1{
             v += 1;
-        }else if self.backward(square) {
+        }else if self.backward() == 1{
             v += 1;
         }
 
         v
     }
 
-    fn opposed(&self, square: todo!()) -> i32 {
+    fn opposed(&self) -> i32 {
         // sum function
 
         // if square not pawn return 0
@@ -221,7 +333,7 @@ impl Board {
         0
     }
     
-    fn blocked(&self, square: todo!()) -> i32 {
+    fn blocked(&self) -> i32 {
         // sum function
 
         // if square not pawn return 0
@@ -236,13 +348,13 @@ impl Board {
     
     // MOBILITY MIDDLE GAME
 
-    fn mobility_mg(&self, square: todo!()) -> i32 {
+    fn mobility_mg(&self) -> i32 {
         // sum function
         
-        mobility_bonus(self, square, true)
+        self.mobility_bonus(true)
     }
     
-    fn mobility_bonus(&self, square: todo!(), is_middle_game: bool) -> i32 {
+    fn mobility_bonus(&self, is_middle_game: bool) -> i32 {
         // sum function
 
         // bonus depending on the middle game flag
@@ -254,7 +366,7 @@ impl Board {
         return 0
     }
     
-    fn mobility(&self, square: todo!()) -> i32 {
+    fn mobility(&self) -> i32 {
         // sum function
 
         let mut v = 0;
@@ -271,24 +383,24 @@ impl Board {
     fn threats_mg(&self) -> i32 {
         let mut v = 0;
 
-        v += 69 * hanging(self);
-        v += king_threat(self);
-        v += 48 * pawn_push_threat(self);
-        v += 173 * threat_safe_pawn(self);
-        v += 60 * slider_on_queen(self);
-        v += 16 * knight_on_queen(self);
-        v += 7 * restricted(self);
-        v += 14 * weak_queen_protection(self);
+        v += 69 * self.hanging();
+        v += self.king_threat();
+        v += 48 * self.pawn_push_threat();
+        v += 173 * self.threat_safe_pawn();
+        v += 60 * self.slider_on_queen();
+        v += 16 * self.knight_on_queen();
+        v += 7 * self.restricted();
+        v += 14 * self.weak_queen_protection();
         
         // iterate over board to check for minor threat function and rook threat function
 
         v
     }
     
-    fn hanging(&self, square: todo!()) -> i32 {
+    fn hanging(&self) -> i32 {
         // sum function
 
-        if !weak_enemies(self, square) {
+        if self.weak_enemies() == 0{
             return 0;
         }
         
@@ -297,7 +409,7 @@ impl Board {
         0
     }
     
-    fn weak_enemies(&self, square: todo!()) -> i32 {
+    fn weak_enemies(&self) -> i32 {
         // sum function
 
         // check if the square is protected or not, if protected return 0, if not return 1
@@ -308,12 +420,12 @@ impl Board {
         0
     }
     
-    fn king_threat(&self, square: todo!()) -> i32 {
+    fn king_threat(&self) -> i32 {
         // sum function
 
         // if square is not enemy piece return 0
 
-        if !weak_enemies(self, square) {
+        if self.weak_enemies() == 0{
             return 0;
         }
         
@@ -322,7 +434,7 @@ impl Board {
         0
     }
     
-    fn pawn_push_threat(&self, square: todo!()) -> i32 {
+    fn pawn_push_threat(&self) -> i32 {
         // sum function
 
         // is square is not enemy return 0
@@ -335,7 +447,7 @@ impl Board {
         0
     }
     
-    fn threat_safe_pawn(&self, square: todo!()) -> i32 {
+    fn threat_safe_pawn(&self) -> i32 {
         // sum function
 
         // if square not enemy pawn return 0
@@ -347,7 +459,7 @@ impl Board {
         0
     }
 
-    fn safe_pawn(&self, square: todo!()) -> i32 {
+    fn safe_pawn(&self) -> i32 {
         // sum function
 
         // if square is not enemy pawn return 0
@@ -358,7 +470,7 @@ impl Board {
     }
 
     // this function sees if i can gain tempo on a queen using a slider piece
-    fn slider_on_queen(&self, square: todo!()) -> i32 {
+    fn slider_on_queen(&self) -> i32 {
         // sum function
 
         // check for enemy pawn
@@ -373,13 +485,13 @@ impl Board {
     }
     
     // this function sees if i can gain tempo on a queen using a knight
-    fn knight_on_queen(self, square: todo!()) -> i32 {
+    fn knight_on_queen(&self) -> i32 {
         // sum function
 
         0
     }
 
-    fn restricted(&self, square: todo!()) -> i32 {
+    fn restricted(&self) -> i32 {
         // sum function
 
         // check attack function
@@ -389,10 +501,10 @@ impl Board {
         0
     }
 
-    fn weak_queen_protection(&self, square: todo!()) -> i32 {
+    fn weak_queen_protection(&self) -> i32 {
         // sum function
 
-        if !weak_enemies(self, square) {
+        if self.weak_enemies() == 0{
             return 0;
         }
         
@@ -403,7 +515,7 @@ impl Board {
 
     // PASSED MIDDLE GAME
 
-    fn passed_mg(&self, square: todo!()) -> i32 {
+    fn passed_mg(&self) -> i32 {
         // sum function
 
         // check for passed leverable function
@@ -420,7 +532,7 @@ impl Board {
     // SPACE FUNCTION
 
     // this function calculate how much space a side has
-    fn space(&self, square: todo!()) -> i32 {
+    fn space(&self) -> i32 {
 
         0
     }
@@ -429,13 +541,13 @@ impl Board {
 
     fn king_mg(&self) -> i32 {
         let mut v = 0;
-        let mut kd = king_danger(self);
+        let mut kd = self.king_danger();
         
-        v -= shelter_strength(self);
-        v += shelter_storm(self);
+        v -= self.shelter_strength();
+        v += self.shelter_storm();
         v += kd * kd / 4096;
-        v += 8 * flank_attack(self);
-        v += 17 * pawnless_flank(self);
+        v += 8 * self.flank_attack();
+        v += 17 * self.pawnless_flank();
         
         v
     }
@@ -446,23 +558,23 @@ impl Board {
         0
     }
 
-    fn shelter_strength(&self, square: todo!()) -> i32 {
+    fn shelter_strength(&self) -> i32 {
         // calculate the pieces sheltring the king
 
         0
     }
     
-    fn shelter_storm(&self, square: todo!()) -> i32 {
+    fn shelter_storm(&self) -> i32 {
 
         0
     }
     
-    fn flank_attack(&self, square: todo!()) -> i32 {
+    fn flank_attack(&self) -> i32 {
 
         0
     }
     
-    fn pawnless_flank(&self, square: todo!()) -> i32 {
+    fn pawnless_flank(&self) -> i32 {
 
         0
     }
@@ -496,7 +608,7 @@ impl Board {
         };
 
 
-        return v * i32::max(i32::min(winnable(self) + 50, 0), -i32::abs(v));
+        return v * i32::max(i32::min(self.winnable() + 50, 0), -i32::abs(v));
     }
     
     fn winnable(&self) -> i32 {
@@ -509,20 +621,35 @@ impl Board {
     fn color_flip(&self) -> Self {
         let mut clone_board = self.clone();
 
-        macro_rules! swap_pieces {
-            ($piece:ident) => {
-                let temp = clone_board.bitboards.white_$piece;
-                clone_board.bitboards.white_$piece = clone_board.bitboards.black_$piece;
-                clone_board.bitboards.black_$piece = temp;
-            };
-        }
+        // Swap pawns
+        let temp = clone_board.bitboards.white_pawns;
+        clone_board.bitboards.white_pawns = clone_board.bitboards.black_pawns;
+        clone_board.bitboards.black_pawns = temp;
 
-        swap_pieces!(pawns);
-        swap_pieces!(knights);
-        swap_pieces!(bishops);
-        swap_pieces!(rooks);
-        swap_pieces!(queens);
-        swap_pieces!(king);
+        // Swap knights
+        let temp = clone_board.bitboards.white_knights;
+        clone_board.bitboards.white_knights = clone_board.bitboards.black_knights;
+        clone_board.bitboards.black_knights = temp;
+
+        // Swap bishops
+        let temp = clone_board.bitboards.white_bishops;
+        clone_board.bitboards.white_bishops = clone_board.bitboards.black_bishops;
+        clone_board.bitboards.black_bishops = temp;
+
+        // Swap rooks
+        let temp = clone_board.bitboards.white_rooks;
+        clone_board.bitboards.white_rooks = clone_board.bitboards.black_rooks;
+        clone_board.bitboards.black_rooks = temp;
+
+        // Swap queens
+        let temp = clone_board.bitboards.white_queens;
+        clone_board.bitboards.white_queens = clone_board.bitboards.black_queens;
+        clone_board.bitboards.black_queens = temp;
+
+        // Swap kings
+        let temp = clone_board.bitboards.white_king;
+        clone_board.bitboards.white_king = clone_board.bitboards.black_king;
+        clone_board.bitboards.black_king = temp;
 
         clone_board
     }
