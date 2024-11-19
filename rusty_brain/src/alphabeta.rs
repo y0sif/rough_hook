@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::i32;
 use crate::board::{Board, Turn};
 use crate::movement::Move;
@@ -25,13 +26,22 @@ impl Board {
         */
         
         //using alphabeta with transposition table
+        /*
         let eval = match self.turn {
             Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
             Turn::Black => self.alpha_beta_min_tt(transposition_table,true, i32::MIN, i32::MAX, depth),
         };
-        
-
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
+        */
+        
+        //Iterative deepening, needs move ordering to show its strength
+        let eval = match self.turn {
+            Turn::White => self.iterative_deepening(transposition_table, true, depth),
+            Turn::Black => self.iterative_deepening(transposition_table, false, depth),
+        }; 
+        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
+
+
 
     }
 
@@ -291,4 +301,23 @@ impl Board {
         
         return best_value;
     }
+
+    fn iterative_deepening(&mut self, transposition_table: &mut TranspositionTable, maximazing: bool, max_depth: i32) -> i32 {
+        
+        let mut best_score = 0;
+
+        if maximazing {
+            for depth in 1..=max_depth {
+                best_score = self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth);
+            }
+        }
+        else {
+            for depth in 1..=max_depth {
+                best_score = self.alpha_beta_min_tt(transposition_table, true, i32::MIN, i32::MAX, depth);
+            }
+        }
+
+        best_score
+    }
+
 }
