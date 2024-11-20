@@ -302,21 +302,33 @@ impl Board {
         return best_value;
     }
 
-    fn iterative_deepening(&mut self, transposition_table: &mut TranspositionTable, maximazing: bool, max_depth: i32) -> i32 {
+    fn iterative_deepening(&mut self, transposition_table: &mut TranspositionTable, maximizing: bool, max_depth: i32) -> i32 {
         
         let mut best_score = 0;
+        let mut guess = 0;
+        let mut delta = 100;
+        
+        for depth in 1..=max_depth{
+            let mut alpha = guess - delta;
+            let mut beta = guess + delta;
 
-        if maximazing {
-            for depth in 1..=max_depth {
-                best_score = self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth);
-            }
+            loop{
+                best_score = if maximizing{
+                    self.alpha_beta_max_tt(transposition_table, true, alpha, beta, depth)
+                }else{
+                    self.alpha_beta_min_tt(transposition_table, true, alpha, beta, depth)
+                };
+                if best_score <= alpha{
+                    alpha = alpha -delta; //fail low, widen window low side
+                } else if best_score >= beta{
+                    beta = beta + delta; // fail high, widen window high side
+                }else{ // success!
+                    guess = best_score; //want to figure out if it should be zeroed out every new depth or not
+                    break;
+                }
+            delta = delta *2;}
         }
-        else {
-            for depth in 1..=max_depth {
-                best_score = self.alpha_beta_min_tt(transposition_table, true, i32::MIN, i32::MAX, depth);
-            }
-        }
-
+        
         best_score
     }
 
