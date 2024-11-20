@@ -1,9 +1,11 @@
-use crate::{board::{Board, Turn}, square::{self, Square}};
+use std::process::id;
+
+use crate::{bitboards, board::{Board, Turn}, square::{self, Square}};
 
 impl Board {
     pub fn evaluate(&mut self) -> i32 {
         let mg = self.middle_game_evaluation(true);
-        0
+        mg
     }
     
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
@@ -150,7 +152,7 @@ impl Board {
                 sum += calculate_bonus(self.bitboards.white_king, &bonus[4], 1);
             }
             Turn::Black => {
-                let mut pawn_bitboard = self.bitboards.white_pawns;
+                let mut pawn_bitboard = self.bitboards.black_pawns;
                  
                 while pawn_bitboard != 0 {
                     let square = pawn_bitboard.trailing_zeros() as u8;
@@ -175,7 +177,7 @@ impl Board {
 
     // IMBALANCE TOTAL
     
-    fn imbalance_total(&self, flip: &Board) -> i32 {
+    pub fn imbalance_total(&self, flip: &Board) -> i32 {
         let mut v = 0;
         v += self.imbalance() - flip.imbalance();
         v += self.bishop_pair() - flip.bishop_pair();
@@ -183,32 +185,130 @@ impl Board {
         v / 16
     }
 
-    fn imbalance(&self) -> i32 {
-        // sum function
+    pub fn imbalance(&self) -> i32 {
+        let qo: Vec<Vec<i32>> = vec![
+            vec![0],
+            vec![40, 38],
+            vec![32, 255, -62],
+            vec![0, 104, 4, 0],
+            vec![-26, -2, 47, 105, -208],
+            vec![-189, 24, 117, 133, -134, -6],
+        ];
 
-        // calculate niggerlicious imbalance
+        let qt: Vec<Vec<i32>> = vec![
+            vec![0],
+            vec![36, 0],
+            vec![9, 63, 0],
+            vec![59, 65, 42, 0],
+            vec![46, 39, 24, -24, 0],
+            vec![97, 100, -42, 137, 268, 0],
+        ];
 
-        0
-    }
-    
-    fn bishop_pair(&self) -> i32 {
-        if self.bishop_count() < 2 {
-            return 0;
+        let mut bishop = [0, 0];
+        
+        let mut v = 0;
+        
+        let through_piece = |bitboard: u64, table: &Vec<i32>, i: usize, j: usize| {
+            let mut sum = 0;
+            let mut bb = bitboard;
+
+            while bb != 0 {
+                if i % 6 > j {
+                    bb &= bb - 1;
+                    continue;
+                }
+                sum += table[i];
+
+                bb &= bb - 1; 
+            }
+            sum
+        };
+
+        // Helper function to calculate piece bonuses
+        let calculate_bonus = |bishop: &[u32; 2], bitboard: u64, ally_table: &Vec<Vec<i32>>, enemy_table: &Vec<Vec<i32>>, idx: usize| {
+            let mut sum = 0;
+            let mut bb = bitboard;
+            while bb != 0 {
+                sum += through_piece(self.bitboards.white_pawns, &ally_table[idx], 1, idx);
+                sum += through_piece(self.bitboards.white_knights, &ally_table[idx], 2, idx);
+                sum += through_piece(self.bitboards.white_bishops, &ally_table[idx], 3, idx);
+                sum += through_piece(self.bitboards.white_rooks, &ally_table[idx], 4, idx);
+                sum += through_piece(self.bitboards.white_queens, &ally_table[idx], 5, idx);
+
+                sum += through_piece(self.bitboards.black_pawns, &enemy_table[idx], 1, idx);
+                sum += through_piece(self.bitboards.black_knights, &enemy_table[idx], 2, idx);
+                sum += through_piece(self.bitboards.black_bishops, &enemy_table[idx], 3, idx);
+                sum += through_piece(self.bitboards.black_rooks, &enemy_table[idx], 4, idx);
+                sum += through_piece(self.bitboards.black_queens, &enemy_table[idx], 5, idx);
+
+                bb &= bb - 1;
+            }
+            
+            match self.turn {
+                Turn::White => {
+                    if bishop[0] > 1 {
+                        sum += enemy_table[idx][0]
+                    }
+                    if bishop[1] > 1 {
+                        sum += ally_table[idx][0]
+                    }
+                },
+                Turn::Black => {
+                    if bishop[0] > 1 {
+                        sum += ally_table[idx][0]
+                    }
+                    if bishop[1] > 1 {
+                        sum += enemy_table[idx][0]
+                    }
+                }
+            }
+            sum
+        };
+
+        match self.turn {
+            Turn::White => {
+                bishop[0] = self.bitboards.white_bishops.count_ones();
+                bishop[1] = self.bitboards.black_bishops.count_ones();
+                
+                v += calculate_bonus(&bishop, self.bitboards.white_pawns, &qo, &qt, 1);
+                v += calculate_bonus(&bishop, self.bitboards.white_knights, &qo, &qt, 2);
+                v += calculate_bonus(&bishop, self.bitboards.white_bishops, &qo, &qt, 3);
+                v += calculate_bonus(&bishop, self.bitboards.white_rooks, &qo, &qt,4);
+                v += calculate_bonus(&bishop, self.bitboards.white_queens, &qo, &qt,5);
+
+            },
+            Turn::Black => {
+                bishop[0] = self.bitboards.black_bishops.count_ones();
+                bishop[1] = self.bitboards.white_bishops.count_ones();
+
+                v += calculate_bonus(&bishop, self.bitboards.black_pawns, &qt, &qo, 1);
+                v += calculate_bonus(&bishop, self.bitboards.black_knights, &qt, &qo, 2);
+                v += calculate_bonus(&bishop, self.bitboards.black_bishops, &qt, &qo, 3);
+                v += calculate_bonus(&bishop, self.bitboards.black_rooks, &qt, &qo,4);
+                v += calculate_bonus(&bishop, self.bitboards.black_queens, &qt, &qo,5);
+            }
         }
-        
-        // if no square return 1438
 
-        // if square is bishop return 1 else 0
-        
-        0
+        v
     }
     
-    fn bishop_count(&self) -> i32 {
-        // sum function
-        
-        // if square is bishop return 1
-
-        0
+    pub fn bishop_pair(&self) -> i32 {
+        match self.turn {
+            Turn::White => {
+                if self.bitboards.white_bishops.count_ones() < 2 {
+                    return 0;
+                }else{
+                    return 1438;
+                }
+            },
+            Turn::Black => {
+                if self.bitboards.black_bishops.count_ones() < 2 {
+                    return 0;
+                }else{
+                    return 1438;
+                }
+            }
+        }     
     }
     
     // PAWNS MIDDLE GAME
@@ -618,7 +718,7 @@ impl Board {
 
     // COLOR FLIP FOR BOARD
 
-    fn color_flip(&self) -> Self {
+    pub fn color_flip(&self) -> Self {
         let mut clone_board = self.clone();
 
         // Swap pawns
