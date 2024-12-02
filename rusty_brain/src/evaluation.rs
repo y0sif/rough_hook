@@ -1,6 +1,6 @@
 use std::process::id;
 
-use crate::{bitboards, board::{Board, Turn}, square::{self, Square}};
+use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
 
 impl Board {
     pub fn evaluate(&mut self) -> i32 {
@@ -318,64 +318,192 @@ impl Board {
         
         let mut v = 0;
         
-        if self.doubled_isolated() == 1{
-            v -= 11;
-        }else if self.isolated() == 1{
-            v -= 5;
-        }else if self.backward() == 1{
-            v -= 9;
-        }
+        let mut pawn_bitboard = match self.turn {
+            Turn::White => self.bitboards.white_pawns,
+            Turn::Black => self.bitboards.black_pawns,
+        };
+        
+        while pawn_bitboard != 0 {
+            let square = pawn_bitboard.trailing_zeros() as u8;
+            let square_position = 1 << square;
 
-        v -= self.doubled() * 11;
+            if self.doubled_isolated(square, square_position) == 1{
+                v -= 11;
+            }else if self.isolated(square_position) == 1{
+                v -= 5;
+            }else if self.backward(square_position) == 1{
+                v -= 9;
+            }
+
+            v -= self.doubled(square_position) * 11;
+        
+            if self.connected_bonus(square_position, square) == 1{
+                v += self.connected(square_position);
+            }
+            
+            v -= 13 * self.weak_unopposeed_pawn(square_position, square);
+            
+            let arr = [0, -11, -3];
+            
+            v += arr[self.blocked(square_position, square) as usize]; 
+
+            pawn_bitboard &= pawn_bitboard - 1;
+        }
     
-        if self.connected_bonus() == 1{
-            v += self.connected();
-        }
-        
-        v -= 13 * self.weak_unopposeed_pawn();
-        
-        // add something niggerlicious to v in case of blocked function
-
         v
     }
     
-    fn doubled_isolated(&self) -> i32 {
-        // sum function
+    fn doubled_isolated(&self, square: u8, square_position: u64) -> i32 {
+        match self.turn {
+            Turn::White => {
+                if self.isolated(square_position) == 1 {
+                    let mut obe = 0;
+                    let mut eop = 0;
+                    let mut ene = 0;
 
-        // if square not pawn return 0
+                    let above_pawns = Bitboards::north_mask_ex(square) & self.bitboards.white_pawns; 
+                    let under_pawns = Bitboards::south_mask_ex(square) & self.bitboards.white_pawns; 
+                    
+                    obe += above_pawns.count_ones();
+                    eop += under_pawns.count_ones();
 
-        if self.isolated() == 1{
-            // do niggerlicious stuff here
+                    let neighbor_enemy_pawns = Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8) |
+                                                    Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
+                    
+                    let neighbor_enemy_pawns = neighbor_enemy_pawns & self.bitboards.black_pawns;
+                    
+                    ene += neighbor_enemy_pawns.count_ones();
+
+                    if obe > 0 && ene == 0 && eop > 0 {
+                        return 1;
+                    }
+                }    
+            },
+            Turn::Black => {
+                if self.isolated(square_position) == 1 {
+                    let mut obe = 0;
+                    let mut eop = 0;
+                    let mut ene = 0;
+
+                    let under_pawns = Bitboards::north_mask_ex(square) & self.bitboards.black_pawns; 
+                    let above_pawns = Bitboards::south_mask_ex(square) & self.bitboards.black_pawns; 
+                    
+                    obe += above_pawns.count_ones();
+                    eop += under_pawns.count_ones();
+
+                    let neighbor_enemy_pawns = Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8) |
+                                                    Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
+                    
+                    let neighbor_enemy_pawns = neighbor_enemy_pawns & self.bitboards.white_pawns;
+                    
+                    ene += neighbor_enemy_pawns.count_ones();
+
+                    if obe > 0 && ene == 0 && eop > 0 {
+                        return 1;
+                    }
+                }    
+                
+            },
+        }
+        
+        0
+    }
+
+    fn isolated(&self, square_position: u64) -> i32 {
+        let neighbor_pawns = Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8)
+                                  | Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
+
+        match self.turn {
+            Turn::White => {
+                if neighbor_pawns & self.bitboards.white_pawns != 0 {
+                    return 0;
+                }
+
+            },
+            Turn::Black => {
+                if neighbor_pawns & self.bitboards.black_pawns != 0 {
+                    return 0;
+                }
+
+            },
+        }
+
+        1
+    }
+
+    fn backward(&self, square_position: u64) -> i32 {
+        match self.turn {
+            Turn::White => {
+                let neighbor_pawns = Bitboards::south_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8) | 
+                                          Bitboards::south_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8) |
+                                          Bitboards::move_east(square_position) | 
+                                          Bitboards::move_west(square_position);
+                if neighbor_pawns & self.bitboards.white_pawns != 0 {
+                    return 0;
+                }
+                
+                let enemy_pawns = Bitboards::move_north(Bitboards::move_north(square_position));
+                let enemy_pawns = Bitboards::move_east(enemy_pawns) | Bitboards::move_west(enemy_pawns);
+                
+                if enemy_pawns & self.bitboards.black_pawns != 0 {
+                    return 1;
+                }
+                
+            },
+            Turn::Black => {
+                let neighbor_pawns = Bitboards::north_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8) | 
+                                          Bitboards::north_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8) |
+                                          Bitboards::move_east(square_position) | 
+                                          Bitboards::move_west(square_position);
+
+                if neighbor_pawns & self.bitboards.black_pawns != 0 {
+                    return 0;
+                }
+                
+                let enemy_pawns = Bitboards::move_north(Bitboards::move_north(square_position));
+                let enemy_pawns = Bitboards::move_east(enemy_pawns) | Bitboards::move_west(enemy_pawns);
+                
+                if enemy_pawns & self.bitboards.white_pawns != 0 {
+                    return 1;
+                }
+                
+            },
         }
 
         0
     }
 
-    fn isolated(&self) -> i32 {
-        // sum function
-
-        // if square not pawn return 0
-
-        // iterate over the same rank, if there is a pawn -> not isolated so return 0
-
-        // else
-        1
-    }
-
-    fn backward(&self) -> i32 {
-        // sum function
-
-        // if square not pawn return 0
-
-        // iterate to check if it is backwards or not
-
-        //else 
-        0
-    }
-
-    fn doubled(&self) -> i32 {
-        // sum function
-
+    fn doubled(&self, square_position: u64) -> i32 {
+        match self.turn {
+            Turn::White => {
+                let above_pawn = Bitboards::move_north(square_position);
+                if above_pawn & self.bitboards.white_pawns == 0 {
+                    return 0;
+                }
+                
+                let support_pawns = Bitboards::move_south(square_position);
+                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
+                if support_pawns != 0 {
+                    return 0;
+                }
+                
+                return 1;
+            },
+            Turn::Black => {
+                let under_pawns = Bitboards::move_south(square_position);
+                if under_pawns & self.bitboards.white_pawns == 0 {
+                    return 0;
+                }
+                
+                let support_pawns = Bitboards::move_north(square_position);
+                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
+                if support_pawns != 0 {
+                    return 0;
+                }
+                
+                return 1;
+            },
+        }
         // if square not pawn return 0
 
         // if square above pawn is not pawn return 0
@@ -385,65 +513,153 @@ impl Board {
         1 
     }
 
-    fn connected_bonus(&self) -> i32 {
-        // sum function
+    fn connected_bonus(&self, square_position: u64, square: u8) -> i32 {
 
-        if self.connected() == 0{
+        if self.connected(square_position) == 0{
             return 0;
         }
 
-        // calculate connected bonus from the given function in the wiki
+        let seed = [0, 7, 8, 12, 29, 48, 86];
+        
+        let op = self.opposed(square);
+        let ph = self.phalanx(square_position);
+        let su = self.supported(square_position);
+        let bl = match self.turn {
+            Turn::White => {
+                if Bitboards::move_north(square_position) & self.bitboards.black_pawns != 0 {
+                    return 1;
+                }
+                0
+            },
+            Turn::Black => {
+                if Bitboards::move_south(square_position) & self.bitboards.white_pawns != 0 {
+                    return 1;
+                }
+                0
+            },
+        };
+        
+        let r = Square::from(square).rank() as usize;
+        
+        if r < 2 || r > 7 {
+            return 0;
+        }
+
+        match self.turn {
+            Turn::White => {
+                seed[r - 1] * (2 + ph - op) + 21 * su
+            },
+            Turn::Black => {
+                seed[r + 1] * (2 + ph - op) + 21 * su
+            },
+        }
+    }
+
+    fn connected(&self, square_position: u64) -> i32 {
+        if self.supported(square_position) != 0 || self.phalanx(square_position) == 1{
+            return 1;
+        }   
+
+        0
+    }
+    
+    fn supported(&self, square_position: u64) -> i32 {
+        match self.turn {
+            Turn::White => {
+                let support_pawns = Bitboards::move_south(square_position);
+                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
+                
+                return support_pawns.count_ones() as i32;
+
+            },
+            Turn::Black => {
+                let support_pawns = Bitboards::move_north(square_position);
+                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
+                
+                return support_pawns.count_ones() as i32;
+            },
+        }
+        
+    }
+    
+    fn phalanx(&self, square_position: u64) -> i32 {
+        let phalan = Bitboards::move_east(square_position) | Bitboards::move_west(square_position);
+        
+        if phalan != 0 {
+            return 1;
+        }
 
         0
     }
 
-    fn connected(&self) -> i32 {
-        // sum function
-
-        // check for phalanx and supported
-
-        0
-    }
-
-    fn weak_unopposeed_pawn(&self) -> i32 {
-        // sum function
-
-        if self.opposed() == 1{
+    fn weak_unopposeed_pawn(&self, square_position: u64, square: u8) -> i32 {
+        if self.opposed(square) == 1{
             return 0;
         }
 
         let mut v = 0;
 
-        if self.isolated() == 1{
+        if self.isolated(square_position) == 1{
             v += 1;
-        }else if self.backward() == 1{
+        }else if self.backward(square_position) == 1{
             v += 1;
         }
 
         v
     }
 
-    fn opposed(&self) -> i32 {
-        // sum function
+    fn opposed(&self, square: u8) -> i32 {
 
-        // if square not pawn return 0
-
-        // check if the pawn is opposed by enemy pawn -> return 1
+        match self.turn {
+            Turn::White => {
+                let op = Bitboards::north_mask_ex(square) & self.bitboards.black_pawns;
+                
+                if op != 0 {
+                    return 1;
+                }
+            },
+            Turn::Black => {
+                let op = Bitboards::south_mask_ex(square) & self.bitboards.white_pawns;
+                
+                if op != 0 {
+                    return 1;
+                }
+                
+            },
+        }
 
         0
     }
     
-    fn blocked(&self) -> i32 {
-        // sum function
-
-        // if square not pawn return 0
-
-        // check for a condition regarding pawn placement
-
-        // if there is a pawn behind me -> return 0
-
-        // else return 4 - pawn rank
-        0
+    fn blocked(&self, square_position: u64, square: u8) -> i32 {
+        match self.turn {
+            Turn::White => {
+                let rank = Square::from(square).rank();
+                
+                if rank != Rank::Second && rank != Rank::Third {
+                    return 0;
+                }
+                
+                if Bitboards::move_north(square_position) & self.bitboards.black_pawns == 0 {
+                    return 0;
+                }
+                
+                return 4 - rank as i32;
+            },
+            Turn::Black => {
+                let rank = Square::from(square).rank();
+                
+                if rank != Rank::Seventh && rank != Rank::Sixth {
+                    return 0;
+                }
+                
+                if Bitboards::move_south(square_position) & self.bitboards.white_pawns == 0 {
+                    return 0;
+                }
+                
+                return rank as i32;
+            },
+        }
     }
     
     // MOBILITY MIDDLE GAME
