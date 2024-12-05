@@ -185,7 +185,7 @@ impl Board {
         v / 16
     }
 
-    pub fn imbalance(&self) -> i32 {
+    fn imbalance(&self) -> i32 {
         let qo: Vec<Vec<i32>> = vec![
             vec![0],
             vec![40, 38],
@@ -208,20 +208,16 @@ impl Board {
         
         let mut v = 0;
         
-        let through_piece = |bitboard: u64, table: &Vec<i32>, i: usize, j: usize| {
-            let mut sum = 0;
-            let mut bb = bitboard;
-
-            while bb != 0 {
-                if i % 6 > j {
-                    bb &= bb - 1;
-                    continue;
-                }
-                sum += table[i];
-
-                bb &= bb - 1; 
+        let through_piece = |bitboard: u64, table: &Vec<i32>, i: usize, j: usize| {            
+            if i % 6 > j{
+                return 0;
             }
-            sum
+            else {
+                let sum;
+                let number_of_pieces = bitboard.count_ones() as i32;
+                sum = number_of_pieces * table[i];
+                return sum;
+            }
         };
 
         // Helper function to calculate piece bonuses
@@ -240,35 +236,38 @@ impl Board {
                 sum += through_piece(self.bitboards.black_bishops, &enemy_table[idx], 3, idx);
                 sum += through_piece(self.bitboards.black_rooks, &enemy_table[idx], 4, idx);
                 sum += through_piece(self.bitboards.black_queens, &enemy_table[idx], 5, idx);
+                
+                match self.turn {
+                    Turn::White => {
+                        if bishop[0] > 1 {
+                            sum += enemy_table[idx][0];
+                            //println!("Here1");
+                        }
+                        if bishop[1] > 1 {
+                            //println!("Here2");
+                            sum += ally_table[idx][0]
+                        }
+                    },
+                    Turn::Black => {
+                        if bishop[0] > 1 {
+                            sum += ally_table[idx][0]
+                        }
+                        if bishop[1] > 1 {
+                            sum += enemy_table[idx][0]
+                        }
+                    }
+                }
 
                 bb &= bb - 1;
             }
             
-            match self.turn {
-                Turn::White => {
-                    if bishop[0] > 1 {
-                        sum += enemy_table[idx][0]
-                    }
-                    if bishop[1] > 1 {
-                        sum += ally_table[idx][0]
-                    }
-                },
-                Turn::Black => {
-                    if bishop[0] > 1 {
-                        sum += ally_table[idx][0]
-                    }
-                    if bishop[1] > 1 {
-                        sum += enemy_table[idx][0]
-                    }
-                }
-            }
             sum
         };
 
         match self.turn {
             Turn::White => {
-                bishop[0] = self.bitboards.white_bishops.count_ones();
-                bishop[1] = self.bitboards.black_bishops.count_ones();
+                bishop[0] = self.bitboards.black_bishops.count_ones();
+                bishop[1] = self.bitboards.white_bishops.count_ones();
                 
                 v += calculate_bonus(&bishop, self.bitboards.white_pawns, &qo, &qt, 1);
                 v += calculate_bonus(&bishop, self.bitboards.white_knights, &qo, &qt, 2);
@@ -278,8 +277,8 @@ impl Board {
 
             },
             Turn::Black => {
-                bishop[0] = self.bitboards.black_bishops.count_ones();
-                bishop[1] = self.bitboards.white_bishops.count_ones();
+                bishop[0] = self.bitboards.white_bishops.count_ones();
+                bishop[1] = self.bitboards.black_bishops.count_ones();
 
                 v += calculate_bonus(&bishop, self.bitboards.black_pawns, &qt, &qo, 1);
                 v += calculate_bonus(&bishop, self.bitboards.black_knights, &qt, &qo, 2);
