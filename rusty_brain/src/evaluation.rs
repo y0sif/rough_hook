@@ -124,7 +124,7 @@ impl Board {
                 let square = bb.trailing_zeros() as u8;
                 let rank = Square::from(square).rank() as usize;
                 let file = Square::from(square).file() as usize;
-                let table_rank = if multiplier == 1 { 7 - rank as usize } else { rank as usize };
+                let table_rank = if multiplier == 1 {rank as usize } else {7 - rank as usize };
                 sum += table[table_rank][usize::min(file, 7 - file)];
                 bb &= bb - 1; // Clear the least significant bit
             }
@@ -140,7 +140,7 @@ impl Board {
                     let rank = Square::from(square).rank() as usize;
                     let file = Square::from(square).file() as usize;
                     
-                    sum += p_bonus[7 - rank][file];
+                    sum += p_bonus[rank][file];
                     
                     pawn_bitboard &= pawn_bitboard - 1;
                 }
@@ -159,7 +159,7 @@ impl Board {
                     let rank = Square::from(square).rank() as usize;
                     let file = Square::from(square).file() as usize;
                     
-                    sum += p_bonus[rank][file];
+                    sum += p_bonus[7-rank][file];
                     
                     pawn_bitboard &= pawn_bitboard - 1;
                 }
@@ -177,7 +177,7 @@ impl Board {
 
     // IMBALANCE TOTAL
     
-    pub fn imbalance_total(&self, flip: &Board) -> i32 {
+    fn imbalance_total(&self, flip: &Board) -> i32 {
         let mut v = 0;
         v += self.imbalance() - flip.imbalance();
         v += self.bishop_pair() - flip.bishop_pair();
