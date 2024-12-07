@@ -1,8 +1,9 @@
 use burn::{
     backend::{Autodiff, Wgpu},
-    optim::AdamConfig, 
+    optim::AdamWConfig, 
 };
-use nnue::{model::ModelConfig, training::TrainingConfig};
+use kanue::{model::KanConfig, training::{KanTrainingConfig, train}};
+use burn_efficient_kan::KanOptions;
 
 fn main() {
     type MyBackend = Wgpu<f32, i32>;
@@ -10,9 +11,12 @@ fn main() {
 
     let device = burn::backend::wgpu::WgpuDevice::BestAvailable;
     let artifact_dir = "/tmp/guide";
-    nnue::training::train::<MyAutodiffBackend>(
+    let config_optimizer = AdamWConfig::new().with_weight_decay(1e-4);
+
+    train::<MyAutodiffBackend>(
         artifact_dir,
-        TrainingConfig::new(ModelConfig::new(), AdamConfig::new()),
+        KanTrainingConfig::new(KanConfig::new(), config_optimizer, KanOptions::new([64 * 64 * 5 * 2, 1, 256]),
+        KanOptions::new([512, 2, 1])),
         device.clone(),
     );
 

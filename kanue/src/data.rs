@@ -175,7 +175,7 @@ impl ChessPositionDataSet {
     fn new(split: &str) -> Self{
         println!("dataloading started");
         type ChessEval = SqliteDataset<ChessPositionRaw>;
-        let root: SqliteDataset<ChessPositionRaw> = HuggingfaceDatasetLoader::new("Lichess/chess-evaluations")
+        let root: SqliteDataset<ChessPositionRaw> = HuggingfaceDatasetLoader::new("Lichess/chess-position-evaluations")
             .dataset("train") // The training split.
             .unwrap();
 
