@@ -9,7 +9,7 @@ use burn_dataset::HuggingfaceDatasetLoader;
 use burn_dataset::InMemDataset;
 use burn_dataset::SqliteDataset;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChessPositionRaw {
@@ -31,14 +31,12 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
     fn map(&self, item: &ChessPositionRaw) -> ChessPositionItem {
         /*
         White
-        king
         pawn
         knight
         bishop
         rook
         queen
         Black
-        king
         pawn
         knight
         bishop
@@ -57,6 +55,25 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
             ('r', 8),
             ('q', 9),
         ]);
+        
+        // map used to make other side perspective
+        
+        let piece_to_piece_map: HashMap<usize, usize> = HashMap::from([
+            (0, 5), (1, 6), (2, 7), (3, 8), (4, 9),
+            (5, 0), (6, 1), (7, 2), (8, 3), (9, 4)            
+        ]);
+
+        let other_side_map: HashMap<usize, usize> = HashMap::from([
+            (0, 56), (1, 57), (2, 58), (3, 59), (4, 60), (5, 61), (6, 62), (7, 63),
+            (8, 48), (9, 49), (10, 50), (11, 51), (12, 52), (13, 53), (14, 54), (15, 55),
+            (16, 40), (17, 41), (18, 42), (19, 43), (20, 44), (21, 45), (22, 46), (23, 47),
+            (24, 32), (25, 33), (26, 34), (27, 35), (28, 36), (29, 37), (30, 38), (31, 39),
+            (32, 24), (33, 25), (34, 26), (35, 27), (36, 28), (37, 29), (38, 30), (39, 31),
+            (40, 16), (41, 17), (42, 18), (43, 19), (44, 20), (45, 21), (46, 22), (47, 23),
+            (48, 8), (49, 9), (50, 10), (51, 11), (52, 12), (53, 13), (54, 14), (55, 15),
+            (56, 0), (57, 1), (58, 2), (59, 3), (60, 4), (61, 5), (62, 6), (63, 7),
+        ]);
+
         let mut position = [[0.0; 64]; 10];
         
         let fen_str: Vec<&str> = item.fen.split_whitespace().collect();
@@ -98,19 +115,49 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
                 count += 1
             }
         }
+        
+        let mut other_perspective_position = position.clone();
+
+        let mut set = HashSet::new();
+        for i in 0..other_perspective_position.len() {
+            for j in 0..other_perspective_position[i].len() {
+                if other_perspective_position[i][j] == 1.0 {
+                    if !set.insert((i, j)){
+                        continue;
+                    }
+                    let idx_i = piece_to_piece_map.get(&i).unwrap();
+                    let idx_j = other_side_map.get(&j).unwrap();
+                    if !set.insert((*idx_i, *idx_j)){
+                        continue;
+                    }
+                    other_perspective_position[i][j] = 0.0;
+                    other_perspective_position[*idx_i][*idx_j] = 1.0;
+                }
+            }
+        }
+        
+        other_square = *other_side_map.get(&other_square).unwrap();
 
         let position: Vec<f32> = position.into_iter()
                                 .flat_map(|item| item).collect();
+
+        let other_perspective_position: Vec<f32> = other_perspective_position.into_iter()
+                                .flat_map(|item| item).collect();
+
         let mut side_to_move: Vec<Vec<f32>> = Vec::new();
         let mut other_to_move: Vec<Vec<f32>> = Vec::new();
         for i in 0..64{
             if i == to_move_square{
+                println!("side to move: {}", i);
+                println!("boards \n {:?}", position);
                 side_to_move.push(position.clone());
             }else {
                 side_to_move.push([0.0; 640].to_vec());
             }
             if i == other_square{
-                other_to_move.push(position.clone());
+                println!("side to move: {}", i);
+                println!("boards \n {:?}", other_perspective_position);
+                other_to_move.push(other_perspective_position.clone());
             }else {
                 other_to_move.push([0.0; 640].to_vec());
             }
