@@ -20,8 +20,8 @@ pub struct ChessPositionRaw {
 
 #[derive(Clone, Debug)]
 pub struct ChessPositionItem{
-    pub side_to_move: Vec<f32>,
-    pub other_side: Vec<f32>,
+    pub side_to_move: Vec<i8>,
+    pub other_side: Vec<i8>,
     pub evaluation: f32,
 } 
 
@@ -74,7 +74,7 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
             (56, 0), (57, 1), (58, 2), (59, 3), (60, 4), (61, 5), (62, 6), (63, 7),
         ]);
 
-        let mut position = [[0.0; 64]; 10];
+        let mut position = [[0; 64]; 10];
         
         let fen_str: Vec<&str> = item.fen.split_whitespace().collect();
         
@@ -111,7 +111,7 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
                 continue;
             }
             if let Some(value) = map.get(&piece){
-                position[*value][count] = 1.0;
+                position[*value][count] = 1;
                 count += 1
             }
         }
@@ -121,7 +121,7 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
         let mut set = HashSet::new();
         for i in 0..other_perspective_position.len() {
             for j in 0..other_perspective_position[i].len() {
-                if other_perspective_position[i][j] == 1.0 {
+                if other_perspective_position[i][j] == 1 {
                     if !set.insert((i, j)){
                         continue;
                     }
@@ -130,42 +130,38 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
                     if !set.insert((*idx_i, *idx_j)){
                         continue;
                     }
-                    other_perspective_position[i][j] = 0.0;
-                    other_perspective_position[*idx_i][*idx_j] = 1.0;
+                    other_perspective_position[i][j] = 0;
+                    other_perspective_position[*idx_i][*idx_j] = 1;
                 }
             }
         }
         
         other_square = *other_side_map.get(&other_square).unwrap();
 
-        let position: Vec<f32> = position.into_iter()
+        let position: Vec<i8> = position.into_iter()
                                 .flat_map(|item| item).collect();
 
-        let other_perspective_position: Vec<f32> = other_perspective_position.into_iter()
+        let other_perspective_position: Vec<i8> = other_perspective_position.into_iter()
                                 .flat_map(|item| item).collect();
 
-        let mut side_to_move: Vec<Vec<f32>> = Vec::new();
-        let mut other_to_move: Vec<Vec<f32>> = Vec::new();
+        let mut side_to_move: Vec<Vec<i8>> = Vec::new();
+        let mut other_to_move: Vec<Vec<i8>> = Vec::new();
         for i in 0..64{
             if i == to_move_square{
-                println!("side to move: {}", i);
-                println!("boards \n {:?}", position);
                 side_to_move.push(position.clone());
             }else {
-                side_to_move.push([0.0; 640].to_vec());
+                side_to_move.push([0; 640].to_vec());
             }
             if i == other_square{
-                println!("side to move: {}", i);
-                println!("boards \n {:?}", other_perspective_position);
                 other_to_move.push(other_perspective_position.clone());
             }else {
-                other_to_move.push([0.0; 640].to_vec());
+                other_to_move.push([0; 640].to_vec());
             }
 
         }
-        let side_to_move: Vec<f32> = side_to_move.into_iter()
+        let side_to_move: Vec<i8> = side_to_move.into_iter()
                                     .flat_map(|item| item).collect();
-        let other_to_move: Vec<f32> = other_to_move.into_iter()
+        let other_to_move: Vec<i8> = other_to_move.into_iter()
                                     .flat_map(|item| item).collect();
 
         assert_eq!(side_to_move.len(), 64 * 64 * 5 * 2);
@@ -222,7 +218,7 @@ impl ChessPositionDataSet {
     fn new(split: &str) -> Self{
         println!("dataloading started");
         type ChessEval = SqliteDataset<ChessPositionRaw>;
-        let root: SqliteDataset<ChessPositionRaw> = HuggingfaceDatasetLoader::new("Lichess/chess-position-evaluations")
+        let root: SqliteDataset<ChessPositionRaw> = HuggingfaceDatasetLoader::new("Lichess/chess-evaluations")
             .dataset("train") // The training split.
             .unwrap();
 
@@ -268,8 +264,10 @@ impl<B: Backend> ChessPositionBatcher<B> {
     }
 
     
-    pub fn normalize<const D: usize>(&self, inp:Tensor<B, D>) -> Tensor<B, D>{
-        inp.div_scalar(100.0)
+    pub fn min_max_norm(&self, inp:Tensor<B, 1>) -> Tensor<B, 1>{
+        let min = inp.clone().min();
+        let max = inp.clone().max();
+        (inp - min.clone()).div(max - min)
     }
 }
 
@@ -304,8 +302,7 @@ impl <B: Backend> Batcher<ChessPositionItem, ChessPositionBatch<B>> for ChessPos
             .map(|item| Tensor::<B, 1>::from_data([item.evaluation as f32], &self.device))
             .collect();
         let evaluations = Tensor::cat(evaluations, 0); 
-        //let evaluations = self.min_max_norm(evaluations);
-        let evaluations = self.normalize(evaluations);
+        let evaluations = self.min_max_norm(evaluations);
 
         ChessPositionBatch { side_to_move, other_side, evaluations }
     }
