@@ -14,9 +14,8 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessPosit
 
     let batcher = ChessPositionBatcher::new(device);
     let batch = batcher.batch(vec![item.clone()]);
-    let output = model.forward(batch.fens);
+    let output = model.infer(batch.fens) * 400.0;
 
-    // Directly use the output without argmax for regression
     let predicted = output.flatten::<1>(0, 1).into_scalar();
 
     println!("Predicted {} Expected {}", predicted, item.evaluation);

@@ -2,7 +2,8 @@ use burn::{
     backend::{Autodiff, Wgpu},
     optim::AdamConfig, 
 };
-use nnue::{model::ModelConfig, training::TrainingConfig};
+use burn_dataset::transform::Mapper;
+use nnue::{data::{self, RawToItem}, model::ModelConfig, training::TrainingConfig};
 
 fn main() {
     type MyBackend = Wgpu<f32, i32>;
@@ -17,13 +18,15 @@ fn main() {
     );
 
     // let chess_raw = data::ChessPositionRaw{
-    //     fen: String::from("rnbqkb1r/pppppppp/5n2/8/4P1Q1/8/PPPP1PPP/RNB1KBNR b KQkq - 2 2"),
-    //     evaluation: String::from("0"),
+    //     fen: String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/R3K3 w Qkq - 0 1"),
+    //     evaluation: Some(-1500.0),
     // };
-    // let mapper = data::RawToItem;
+    
+    // let mapper = RawToItem;
+
     // let chess_item = mapper.map(&chess_raw);
 
-    // crate::inference::infer::<MyBackend>(
+    // nnue::inference::infer::<MyBackend>(
     //     artifact_dir,
     //     device,
     //     chess_item,

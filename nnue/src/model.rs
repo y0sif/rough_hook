@@ -27,15 +27,23 @@ impl ModelConfig {
 }
 
 impl <B:Backend> Model<B> {
-pub fn forward(&self, positions: Tensor<B, 2>) -> Tensor<B, 2> {
+    pub fn forward(&self, positions: Tensor<B, 2>) -> Tensor<B, 2> {
         let x = self.linear1.forward(positions);
         let x = clipped_relu(x); 
         let x = self.linear2.forward(x);
         let x = clipped_relu(x); 
         let x = self.linear3.forward(x);
         self.activation.forward(x)
-        
     }
+    
+    pub fn infer(&self, positions: Tensor<B, 2>) -> Tensor<B, 2> {
+        let x = self.linear1.forward(positions);
+        let x = clipped_relu(x); 
+        let x = self.linear2.forward(x);
+        let x = clipped_relu(x); 
+        self.linear3.forward(x)
+    }
+
 }
 
 fn clipped_relu<B: Backend>(tensor: Tensor<B, 2>) -> Tensor<B, 2> {
