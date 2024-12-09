@@ -1,15 +1,12 @@
-use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::loss::{MseLoss, Reduction}, optim::AdamConfig, prelude::Backend, record::CompactRecorder, tensor::{backend::AutodiffBackend, Tensor}, train::{metric::{store::{Aggregate, Direction, Split}, LossMetric, }, LearnerBuilder, MetricEarlyStoppingStrategy, RegressionOutput, StoppingCondition, TrainOutput, TrainStep, ValidStep}};
-
+use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::loss::{MseLoss, Reduction}, optim::AdamConfig, prelude::Backend, record::CompactRecorder, tensor::{backend::AutodiffBackend, Tensor}, train::{metric::{store::{Aggregate, Direction, Split}, LossMetric}, LearnerBuilder, MetricEarlyStoppingStrategy, RegressionOutput, StoppingCondition, TrainOutput, TrainStep, ValidStep}};
 use crate::{data::{ChessPositionBatch, ChessPositionBatcher, ChessPositionDataSet}, model::{Model, ModelConfig}};
-
 impl <B: Backend> Model<B> {
     pub fn forward_regression(
         &self,
-        side_to_move: Tensor<B, 2>,
-        other_side: Tensor<B, 2>,
+        fens: Tensor<B, 2>,
         evaluations: Tensor<B, 1>,
     ) -> RegressionOutput<B> {
-        let output = self.forward(side_to_move, other_side);
+        let output = self.forward(fens);
         let loss = MseLoss::new().forward(output.clone(), evaluations.clone().unsqueeze(), Reduction::Mean);
         
         RegressionOutput::new(loss, output.unsqueeze(), evaluations.unsqueeze())
@@ -18,19 +15,16 @@ impl <B: Backend> Model<B> {
 
 impl<B: AutodiffBackend> TrainStep<ChessPositionBatch<B>, RegressionOutput<B>> for Model<B> {
     fn step(&self, batch: ChessPositionBatch<B>) -> burn::train::TrainOutput<RegressionOutput<B>> {
-        let item = self.forward_regression(batch.side_to_move, batch.other_side, batch.evaluations);
-
+        let item = self.forward_regression(batch.fens, batch.evaluations);
         TrainOutput::new(self, item.loss.backward(), item)
     }
-
 }
 
 impl <B: Backend> ValidStep<ChessPositionBatch<B>, RegressionOutput<B>> for Model<B> {
     fn step(&self, batch: ChessPositionBatch<B>) -> RegressionOutput<B> {
-        self.forward_regression(batch.side_to_move, batch.other_side, batch.evaluations)
+        self.forward_regression(batch.fens, batch.evaluations) 
     }
 }
-
 
 #[derive(Config)]
 pub struct TrainingConfig{
@@ -38,13 +32,13 @@ pub struct TrainingConfig{
     pub optimizer: AdamConfig,
     #[config(default = 10)]
     pub num_epochs: usize,
-    #[config(default = 32)]
+    #[config(default = 64)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
     #[config(default = 42)]
     pub seed: u64,
-    #[config(default = 1.0e-9)]
+    #[config(default = 1.0e-4)]
     pub learning_rate: f64,
 }
 
@@ -61,8 +55,6 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
         .expect("Config should be saved successfully");
 
     B::seed(config.seed);
-    println!("started training");
-    
 
     let batcher_train = ChessPositionBatcher::<B>::new(device.clone());
     let batcher_valid = ChessPositionBatcher::<B::InnerBackend>::new(device.clone());
@@ -71,7 +63,6 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
         .shuffle(config.seed)
         .num_workers(config.num_workers)
         .build(ChessPositionDataSet::train());
-
     
     let dataloader_test= DataLoaderBuilder::new(batcher_valid)
         .batch_size(config.batch_size)
