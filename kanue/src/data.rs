@@ -8,8 +8,9 @@ use burn_dataset::Dataset;
 use burn_dataset::HuggingfaceDatasetLoader;
 use burn_dataset::InMemDataset;
 use burn_dataset::SqliteDataset;
+use nn::Sigmoid;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChessPositionRaw {
@@ -20,8 +21,7 @@ pub struct ChessPositionRaw {
 
 #[derive(Clone, Debug)]
 pub struct ChessPositionItem{
-    pub side_to_move: Vec<f32>,
-    pub other_side: Vec<f32>,
+    pub fen_to_pieces: Vec<i8>,
     pub evaluation: f32,
 } 
 
@@ -31,12 +31,14 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
     fn map(&self, item: &ChessPositionRaw) -> ChessPositionItem {
         /*
         White
+        king
         pawn
         knight
         bishop
         rook
         queen
         Black
+        king
         pawn
         knight
         bishop
@@ -44,53 +46,21 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
         queen
          */
         let map = HashMap::from([
-            ('P', 0),
-            ('N', 1),
-            ('B', 2),
-            ('R', 3),
-            ('Q', 4),
-            ('p', 5),
-            ('n', 6),
-            ('b', 7),
-            ('r', 8),
-            ('q', 9),
+            ('K', 0),
+            ('P', 1),
+            ('N', 2),
+            ('B', 3),
+            ('R', 4),
+            ('Q', 5),
+            ('k', 6),
+            ('p', 7),
+            ('n', 8),
+            ('b', 9),
+            ('r', 10),
+            ('q', 11),
         ]);
-        
-        // map used to make other side perspective
-        
-        let piece_to_piece_map: HashMap<usize, usize> = HashMap::from([
-            (0, 5), (1, 6), (2, 7), (3, 8), (4, 9),
-            (5, 0), (6, 1), (7, 2), (8, 3), (9, 4)            
-        ]);
-
-        let other_side_map: HashMap<usize, usize> = HashMap::from([
-            (0, 56), (1, 57), (2, 58), (3, 59), (4, 60), (5, 61), (6, 62), (7, 63),
-            (8, 48), (9, 49), (10, 50), (11, 51), (12, 52), (13, 53), (14, 54), (15, 55),
-            (16, 40), (17, 41), (18, 42), (19, 43), (20, 44), (21, 45), (22, 46), (23, 47),
-            (24, 32), (25, 33), (26, 34), (27, 35), (28, 36), (29, 37), (30, 38), (31, 39),
-            (32, 24), (33, 25), (34, 26), (35, 27), (36, 28), (37, 29), (38, 30), (39, 31),
-            (40, 16), (41, 17), (42, 18), (43, 19), (44, 20), (45, 21), (46, 22), (47, 23),
-            (48, 8), (49, 9), (50, 10), (51, 11), (52, 12), (53, 13), (54, 14), (55, 15),
-            (56, 0), (57, 1), (58, 2), (59, 3), (60, 4), (61, 5), (62, 6), (63, 7),
-        ]);
-
-        let mut position = [[0.0; 64]; 10];
-        
+        let mut position = [[0; 64]; 12];
         let fen_str: Vec<&str> = item.fen.split_whitespace().collect();
-        
-        let (to_move, other) = match fen_str[1]{
-            "w" => {
-                ('K', 'k')
-            },
-            "b" => {
-                ('k', 'K')
-            },
-            _ => {
-                (' ', ' ')
-            },
-        };
-        let mut to_move_square = 0;
-        let mut other_square = 0;
         let mut count: usize = 0;
         for piece in fen_str[0].chars(){
             if piece == '/'{
@@ -100,88 +70,24 @@ impl Mapper<ChessPositionRaw, ChessPositionItem> for RawToItem{
                 count += piece.to_digit(10).unwrap() as usize;
                 continue;
             }
-            if piece == to_move{
-                to_move_square = count;
-                count += 1;
-                continue;
-            }
-            if piece == other{
-                other_square = count;
-                count += 1;
-                continue;
-            }
             if let Some(value) = map.get(&piece){
-                position[*value][count] = 1.0;
+                position[*value][count] = 1;
                 count += 1
             }
         }
-        
-        let mut other_perspective_position = position.clone();
-
-        let mut set = HashSet::new();
-        for i in 0..other_perspective_position.len() {
-            for j in 0..other_perspective_position[i].len() {
-                if other_perspective_position[i][j] == 1.0 {
-                    if !set.insert((i, j)){
-                        continue;
-                    }
-                    let idx_i = piece_to_piece_map.get(&i).unwrap();
-                    let idx_j = other_side_map.get(&j).unwrap();
-                    if !set.insert((*idx_i, *idx_j)){
-                        continue;
-                    }
-                    other_perspective_position[i][j] = 0.0;
-                    other_perspective_position[*idx_i][*idx_j] = 1.0;
-                }
-            }
-        }
-        
-        other_square = *other_side_map.get(&other_square).unwrap();
-
-        let position: Vec<f32> = position.into_iter()
+        let position: Vec<i8> = position.into_iter()
                                 .flat_map(|item| item).collect();
-
-        let other_perspective_position: Vec<f32> = other_perspective_position.into_iter()
-                                .flat_map(|item| item).collect();
-
-        let mut side_to_move: Vec<Vec<f32>> = Vec::new();
-        let mut other_to_move: Vec<Vec<f32>> = Vec::new();
-        for i in 0..64{
-            if i == to_move_square{
-                println!("side to move: {}", i);
-                println!("boards \n {:?}", position);
-                side_to_move.push(position.clone());
-            }else {
-                side_to_move.push([0.0; 640].to_vec());
-            }
-            if i == other_square{
-                println!("side to move: {}", i);
-                println!("boards \n {:?}", other_perspective_position);
-                other_to_move.push(other_perspective_position.clone());
-            }else {
-                other_to_move.push([0.0; 640].to_vec());
-            }
-
-        }
-        let side_to_move: Vec<f32> = side_to_move.into_iter()
-                                    .flat_map(|item| item).collect();
-        let other_to_move: Vec<f32> = other_to_move.into_iter()
-                                    .flat_map(|item| item).collect();
-
-        assert_eq!(side_to_move.len(), 64 * 64 * 5 * 2);
-        assert_eq!(other_to_move.len(), 64 * 64 * 5 * 2);
         ChessPositionItem {
-            side_to_move,
-            other_side: other_to_move,
+            fen_to_pieces: position,
             evaluation: match item.evaluation {
-                Some(val) => val / 100.0,
+                Some(val) => val,
                 None => {
                     match fen_str[1]{
                         "w" => {
-                            1000.0
+                            20000.0
                         },
                         "b" => {
-                            -1000.0
+                            -20000.0
                         },
                         _ => {
                             0.0
@@ -268,45 +174,38 @@ impl<B: Backend> ChessPositionBatcher<B> {
     }
 
     
-    pub fn normalize<const D: usize>(&self, inp:Tensor<B, D>) -> Tensor<B, D>{
-        inp.div_scalar(100.0)
+    pub fn sigd<const D: usize>(&self, inp:Tensor<B, D>) -> Tensor<B, D>{
+        let sigmoid = Sigmoid::new();
+        sigmoid.forward(inp / 400.0)
     }
 }
 
 #[derive(Debug, Clone)]
 pub struct ChessPositionBatch<B: Backend> {
-    pub side_to_move: Tensor<B, 2>,
-    pub other_side: Tensor<B, 2>,
+    pub fens: Tensor<B, 2>,
     pub evaluations: Tensor<B, 1>,
 }
 
 impl <B: Backend> Batcher<ChessPositionItem, ChessPositionBatch<B>> for ChessPositionBatcher<B>{
     fn batch(&self, items: Vec<ChessPositionItem>) -> ChessPositionBatch<B> {
-        let mut side_to_move: Vec<Tensor<B, 2>> = Vec::new();
+        let mut fens: Vec<Tensor<B, 2>> = Vec::new();
+
         for item in items.iter() {
-            let side_to_move_tensor = Tensor::<B, 1>::from_data(item.side_to_move.as_slice(), &self.device);
-            side_to_move.push(side_to_move_tensor.unsqueeze());
+            let fens_tensor = Tensor::<B, 1>::from_data(item.fen_to_pieces.as_slice(), &self.device);
+            fens.push(fens_tensor.unsqueeze());
         }
 
-        let side_to_move = Tensor::cat(side_to_move, 0);
-        
-        let mut other_side: Vec<Tensor<B, 2>> = Vec::new();
-        for item in items.iter() {
-            let other_side_tensor = Tensor::<B, 1>::from_data(item.other_side.as_slice(), &self.device);
-            other_side.push(other_side_tensor.unsqueeze());
-        }
-
-        let other_side = Tensor::cat(other_side, 0);
-
+        let fens = Tensor::cat(fens, 0);
 
         let evaluations = items
             .iter()
             .map(|item| Tensor::<B, 1>::from_data([item.evaluation as f32], &self.device))
             .collect();
-        let evaluations = Tensor::cat(evaluations, 0); 
-        //let evaluations = self.min_max_norm(evaluations);
-        let evaluations = self.normalize(evaluations);
 
-        ChessPositionBatch { side_to_move, other_side, evaluations }
+        let evaluations = Tensor::cat(evaluations, 0); 
+
+        let evaluations = self.sigd(evaluations);
+
+        ChessPositionBatch { fens, evaluations }
     }
 }

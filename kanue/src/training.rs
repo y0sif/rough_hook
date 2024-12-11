@@ -30,11 +30,10 @@ use burn_efficient_kan::KanOptions;
 impl<B: Backend> Kan<B>{
     pub fn forward_regression(
         &self,
-        side_to_move: Tensor<B, 2>,
-        other_side: Tensor<B, 2>,
+        fens: Tensor<B, 2>,
         evaluations: Tensor<B, 1>,
     ) -> RegressionOutput<B> {
-        let output = self.forward(side_to_move, other_side);
+        let output = self.forward(fens);
         let loss = MseLoss::new().forward(output.clone(),
         evaluations.clone().unsqueeze(), Reduction::Mean);
 
@@ -44,15 +43,14 @@ impl<B: Backend> Kan<B>{
 
 impl<B: AutodiffBackend> TrainStep<ChessPositionBatch<B>, RegressionOutput<B>> for Kan<B> {
     fn step(&self, batch: ChessPositionBatch<B>) -> burn::train::TrainOutput<RegressionOutput<B>> {
-        let item = self.forward_regression(batch.side_to_move, batch.other_side, batch.evaluations);
-
+        let item = self.forward_regression(batch.fens, batch.evaluations);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
 
 impl <B: Backend> ValidStep<ChessPositionBatch<B>, RegressionOutput<B>> for Kan<B> {
     fn step(&self, batch: ChessPositionBatch<B>) -> RegressionOutput<B> {
-        self.forward_regression(batch.side_to_move, batch.other_side, batch.evaluations)
+        self.forward_regression(batch.fens, batch.evaluations)
     }
 }
 
@@ -61,7 +59,6 @@ impl <B: Backend> ValidStep<ChessPositionBatch<B>, RegressionOutput<B>> for Kan<
 pub struct KanTrainingConfig {
     pub model: KanConfig,
     pub optimizer: AdamWConfig,
-    pub init_options: KanOptions,
     pub kan_options: KanOptions,
     #[config(default = 42)]
     pub seed: u64,
@@ -124,7 +121,7 @@ where
         .num_epochs(config.num_epochs)
         .summary()
         .build(
-            config.model.init(&config.init_options, &config.kan_options, &device),
+            config.model.init(&config.kan_options, &device),
             config.optimizer.init(),
             config.lr_scheduler,
         );

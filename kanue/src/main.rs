@@ -15,9 +15,9 @@ fn main() {
 
     train::<MyAutodiffBackend>(
         artifact_dir,
-        KanTrainingConfig::new(KanConfig::new(), config_optimizer, KanOptions::new([64 * 64 * 5 * 2, 1, 256]),
-        KanOptions::new([512, 2, 1])),
-        device.clone(),
+        KanTrainingConfig::new(KanConfig::new(), config_optimizer,
+        KanOptions::new([768, 2, 1])),
+        device.clone()
     );
 
     // let chess_raw = data::ChessPositionRaw{
