@@ -1,7 +1,6 @@
 // use burn::prelude::Backend;
-use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector, CV_PI}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
+use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
 use std::f64::consts::PI;
-use image::{GenericImageView, ImageBuffer, RgbaImage};
 
 pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */) {
     let mut img = imgcodecs::imread("hook_lens\\input_img.png", imgcodecs::IMREAD_COLOR).unwrap();
@@ -100,7 +99,7 @@ pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */) {
             let image_name = format!("{}{}{}", standard_name, image_number.to_string(),".png");
             let path = format!("{}{}" ,folder_name ,image_name);
             let cropped_image = input_image.crop(point.0 as u32, point.1 as u32, (edge_lengh+2) as u32, (edge_lengh+2) as u32);
-            cropped_image.save(path);
+            cropped_image.save(path).unwrap();
             image_number+=1;
         }
     }
