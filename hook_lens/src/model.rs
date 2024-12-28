@@ -189,9 +189,9 @@ impl<B: Backend> Cnn<B> {
 
         let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
 
-        let fc1 = LinearConfig::new(100352, 2048).init(device);
-        let fc2 = LinearConfig::new(2048, 128).init(device);
-        let fc3 = LinearConfig::new(128, num_classes).init(device);
+        let fc1 = LinearConfig::new(1152, 512).init(device);
+        let fc2 = LinearConfig::new(512, 64).init(device);
+        let fc3 = LinearConfig::new(64, num_classes).init(device);
 
         let dropout = DropoutConfig::new(0.3).init();
 

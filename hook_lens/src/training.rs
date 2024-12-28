@@ -128,6 +128,7 @@ impl<B: Backend> Cnn<B> {
         images: Tensor<B, 4>,
         targets: Tensor<B, 1, Int>,
     ) -> ClassificationOutput<B> {
+        
         let output = self.forward(images);
         let loss = CrossEntropyLossConfig::new()
             .init(&output.device())
@@ -140,7 +141,6 @@ impl<B: Backend> Cnn<B> {
 impl<B: AutodiffBackend> TrainStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<B> {
     fn step(&self, batch: ChessBoardBatch<B>) -> TrainOutput<ClassificationOutput<B>> {
         let item = self.forward_classification(batch.images, batch.targets);
-
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
@@ -156,9 +156,9 @@ pub struct TrainingConfig {
     pub optimizer: SgdConfig,
     #[config(default = 30)]
     pub num_epochs: usize,
-    #[config(default = 16)]
-    pub batch_size: usize,
     #[config(default = 4)]
+    pub batch_size: usize,
+    #[config(default = 1)]
     pub num_workers: usize,
     #[config(default = 42)]
     pub seed: u64,
@@ -167,7 +167,6 @@ pub struct TrainingConfig {
 }
 
 fn create_artifact_dir(artifact_dir: &str) {
-    // Remove existing artifacts before to get an accurate learner summary
     std::fs::remove_dir_all(artifact_dir).ok();
     std::fs::create_dir_all(artifact_dir).ok();
 }
@@ -181,19 +180,23 @@ pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
 
     B::seed(config.seed);
 
+
     let batcher_train = ChessBoardBatcher::<B>::new(device.clone());
     let batcher_valid = ChessBoardBatcher::<B::InnerBackend>::new(device.clone());
     
+
     let dataloader_train = DataLoaderBuilder::new(batcher_train)
         .batch_size(config.batch_size)
         .shuffle(config.seed)
         .num_workers(config.num_workers)
         .build(ChessDataset::train());
     
+    
     let dataloader_test = DataLoaderBuilder::new(batcher_valid)
         .batch_size(config.batch_size)
         .num_workers(config.num_workers)
         .build(ChessDataset::test());
+    
 
     let learner = LearnerBuilder::new(ARTIFACT_DIR)
         .metric_train_numeric(AccuracyMetric::new())
@@ -209,7 +212,7 @@ pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
             config.optimizer.init(),
             config.learning_rate,
         );
-
+    
     // Training
     let now = Instant::now();
     let model_trained = learner.fit(dataloader_train, dataloader_test);

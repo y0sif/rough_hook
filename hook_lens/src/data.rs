@@ -1,13 +1,15 @@
-use burn::{data::{dataloader::batcher::Batcher, dataset::{vision::{Annotation, ImageFolderDataset, PixelDepth}, Dataset, InMemDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
+use std::{path::Path, thread::{self, Thread}, time::Duration};
+
+use burn::{data::{dataloader::batcher::Batcher, dataset::{vision::{Annotation, ImageFolderDataset, PixelDepth}, Dataset, InMemDataset, SqliteDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
 use serde::{Serialize, Deserialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ChessBoardSquareItem {
     pub board_squares: Vec<u8>,
-    pub square_label: usize 
+    pub square_label: u8 
 }
 
-type MappedDataset = InMemDataset<ChessBoardSquareItem>;
+type MappedDataset = SqliteDataset<ChessBoardSquareItem>;
 
 pub struct ChessDataset {
     dataset: MappedDataset
@@ -34,54 +36,30 @@ impl ChessDataset {
         Self::new("test")
     }
     
+    // no panics exist here
     fn new(split: &str) -> Self { // return self
-        let root = match split {
+        let train_db_file = Path::new("F://Graduation_Project//rough_hook//hook_lens//data_in_sql_lite//chess_pieces_images_tr.db");
+        let test_db_file = Path::new("F://Graduation_Project//rough_hook//hook_lens//data_in_sql_lite//chess_pieces_images_ts.db");
+        
+        match split {
             "train" => {
-                let dataset = ImageFolderDataset::new_classification("hook_lens\\data\\train").unwrap();
+                let dataset = SqliteDataset::from_db_file(train_db_file, split).unwrap();
                 
-                dataset
+                ChessDataset {
+                    dataset
+                }
             },
             _ => {
-                let dataset = ImageFolderDataset::new_classification("hook_lens\\data\\test").unwrap();
-
-                dataset
-            }
-        };
+                
+                let dataset = SqliteDataset::from_db_file(test_db_file, split).unwrap();
         
-        println!("data loaded");
-        println!("data len {}", root.len());
-        let mut images = Vec::new();
-        let mut labels = Vec::new();
-        for item in root.iter() {
-            let img = item.image.as_slice();
-            let mut board_squares = Vec::new();
-            for i in img {
-                let pixel_value = match *i {
-                    PixelDepth::U8(val) => val,
-                    _ => { panic!("expected u8"); }
-                };
-                board_squares.push(pixel_value);
+                ChessDataset {
+                    dataset
+                }
             }
-
-            images.push(board_squares);
-
-            let label = match item.annotation {
-                Annotation::Label(val) => val,
-                _ => { panic!("expected label"); }
-            };
-            labels.push(label);
         }
-
-        let dataset = InMemDataset::new(images.iter().zip(labels.iter()).map(|(board_squares, square_label)| {
-            ChessBoardSquareItem {
-                board_squares: board_squares.clone(),
-                square_label: *square_label
-            }
-        }).collect());
-
-        ChessDataset {
-            dataset
-        }
+        
+        
     }
     
 }
@@ -114,10 +92,11 @@ impl<B: Backend> Batcher<ChessBoardSquareItem, ChessBoardBatch<B>> for ChessBoar
                 )
             })
             .collect();
+            
 
         let images: Vec<Tensor<B, 3>> = items
             .into_iter()
-            .map(|item| TensorData::new(item.board_squares, Shape::new([227, 227, 3])))
+            .map(|item| TensorData::new(item.board_squares, Shape::new([28, 28, 3])))
             .map(|data| {
                 Tensor::<B, 3>::from_data(data.convert::<B::FloatElem>(), &self.device)
                     // permute(2, 0, 1)
@@ -126,7 +105,7 @@ impl<B: Backend> Batcher<ChessBoardSquareItem, ChessBoardBatch<B>> for ChessBoar
             })
             .map(|tensor| tensor / 255) // normalize between [0, 1]
             .collect();
-        
+
         let images = Tensor::stack(images, 0);
         let targets = Tensor::cat(targets, 0);
 
