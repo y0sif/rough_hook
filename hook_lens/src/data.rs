@@ -1,6 +1,6 @@
-use std::{path::Path, thread::{self, Thread}, time::Duration};
+use std::path::Path;
 
-use burn::{data::{dataloader::batcher::Batcher, dataset::{vision::{Annotation, ImageFolderDataset, PixelDepth}, Dataset, InMemDataset, SqliteDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
+use burn::{data::{dataloader::batcher::Batcher, dataset::{Dataset, SqliteDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
 use serde::{Serialize, Deserialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -38,8 +38,8 @@ impl ChessDataset {
     
     // no panics exist here
     fn new(split: &str) -> Self { // return self
-        let train_db_file = Path::new("F://Graduation_Project//rough_hook//hook_lens//data_in_sql_lite//chess_pieces_images_tr.db");
-        let test_db_file = Path::new("F://Graduation_Project//rough_hook//hook_lens//data_in_sql_lite//chess_pieces_images_ts.db");
+        let train_db_file = Path::new("hook_lens//data_in_sql_lite//chess_pieces_images_tr.db");
+        let test_db_file = Path::new("hook_lens//data_in_sql_lite//chess_pieces_images_ts.db");
         
         match split {
             "train" => {
