@@ -102,7 +102,7 @@
 // 
 use std::time::Instant;
 
-use crate::data::{ChessBoardBatch, ChessBoardBatcher, ChessDataset};
+use crate::data_and_model::data::{ChessBoardBatch, ChessBoardBatcher, ChessDataset};
 
 use burn::{
     data::dataloader::DataLoaderBuilder,
