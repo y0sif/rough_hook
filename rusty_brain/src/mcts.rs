@@ -1,6 +1,8 @@
 use crate::board::Board;
 use std::rc::Rc;
 use core::cell::RefCell;
+use rand::Rng;
+
 
 pub struct Hyperparameters {
     iterations: u32,
@@ -85,6 +87,7 @@ impl Board {
                 current_node = best_child;
             }
 
+
             // <<Phase 2: Expansion>>
             let mut current_node_mut = current_node.borrow_mut();
             if !current_node_mut.terminal() {
@@ -105,8 +108,26 @@ impl Board {
                 
             }
 
-            // <<Phase 3: Simulation>>
 
+            // <<Phase 3: Simulation>>
+            let node_to_simulate_from = current_node.borrow();
+            let mut temp_board = node_to_simulate_from.board.clone();
+            let mut current_depth = 0;
+            while !temp_board.checkmate 
+                && !temp_board.stalemate 
+                && !temp_board.draw
+                && current_depth < hyperparameters.depth {
+                let legal_moves = temp_board.generate_legal_moves();
+                let mut rng = rand::thread_rng();
+                let random_index = rng.gen_range(0..legal_moves.len());
+                let random_move = legal_moves[random_index];
+                temp_board.make_move(random_move);
+                current_depth += 1;
+            }
+            let sim_evaluation = temp_board.evaluate();
+
+
+            // <<Phase 4: Backpropagation>>
         }
     }
 }
