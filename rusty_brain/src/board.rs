@@ -11,6 +11,7 @@ pub enum Turn {
    White,
    Black, 
 }
+#[derive(Clone)]
 pub struct Board{
     pub bitboards: Bitboards,
     pub turn: Turn,

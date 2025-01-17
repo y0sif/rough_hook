@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub enum Piece {
     Pawn,
     Knight,
