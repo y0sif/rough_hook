@@ -1,17 +1,18 @@
 use burn::{module::Module, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::{Shape, Tensor, TensorData}};
 
-use super::model::{Cnn, CnnRecord};
+use super::model::{Kan, KanRecord};
 
 
 pub fn infer<B: Backend> (artifact_dir: &str,  device: B::Device , image: Vec<u8>)->u8
 where
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
         B::IntElem: TryInto<u8> + std::fmt::Debug,
 {
-    let record: CnnRecord<B> = CompactRecorder::new()
+    let record: KanRecord<B> = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
         .expect("Trained model should exist");
 
-    let model = Cnn::new(13, &device);
+    let model = Kan::new(13, &device);
     
     let model = model.load_record(record);
     let img = TensorData::new(image, Shape::new([32, 32, 3]));

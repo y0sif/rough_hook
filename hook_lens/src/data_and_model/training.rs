@@ -2,7 +2,7 @@ use std::time::Instant;
 
 use crate::{
     data_and_model::data::{ChessBoardBatch, ChessBoardBatcher, ChessDataset},
-    data_and_model::model::Cnn,
+    data_and_model::model::Kan,
 };
 use burn::{
     data::dataloader::DataLoaderBuilder,
@@ -20,7 +20,7 @@ use burn::{
 const NUM_CLASSES: u8 = 13;
 const ARTIFACT_DIR: &str = "/tmp/hook_lens";
 
-impl<B: Backend> Cnn<B> {
+impl<B: Backend> Kan<B> {
     pub fn forward_classification(
         &self,
         images: Tensor<B, 4>,
@@ -36,14 +36,14 @@ impl<B: Backend> Cnn<B> {
     }
 }
 
-impl<B: AutodiffBackend> TrainStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<B> {
+impl<B: AutodiffBackend> TrainStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Kan<B> {
     fn step(&self, batch: ChessBoardBatch<B>) -> TrainOutput<ClassificationOutput<B>> {
         let item = self.forward_classification(batch.images, batch.targets);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
 
-impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<B> {
+impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Kan<B> {
     fn step(&self, batch: ChessBoardBatch<B>) -> ClassificationOutput<B> {
         self.forward_classification(batch.images, batch.targets)
     }
@@ -52,11 +52,11 @@ impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<
 #[derive(Config)]
 pub struct TrainingConfig {
     pub optimizer: AdamConfig,
-    #[config(default = 200)]
+    #[config(default = 400)]
     pub num_epochs: usize,
     #[config(default = 8)]
     pub batch_size: usize,
-    #[config(default = 4)]
+    #[config(default = 8)]
     pub num_workers: usize,
     #[config(default = 42)]
     pub seed: u64,
@@ -69,7 +69,10 @@ fn create_artifact_dir(artifact_dir: &str) {
     std::fs::create_dir_all(artifact_dir).ok();
 }
 
-pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
+pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
     create_artifact_dir(ARTIFACT_DIR);
 
     config
@@ -106,7 +109,7 @@ pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
         .num_epochs(config.num_epochs)
         .summary()
         .build(
-            Cnn::new(NUM_CLASSES.into(), &device),
+            Kan::new(NUM_CLASSES.into(), &device),
             config.optimizer.init(),
             config.learning_rate,
         );
