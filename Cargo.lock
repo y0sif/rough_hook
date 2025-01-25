@@ -2006,6 +2006,7 @@ dependencies = [
  "image",
  "opencv",
  "resnet-burn",
+ "rusty_brain",
  "serde",
 ]
 

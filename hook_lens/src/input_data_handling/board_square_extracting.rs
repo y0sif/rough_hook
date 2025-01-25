@@ -1,18 +1,23 @@
-use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
+use image::imageops;
+use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY}};
 use std::f64::consts::PI;
 
-pub fn extract_board_sqaures_from(board_image_path : &str){
+
+
+pub fn extract_board_sqaures_from(board_image_path : &str)->Vec<(Vec<u8> , u8)>{
     let mut img = imgcodecs::imread(board_image_path, imgcodecs::IMREAD_COLOR).unwrap();
     //convert image to gray sacle image
-    let mut gray_scale_image = convert_image_to_gray_scale(&img);
+    let  gray_scale_image = convert_image_to_gray_scale(&img);
     //apply canny on the gray scale image
-    let mut canny_image = apply_canny(&gray_scale_image);
+    let  canny_image = apply_canny(&gray_scale_image);
+
     // testing code that display affter we apply canny  (in dev env only)
     #[cfg(debug_assertions)]
     {
         imshow("canny", &canny_image).unwrap();
         wait_key_def().unwrap();
     }
+
      //using canny image we will apply hough line detection algorithm
     let mut s_lines = Vector::<Vec2f>::new();
     imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 260.0, 170).unwrap();
@@ -21,9 +26,10 @@ pub fn extract_board_sqaures_from(board_image_path : &str){
 
     #[cfg(debug_assertions)]
     draw_intersection_points_on(&mut img , &intersection_points);
-
-    crop_images_from(board_image_path , intersection_points);
-
+    // crop images from the original image and return them with their positions
+    let pieces_images_and_position = crop_images_from(board_image_path , intersection_points);
+    
+    pieces_images_and_position
     
 
 }
@@ -32,7 +38,6 @@ fn convert_image_to_gray_scale(colored_image : &Mat)->Mat{
     let mut gray_scale_image = Mat::default();
     cvt_color_def(&colored_image, &mut gray_scale_image, COLOR_BGR2GRAY).unwrap(); 
     gray_scale_image
-
 }
 
 fn apply_canny(gray_scale_image : &Mat)-> Mat{
@@ -78,9 +83,8 @@ fn get_intersection_points(s_lines:&Vector<Vec2f>)->Vec<(i32, i32)>{
 
                 let x_intersect = (m1 * x1 - m2 * x2 - y1 + y2) / (m1 - m2);
                 let y_intersect = m2 * (x_intersect - x2) + y2;
-                //println!("X = {} , y = {}" , x_intersect , y_intersect);
+
                 points.push((x_intersect , y_intersect));
-                //imgproc::circle_def(&mut img_intersections, Point::new(x_intersect, y_intersect), 3, (255, 0, 0).into()).unwrap();
 
             }else {
                 let m2 = (hor.1.y - hor.0.y) / (hor.1.x - hor.0.x);
@@ -92,42 +96,68 @@ fn get_intersection_points(s_lines:&Vector<Vec2f>)->Vec<(i32, i32)>{
                 let x_intersect = x1;
                 let y_intersect = m2 * (x_intersect - x2) + y2;
                 points.push((x_intersect , y_intersect));
-                //println!("X = {} , y = {}" , x_intersect , y_intersect);
-                //imgproc::circle_def(&mut img_intersections, Point::new(x_intersect, y_intersect), 3, (255, 0, 0).into()).unwrap();
             }
         }
     }
+    // sort the points by x value to get the points in the correct order (first 8 points represent the first column and so on)
     points.sort_by(|a, b| a.0.cmp(&b.0));
-    points.truncate(points.len() - 8); // we don't need the points on the last column so we delte them
+    // we don't need the points on the last column so we delte them
+    points.truncate(points.len() - 8); 
+
     points
     
 }
 
-fn crop_images_from(original_image_path: &str , intersection_points : Vec<(i32,i32)>){
+fn crop_images_from(original_image_path: &str , intersection_points : Vec<(i32,i32)>)->Vec<(Vec<u8> , u8)>{
+    let mut pieces_images_and_position  = Vec::new();
     let mut input_image = image::open(original_image_path).unwrap();
 
-    let edge_lengh = intersection_points[8].0- intersection_points[0].0; // the edge lenth of the square
+    // calculate edge lenth of the square
+    let edge_lengh = intersection_points[8].0- intersection_points[0].0; 
+
     // gropu all ponits to 8 groups  (each column represent a group)
     let mut columns: Vec<Vec<(i32 ,i32)>> = intersection_points.chunks(8)
                                   .map(|chunk| chunk.to_vec())
                                   .collect();
-    // use them to dfine  the path of images
-    let standard_name = String::from("cropped");
-    let mut image_number = 1;
-    let folder_name = "//home//mostafayounis630//Graduation_Project//rough_hook/hook_lens//test_images//cropped_images//"; // create "cropped_images"  folder before runing the code
-    // sort the points of each column by y value then crop images of each column
-    for column in &mut columns{
-        column.sort_by_key(|&(_, second)| second);
-        for point in column{
-            let image_name = format!("{}{}{}", standard_name, image_number.to_string(),".png");
-            let path = format!("{}{}" ,folder_name ,image_name);
-            let cropped_image = input_image.crop(point.0 as u32, point.1 as u32, (edge_lengh+2) as u32, (edge_lengh+2) as u32);
-            cropped_image.save(path).unwrap();
-            image_number+=1;
-        }
-    }
-    // draw points on image (only for show our work)
     
+    let mut image_number = 1;
+
+    
+    let initial_positions = vec![56,57,58,59,60,61,62,63];
+    let mut index = 0;
+
+    // for each column sort the points of each one by y value then crop images from the original image
+    for column in &mut columns{
+        let mut position = initial_positions[index];
+        column.sort_by_key(|&(_, second)| second);
+
+        for point in column{
+            // crop image from the original image
+            let cropped_image = input_image.crop(point.0 as u32, point.1 as u32, (edge_lengh+2) as u32, (edge_lengh+2) as u32);
+            // resize the cropped image to 28*28  to be suitable for the model
+            let resized_img = cropped_image.resize(28, 28, imageops::FilterType::Lanczos3);
+            // convert the resized image to vec of u8
+            let resized_img_as_vec = resized_img.to_rgba8().into_raw();
+            // push the image and its position to the vector to use it to generate the fen string
+            pieces_images_and_position.push((resized_img_as_vec , position));
+            // decrease the position by 8 to get the position of the next piece
+            position-=8;
+            
+            // save the cropped image to the disk (in dev env only)
+            #[cfg(debug_assertions)]
+            {
+                let standard_name = String::from("cropped");
+                let folder_name = "//home//mostafayounis630//Graduation_Project//rough_hook/hook_lens//test_images//cropped_images//"; 
+                let image_name = format!("{}{}{}", standard_name, image_number.to_string(),".png");
+                let path = format!("{}{}" ,folder_name ,image_name);
+                println!(" image number {} , has position of piece = {}" , image_number ,position);
+                cropped_image.save(path).unwrap();
+                image_number+=1;
+            }
+        }
+        index+=1;
+    }
+    pieces_images_and_position
 
 }
 

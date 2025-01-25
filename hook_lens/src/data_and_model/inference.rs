@@ -1,117 +1,31 @@
-// use burn::prelude::Backend;
-use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
-use std::f64::consts::PI;
+use burn::{module::Module, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::{Shape, Tensor, TensorData}};
 
-pub fn infer/*<B: Backend>*/(/*artifact_dir: &str,  device: B::Device, */) {
-    let mut img = imgcodecs::imread("hook_lens\\input_img.png", imgcodecs::IMREAD_COLOR).unwrap();
+use super::model::{Cnn, CnnRecord};
+
+
+pub fn infer<B: Backend> (artifact_dir: &str,  device: B::Device , image: Vec<u8>)->u8
+where
+        B::IntElem: TryInto<u8> + std::fmt::Debug,
+{
+    let record: CnnRecord<B> = CompactRecorder::new()
+        .load(format!("{artifact_dir}/model").into(), &device)
+        .expect("Trained model should exist");
+
+    let model = Cnn::new(13, &device);
     
-    let mut img_intersections = img.clone();
+    let model = model.load_record(record);
+    let img = TensorData::new(image, Shape::new([32, 32, 3]));
+    let img = Tensor::<B, 3>::from_data(img.convert::<B::FloatElem>(), &device)
+        .swap_dims(2, 1) // [H, C, W]
+        .swap_dims(1, 0); // [C, H, W]
+    let img = img / 255.0;
+    let img = img.unsqueeze();
+    let output = model.forward(img);
+    let predicted = output.argmax(1).flatten::<1>(0, 1).into_scalar();
+    let result: Result<u8, _> = predicted.try_into();
 
-    let mut gray_scale = Mat::default();
-
-    cvt_color_def(&img, &mut gray_scale, COLOR_BGR2GRAY).unwrap(); 
-
-    let mut canny_img: Mat = Default::default();
-    imgproc::canny_def(&gray_scale, &mut canny_img,  46.0, 250.0).unwrap();
-
-    imshow("canny", &canny_img).unwrap();
-    wait_key_def().unwrap();
-
-    let mut s_lines = Vector::<Vec2f>::new();
-    imgproc::hough_lines_def(&canny_img, &mut s_lines, 1.0, PI / 260.0, 170).unwrap();
-    // imgproc::hough_lines_p_def(&canny_img, &mut s_lines, 1.0, PI / 180.0, 150).unwrap();
-    
-    let mut vertical_lines_points = Vec::new();
-    let mut horizontal_lines_points = Vec::new();
-    
-    println!("lines {}", s_lines.len());
-    for s_line in s_lines { 
-		let [r, t] = *s_line;
-		let cos_t = t.cos();
-		let sin_t = t.sin();
-		let x0 = r * cos_t;
-		let y0 = r * sin_t;
-		let alpha = 1000.;
-
-		let pt1 = Point2f::new(x0 + alpha * -sin_t, y0 + alpha * cos_t).to::<i32>().unwrap();
-		let pt2 = Point2f::new(x0 - alpha * -sin_t, y0 - alpha * cos_t).to::<i32>().unwrap();
-        
-        let t = t * 180. / PI as f32;
-        if t > 75.0 && t < 105.0 {
-            //println!("horizontal = {:?}", s_line);
-            horizontal_lines_points.push((pt1, pt2));
-        }else if t < 15.0 || t > 165.0 {
-            vertical_lines_points.push((pt1, pt2));
-        }
-        imgproc::line(&mut img, pt1, pt2, (255, 0, 0).into(), 1, LINE_AA, 0).unwrap();
-	}
-    let mut points: Vec<(i32, i32)> = Vec::new();
-    for vert in &vertical_lines_points {
-        for hor in &horizontal_lines_points {
-            if (vert.1.x - vert.0.x) != 0 {
-                let m1 = (vert.1.y - vert.0.y) / (vert.1.x - vert.0.x);
-                let m2 = (hor.1.y - hor.0.y) / (hor.1.x - hor.0.x);
-                
-                let x1 = vert.0.x;
-                let x2 = hor.0.x;
-                let y1 = vert.0.y;
-                let y2 = hor.0.y;
-
-                let x_intersect = (m1 * x1 - m2 * x2 - y1 + y2) / (m1 - m2);
-                let y_intersect = m2 * (x_intersect - x2) + y2;
-                //println!("X = {} , y = {}" , x_intersect , y_intersect);
-                points.push((x_intersect , y_intersect));
-                //imgproc::circle_def(&mut img_intersections, Point::new(x_intersect, y_intersect), 3, (255, 0, 0).into()).unwrap();
-
-            }else {
-                let m2 = (hor.1.y - hor.0.y) / (hor.1.x - hor.0.x);
-                
-                let x1 = vert.0.x;
-                let x2 = hor.0.x;
-                let y2 = hor.0.y;
-
-                let x_intersect = x1;
-                let y_intersect = m2 * (x_intersect - x2) + y2;
-                points.push((x_intersect , y_intersect));
-                //println!("X = {} , y = {}" , x_intersect , y_intersect);
-                //imgproc::circle_def(&mut img_intersections, Point::new(x_intersect, y_intersect), 3, (255, 0, 0).into()).unwrap();
-            }
-        }
+    match result {
+        Ok(value) => value,
+        Err(_) => panic!("Failed to convert prediction to u8"),
     }
-
-    //sort the points by its x values 
-    points.sort_by(|a, b| a.0.cmp(&b.0));
-    points.truncate(points.len() - 8); // we don't need the points on the last column so we delte them
-    // image to crop from it
-    let mut input_image = image::open("hook_lens\\input_img.png").unwrap();
-    let edge_lengh = points[8].0- points[0].0; // the edge lenth of the square
-    // gropu all ponits to 8 groups  (each column represent a group)
-    let mut columns: Vec<Vec<(i32 ,i32)>> = points.chunks(8)
-                                  .map(|chunk| chunk.to_vec())
-                                  .collect();
-    // use them to dfine  the path of images
-    let standard_name = String::from("cropped");
-    let mut image_number = 1;
-    let folder_name = "hook_lens\\cropped_images\\"; // create "cropped_images"  folder before runing the code
-    // sort the points of each column by y value then crop images of each column
-    for column in &mut columns{
-        column.sort_by_key(|&(_, second)| second);
-        for point in column{
-            let image_name = format!("{}{}{}", standard_name, image_number.to_string(),".png");
-            let path = format!("{}{}" ,folder_name ,image_name);
-            let cropped_image = input_image.crop(point.0 as u32, point.1 as u32, (edge_lengh+2) as u32, (edge_lengh+2) as u32);
-            cropped_image.save(path).unwrap();
-            image_number+=1;
-        }
-    }
-    // draw points on image (only for show our work)
-    for point in &points{
-        imgproc::circle_def(&mut img_intersections, Point::new(point.0, point.1), 3, (255, 0, 0).into()).unwrap();
-    }
-    imshow("hough", &img).unwrap();
-    wait_key_def().unwrap();
-
-    imshow("intersections", &img_intersections).unwrap();
-    wait_key_def().unwrap();
 }
-

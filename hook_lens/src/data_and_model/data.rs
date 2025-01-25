@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use burn::{data::{dataloader::batcher::Batcher, dataset::{Dataset, SqliteDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
+use burn::{data::{dataloader::batcher::Batcher, dataset::{transform::ShuffledDataset, Dataset, SqliteDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
 use serde::{Serialize, Deserialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -9,7 +9,7 @@ pub struct ChessBoardSquareItem {
     pub square_label: u8 
 }
 
-type MappedDataset = SqliteDataset<ChessBoardSquareItem>;
+type MappedDataset = Box<dyn Dataset<ChessBoardSquareItem>>;
 
 pub struct ChessDataset {
     dataset: MappedDataset
@@ -38,13 +38,15 @@ impl ChessDataset {
     
     // no panics exist here
     fn new(split: &str) -> Self { // return self
-        let train_db_file = Path::new("hook_lens//data_in_sql_lite//chess_pieces_images_tr.db");
-        let test_db_file = Path::new("hook_lens//data_in_sql_lite//chess_pieces_images_ts.db");
+        let train_db_file = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_old_train_augmented.db");
+        let test_db_file  = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_old_test.db");
         
         match split {
             "train" => {
                 let dataset = SqliteDataset::from_db_file(train_db_file, split).unwrap();
                 
+                let dataset: MappedDataset = Box::new(ShuffledDataset::<SqliteDataset<ChessBoardSquareItem>, ChessBoardSquareItem>::with_seed(dataset, 42));
+
                 ChessDataset {
                     dataset
                 }
@@ -53,6 +55,8 @@ impl ChessDataset {
                 
                 let dataset = SqliteDataset::from_db_file(test_db_file, split).unwrap();
         
+                let dataset: MappedDataset = Box::new(ShuffledDataset::<SqliteDataset<ChessBoardSquareItem>, ChessBoardSquareItem>::with_seed(dataset, 42));
+
                 ChessDataset {
                     dataset
                 }
@@ -96,7 +100,7 @@ impl<B: Backend> Batcher<ChessBoardSquareItem, ChessBoardBatch<B>> for ChessBoar
 
         let images: Vec<Tensor<B, 3>> = items
             .into_iter()
-            .map(|item| TensorData::new(item.board_squares, Shape::new([28, 28, 3])))
+            .map(|item| TensorData::new(item.board_squares, Shape::new([32, 32, 3])))
             .map(|data| {
                 Tensor::<B, 3>::from_data(data.convert::<B::FloatElem>(), &self.device)
                     // permute(2, 0, 1)
