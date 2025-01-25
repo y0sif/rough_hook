@@ -1,5 +1,5 @@
 use image::imageops;
-use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY}};
+use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
 use std::f64::consts::PI;
 
 
@@ -22,7 +22,7 @@ pub fn extract_board_sqaures_from(board_image_path : &str)->Vec<(Vec<u8> , u8)>{
     let mut s_lines = Vector::<Vec2f>::new();
     imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 260.0, 170).unwrap();
     
-    let intersection_points = get_intersection_points(&s_lines);
+    let intersection_points = get_intersection_points(&s_lines , &mut img);
 
     #[cfg(debug_assertions)]
     draw_intersection_points_on(&mut img , &intersection_points);
@@ -46,7 +46,7 @@ fn apply_canny(gray_scale_image : &Mat)-> Mat{
     canny_img
 }
 
-fn get_intersection_points(s_lines:&Vector<Vec2f>)->Vec<(i32, i32)>{
+fn get_intersection_points(s_lines:&Vector<Vec2f> , img : &mut Mat)->Vec<(i32, i32)>{
     let mut vertical_lines_points = Vec::new();
     let mut horizontal_lines_points = Vec::new();
     for s_line in s_lines { 
@@ -67,7 +67,9 @@ fn get_intersection_points(s_lines:&Vector<Vec2f>)->Vec<(i32, i32)>{
         }else if t < 15.0 || t > 165.0 {
             vertical_lines_points.push((pt1, pt2));
         }
-        //imgproc::line(&mut img, pt1, pt2, (255, 0, 0).into(), 1, LINE_AA, 0).unwrap();
+        // draw the lines on the image (in dev env only)
+        #[cfg(debug_assertions)]
+        imgproc::line(img, pt1, pt2, (255, 0, 0).into(), 1, LINE_AA, 0).unwrap();
 	}
     let mut points: Vec<(i32, i32)> = Vec::new();
     for vert in &vertical_lines_points {
@@ -128,21 +130,19 @@ fn crop_images_from(original_image_path: &str , intersection_points : Vec<(i32,i
 
     // for each column sort the points of each one by y value then crop images from the original image
     for column in &mut columns{
-        let mut position = initial_positions[index];
+        let mut position = initial_positions[index] as i32;
         column.sort_by_key(|&(_, second)| second);
 
         for point in column{
             // crop image from the original image
             let cropped_image = input_image.crop(point.0 as u32, point.1 as u32, (edge_lengh+2) as u32, (edge_lengh+2) as u32);
             // resize the cropped image to 28*28  to be suitable for the model
-            let resized_img = cropped_image.resize(28, 28, imageops::FilterType::Lanczos3);
+            let resized_img = cropped_image.resize(32, 32, imageops::FilterType::Lanczos3);
             // convert the resized image to vec of u8
-            let resized_img_as_vec = resized_img.to_rgba8().into_raw();
+            let resized_img_as_vec = resized_img.to_rgb8().into_raw();
             // push the image and its position to the vector to use it to generate the fen string
-            pieces_images_and_position.push((resized_img_as_vec , position));
-            // decrease the position by 8 to get the position of the next piece
-            position-=8;
-            
+            pieces_images_and_position.push((resized_img_as_vec , position as u8));
+
             // save the cropped image to the disk (in dev env only)
             #[cfg(debug_assertions)]
             {
@@ -154,6 +154,7 @@ fn crop_images_from(original_image_path: &str , intersection_points : Vec<(i32,i
                 cropped_image.save(path).unwrap();
                 image_number+=1;
             }
+            position-=8;
         }
         index+=1;
     }

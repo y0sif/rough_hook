@@ -9,3 +9,4 @@ serde = "*"
 image = "*"
 opencv="*"
 rusty_brain = {path = "../rusty_brain"}
+prettytable-rs = "0.10"
