@@ -119,6 +119,6 @@ impl  fmt::Display for Move {
         let start = self.get_from();
         let end = self.get_to();
         let flag = self.get_flags();
-        write!(f, "{}{}  {}", Square::from(start), Square::from(end), flag)
+        write!(f, "{}{}", Square::from(start).to_string().to_lowercase(), Square::from(end).to_string().to_lowercase())
     }
 }

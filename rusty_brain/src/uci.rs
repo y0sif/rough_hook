@@ -31,7 +31,7 @@ impl Uci {
 
     pub fn listen(&mut self){
         loop {
-            print!("> "); // Display a prompt
+            // print!("> "); // Display a prompt
             io::stdout().flush().unwrap(); // Ensure the prompt is displayed immediately
 
             let mut input = String::new();
@@ -103,6 +103,7 @@ impl Uci {
                             } 
                         }
                     }
+                    // self.current_board.print_board();
                 },
                 _ => ()
             }
@@ -113,6 +114,7 @@ impl Uci {
         //clears hash and any information collected abou previous games.
         //should call isready after to check if it's done clearing, which would return readyok
         self.current_board = Board::new();
+        self.transposition_table = TranspositionTable::init()
     }
 
     fn go(&mut self, input_params: Vec<&str>){
@@ -128,7 +130,7 @@ impl Uci {
         }
 
         let best_move = self.current_board.find_best_move(&mut self.transposition_table, self.depth);
-
+        // self.current_board.print_board(); // print board
         println!("bestmove {}", best_move.0)
     }
 
@@ -142,38 +144,37 @@ impl Uci {
 
  
 
-    fn filter_by_params(&self, defined_fields: Vec<&str>, input_params: Vec<&str>) -> Vec<(String, String)>{
+    fn filter_by_params(&self, defined_fields: Vec<&str>, input_params: Vec<&str>) -> Vec<(String, String)> {
         let mut found_fields: Vec<(String, String)> = Vec::new();
-        let mut found_param ="";
+        let mut current_param : Option<&&str> = None; // Keeps track of the current parameter
         let mut combined_value = String::new();
 
         let mut iter = input_params.iter();
+    
         while let Some(param) = iter.next() {
             if defined_fields.contains(param) {
-
-                if !combined_value.is_empty(){
+                // Push the previous parameter and its value(s) to the list
+                if let Some(found_param) = current_param {
                     found_fields.push((found_param.to_string(), combined_value.clone()));
                     combined_value.clear();
                 }
-
-                found_param = param;
-                if let Some(value) = iter.next() {
-
-                    combined_value.push_str(value);
-                }
-
-            }else {
-                if !combined_value.is_empty(){
+                // Start a new parameter
+                current_param = Some(param);
+            } else {
+                // Accumulate the value(s) for the current parameter
+                if !combined_value.is_empty() {
                     combined_value.push(' ');
                 }
                 combined_value.push_str(param);
             }
         }
-
-            if !combined_value.is_empty() {
-                found_fields.push((found_param.to_string(), combined_value.clone()));
-            }
-        
+    
+        // Add the last parameter and its values
+        if let Some(found_param) = current_param {
+            found_fields.push((found_param.to_string(), combined_value));
+        }
+    
         found_fields
     }
+    
 }
