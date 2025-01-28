@@ -9,7 +9,7 @@ mod tests{
         let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
-            //("CNN", "/home/sasa630/Graduation_Project/hook_lens_models/cnn_hook_lens" , 1),
+            ("CNN", "/home/sasa630/Graduation_Project/hook_lens_models/cnn_hook_lens" , 1),
             ("KAN", "/home/sasa630/Graduation_Project/hook_lens_models/kan_hook_lens/kan_hook_lens" , 2),
          ];
         // name , correct_pieces  , wrong_pieces , accuracy
@@ -49,6 +49,10 @@ mod tests{
             let accuracy = (correct as f32 / 64.0)*100 as f32;
             let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
 
+            println!("Correct = {}" , correct);
+            println!("wrong = {}" , wrong);
+            println!("accuracy = {}" ,accuracy);
+
             models_results.push((model_name , correct , wrong , accuracy));
             
             println!("\n\n");
@@ -61,11 +65,6 @@ mod tests{
     // Split the FEN strings into their components
     let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
     let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
-
-    // Ensure both boards have the same length
-    if board1.len() != board2.len() {
-        return Err("The FEN strings represent boards of different sizes.");
-    }
 
     // Count the number of differences
     let differences = board1
