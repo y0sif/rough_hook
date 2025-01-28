@@ -10,7 +10,8 @@ mod tests{
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
             ("CNN", "/home/sasa630/Graduation_Project/hook_lens_models/cnn_hook_lens" , 1),
-            ("KAN", "/home/sasa630/Graduation_Project/hook_lens_models/kan_hook_lens/kan_hook_lens" , 2),
+            ("KAN", "/home/sasa630/Graduation_Project/hook_lens_models/kan/kan" , 2),
+            ("CNN_KAN" , "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn/kan_cnn" , 3)
          ];
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results : Vec<(&str , i16 , i16 , f32)> = Vec::new();
