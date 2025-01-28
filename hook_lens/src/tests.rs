@@ -6,12 +6,11 @@ mod tests{
 
     #[test]
     fn test_fen_string_of_image_1(){
-        let board_image_path = "/home/mostafayounis630/Graduation_Project/test_images/input_img.png";
+        let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
-            ("New CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/final_cnn_hook_lens" , 1),
-            ("Old CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/hook_lens_old_aug_resnet" , 1),
-            ("KAN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/kan_hook_lens" , 2),
+            //("CNN", "/home/sasa630/Graduation_Project/hook_lens_models/cnn_hook_lens" , 1),
+            ("KAN", "/home/sasa630/Graduation_Project/hook_lens_models/kan_hook_lens/kan_hook_lens" , 2),
          ];
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results : Vec<(&str , i16 , i16 , f32)> = Vec::new();
