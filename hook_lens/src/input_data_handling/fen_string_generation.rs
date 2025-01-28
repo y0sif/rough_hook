@@ -5,7 +5,7 @@ use burn::backend::Wgpu;
 
 use crate::input_data_handling::board_square_extracting::*;
 use crate::data_and_model::inference;
-pub fn get_fen_string_from(board_image_path : &str , model_path : &str)->String{
+pub fn get_fen_string_from(board_image_path : &str , model_path : &str , id : i8)->String{
 
     let mut map = HashMap::new();
     map.insert(0 as u8 , "b");
@@ -35,7 +35,7 @@ pub fn get_fen_string_from(board_image_path : &str , model_path : &str)->String{
         let mut index = pos;
         for _ in 0..8{
             let (image , _) = &pieces_images_and_position[index];
-            let piece = map[&inference::infer::<Wgpu>(model_path , WgpuDevice::default(), image.to_vec())];
+            let piece = map[&inference::infer::<Wgpu>(model_path ,id , WgpuDevice::default(), image.to_vec())];
             if piece == "e" {
                 empty_squares += 1;
             }else{

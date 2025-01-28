@@ -6,13 +6,12 @@ mod tests{
 
     #[test]
     fn test_fen_string_of_image_1(){
-        let board_image_path = "/home/mostafayounis630/Graduation_Project/rough_hook/hook_lens/test_images/input_img.png";
-         // Name - Path
-         let models: Vec<(&str, &str)> = vec![
-            ("CNN", "/tmp/hook_lens_cnn"),
-            ("CNN", "/tmp/hook_lens_cnn"),
-            ("ResNet", "/tmp/hook_lens_old_aug_resnet"),
-            ("ResNet", "/tmp/hook_lens_old_aug_resnet")
+        let board_image_path = "/home/mostafayounis630/Graduation_Project/test_images/input_img.png";
+         // Name - Path - Id
+         let models: Vec<(&str, &str , i8)> = vec![
+            ("Final CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/kan_hook_lens" , 1),
+            ("Final CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/final_cnn_hook_lens" , 1),
+            ("Old CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/hook_lens_old_aug_resnet" , 1),
          ];
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results : Vec<(&str , i16 , i16 , f32)> = Vec::new();
@@ -20,18 +19,22 @@ mod tests{
         let actual_fen_string = String::from("r3q1k1/pppb1ppp/2n5/3P4/8/2B2N2/PP3PPP/R2Q2K1");
         
         let mut flag = false;
-        for (model_name , model_path) in models{
+        for (model_name , model_path , id) in models{
             if model_name.len() == 0 || model_path.len() == 0 {
                 continue;
             }
+
             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
-            let predicted_fen_string = get_fen_string_from(board_image_path , model_path);
+
+            let  predicted_fen_string = get_fen_string_from(board_image_path , model_path , id);
 
             println!("====================== actual board =======================");
+
             let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
             actual_board.print_board();
 
             println!("====================== predicted board =======================");
+
             let mut predicted_board = Board::from_fen(predicted_fen_string.clone() + &static_str);
             predicted_board.print_board();
 
@@ -41,11 +44,14 @@ mod tests{
 
             println!("\nactual_fen_string = {}" , actual_fen_string);
             println!("predicted fen string = {}", predicted_fen_string);
+
             let wrong = count_fen_differences(&actual_fen_string , &predicted_fen_string).unwrap() as i16;
             let correct = 64 - wrong as i16;
             let accuracy = (correct as f32 / 64.0)*100 as f32;
             let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
+
             models_results.push((model_name , correct , wrong , accuracy));
+            
             println!("\n\n");
         }
         print_results_table(models_results);
