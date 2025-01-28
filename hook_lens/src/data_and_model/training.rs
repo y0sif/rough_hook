@@ -54,7 +54,7 @@ pub struct TrainingConfig {
     pub optimizer: AdamConfig,
     #[config(default = 200)]
     pub num_epochs: usize,
-    #[config(default = 8)]
+    #[config(default = 32)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
