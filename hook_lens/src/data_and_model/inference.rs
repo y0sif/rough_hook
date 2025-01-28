@@ -1,20 +1,22 @@
 use burn::{module::Module, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::{Shape, Tensor, TensorData}};
 
 use super::model::{Cnn, CnnRecord};
+use super::model::{Kan, KanRecord};
 
 
 pub fn infer<B: Backend> (artifact_dir: &str, id : i8 ,  device: B::Device , image: Vec<u8>)->u8
 where
         B::IntElem: TryInto<u8> + std::fmt::Debug,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     match id {
-        1 => infere_cnn::<B>(artifact_dir , device , image),
-        2 => infere_resnet::<B>(artifact_dir , device , image),
+        1 => infer_cnn::<B>(artifact_dir , device , image),
+        2 => infer_kan::<B>(artifact_dir , device , image),
         _ => panic!("Model with id {} not found", id),
     }
 }
 
-fn infere_cnn<B:Backend>(artifact_dir: &str , device: B::Device , image: Vec<u8>)->u8 
+fn infer_cnn<B:Backend>(artifact_dir: &str , device: B::Device , image: Vec<u8>)->u8 
 where
         B::IntElem: TryInto<u8> + std::fmt::Debug,{
     let record: CnnRecord<B> = CompactRecorder::new()
@@ -39,13 +41,16 @@ where
     }
 } 
 
-fn infere_resnet<B:Backend>(artifact_dir: &str , device: B::Device , image: Vec<u8>)->u8 
+pub fn infer_kan<B: Backend> (artifact_dir: &str,  device: B::Device , image: Vec<u8>)->u8
 where
-        B::IntElem: TryInto<u8> + std::fmt::Debug,{
-    let record: CnnRecord<B> = CompactRecorder::new()
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+        B::IntElem: TryInto<u8> + std::fmt::Debug,
+{
+    let record: KanRecord<B> = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
         .expect("Trained model should exist");
-    let model = Cnn::new(13, &device);
+
+    let model = Kan::new(13, &device);
     
     let model = model.load_record(record);
     let img = TensorData::new(image, Shape::new([32, 32, 3]));
@@ -62,5 +67,5 @@ where
         Ok(value) => value,
         Err(_) => panic!("Failed to convert prediction to u8"),
     }
-} 
+}
 

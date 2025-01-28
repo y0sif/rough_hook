@@ -9,9 +9,9 @@ mod tests{
         let board_image_path = "/home/mostafayounis630/Graduation_Project/test_images/input_img.png";
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
-            ("Final CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/kan_hook_lens" , 1),
-            ("Final CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/final_cnn_hook_lens" , 1),
+            ("New CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/final_cnn_hook_lens" , 1),
             ("Old CNN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/hook_lens_old_aug_resnet" , 1),
+            ("KAN", "/home/mostafayounis630/Graduation_Project/hook_lens_models/kan_hook_lens" , 2),
          ];
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results : Vec<(&str , i16 , i16 , f32)> = Vec::new();
