@@ -52,11 +52,11 @@ impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Kan<
 #[derive(Config)]
 pub struct TrainingConfig {
     pub optimizer: AdamConfig,
-    #[config(default = 400)]
+    #[config(default = 200)]
     pub num_epochs: usize,
-    #[config(default = 8)]
+    #[config(default = 32)]
     pub batch_size: usize,
-    #[config(default = 8)]
+    #[config(default = 4)]
     pub num_workers: usize,
     #[config(default = 42)]
     pub seed: u64,

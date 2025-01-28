@@ -63,7 +63,7 @@ impl<B: Backend> Kan<B> {
         let batch6 = BatchNormConfig::new(128).init(device);
 
         let kan_layer = EfficientKan::new(&KanOptions::new([
-            3072,
+            2048,
             256,
             num_classes as u32
             ]), device);
