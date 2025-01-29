@@ -136,7 +136,7 @@ impl<B: Backend> Cnn<B> {
     }
 }
 
-// Kan Model
+// Kan Model (256)
 #[derive(Module, Debug)]
 pub struct Kan<B: Backend> {
     kan_layer: EfficientKan<B>,
@@ -150,6 +150,64 @@ impl<B: Backend> Kan<B> {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
             256,
+            num_classes as u32
+            ]), device);
+
+        Self {
+            kan_layer
+        }
+    }
+
+    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+        let x = x.flatten(1, 3);
+        
+        self.kan_layer.forward(x)
+    }
+}
+
+// kAN model (512)
+#[derive(Module, Debug)]
+pub struct Kan512<B: Backend> {
+    kan_layer: EfficientKan<B>,
+}
+
+impl<B: Backend> Kan512<B> {
+    pub fn new(num_classes: usize, device: &Device<B>) -> Self
+    where
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+    {
+        let kan_layer = EfficientKan::new(&KanOptions::new([
+            3072,
+            512,
+            num_classes as u32
+            ]), device);
+
+        Self {
+            kan_layer
+        }
+    }
+
+    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+        let x = x.flatten(1, 3);
+        
+        self.kan_layer.forward(x)
+    }
+}
+
+// kAN model (1024)
+#[derive(Module, Debug)]
+pub struct Kan1024<B: Backend> {
+    kan_layer: EfficientKan<B>,
+}
+
+impl<B: Backend> Kan1024<B> {
+    pub fn new(num_classes: usize, device: &Device<B>) -> Self
+    where
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+    {
+        let kan_layer = EfficientKan::new(&KanOptions::new([
+            3072,
+            1024,
             num_classes as u32
             ]), device);
 

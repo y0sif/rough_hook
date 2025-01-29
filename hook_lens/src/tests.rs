@@ -3,6 +3,9 @@ mod tests{
     use rusty_brain::board::Board;
     use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     use prettytable::{Table, row};
+    use std::time::Instant;
+    use std::thread;
+    use std::time::Duration;
 
     #[test]
     fn test_fen_string_of_image_1(){
@@ -10,11 +13,13 @@ mod tests{
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
             ("CNN", "/home/sasa630/Graduation_Project/hook_lens_models/cnn_hook_lens" , 1),
-            ("KAN", "/home/sasa630/Graduation_Project/hook_lens_models/kan/kan" , 2),
-            ("CNN_KAN" , "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn/kan_cnn" , 3)
+            ("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan/kan" , 2),
+            ("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_512/kan_512" , 3),
+            ("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_1024/kan_1024" , 4),
+            ("CNN_KAN" , "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn/kan_cnn" , 5)
          ];
         // name , correct_pieces  , wrong_pieces , accuracy
-        let mut models_results : Vec<(&str , i16 , i16 , f32)> = Vec::new();
+        let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
         let static_str = String::from(" w - - 0 1");
         let actual_fen_string = String::from("r3q1k1/pppb1ppp/2n5/3P4/8/2B2N2/PP3PPP/R2Q2K1");
         
@@ -25,9 +30,9 @@ mod tests{
             }
 
             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
-
+            let start = Instant::now();
             let  predicted_fen_string = get_fen_string_from(board_image_path , model_path , id);
-
+            let duration = start.elapsed().as_secs_f32();
             println!("====================== actual board =======================");
 
             let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
@@ -53,8 +58,9 @@ mod tests{
             println!("Correct = {}" , correct);
             println!("wrong = {}" , wrong);
             println!("accuracy = {}" ,accuracy);
+            println!("duaration = {:?}" , duration);
 
-            models_results.push((model_name , correct , wrong , accuracy));
+            models_results.push((model_name , correct , wrong , accuracy ,duration));
             
             println!("\n\n");
         }
@@ -77,16 +83,16 @@ mod tests{
     Ok(differences)
 }
 
-fn print_results_table(models_results: Vec<(&str, i16, i16, f32)>) {
+fn print_results_table(models_results: Vec<(&str, i16, i16, f32 ,f32)>) {
     // Create a new table
     let mut table = Table::new();
 
     // Add a header row
-    table.add_row(row!["Model Name", "Correct", "Wrong", "Accuracy"]);
+    table.add_row(row!["Model Name", "Correct", "Wrong", "Accuracy" , "Time(s)"]);
 
     // Iterate over the vector and add each tuple as a row in the table
-    for (model_name, correct, wrong, accuracy) in models_results {
-        table.add_row(row![model_name, correct, wrong, accuracy]);
+    for (model_name, correct, wrong, accuracy , time) in models_results {
+        table.add_row(row![model_name, correct, wrong, accuracy ,time]);
     }
     // Print the table to the console
     table.printstd();
