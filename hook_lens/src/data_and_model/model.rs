@@ -16,7 +16,7 @@ impl<B: Backend> Kan<B> {
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
-            256,
+            1024,
             num_classes as u32
             ]), device);
 
