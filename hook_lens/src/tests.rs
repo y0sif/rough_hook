@@ -12,12 +12,28 @@ mod tests{
         let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
-            ("CNN", "/home/sasa630/Graduation_Project/hook_lens_models/cnn_hook_lens" , 1),
-            ("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan/kan" , 2),
-            ("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_512/kan_512" , 3),
-            ("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_1024/kan_1024" , 4),
-            ("CNN_KAN" , "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn/kan_cnn" , 5)
-         ];
+             // kan models
+            //("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_hook_lens", 2),
+            //("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_512_hook_lens" , 3),
+            //("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_1024_hook_lens" , 4),
+            //
+            //("kan_256_spline_order_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_6_hook_lens" , 5),
+            //("kan_256_spline_order_12", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_12_hook_lens" , 6),
+            //
+            //("kan_256_scale_base_2_scale_noise_2", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_2_scale_noise_2_hook_lens" , 7),
+            //("kan_256_scale_base_4_scale_noise_4", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_4_scale_noise_4_hook_lens" , 8),   
+            //("kan_256_scale_base_6_scale_noise_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_6_scale_noise_6_hook_lens" , 9),   
+            //
+            //("kan_256_grid_size_10", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_10_hook_lens" , 10),   
+            //("kan_256_grid_size_20", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_20_hook_lens" , 11),   
+            //("kan_256_grid_size_30", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_30_hook_lens" , 12),   
+            //
+            // kan_cnn models
+            ("kan_cnn_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_hook_lens" , 13),   
+            ("kan_cnn_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_512_hook_lens" , 14),   
+            ("kan_cnn_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_1024_hook_lens" , 15),   
+
+            ("kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2_hook_lens" , 16),            ("kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2_hook_lens" , 17),            ];
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
         let static_str = String::from(" w - - 0 1");
@@ -69,19 +85,19 @@ mod tests{
     }
 
     fn count_fen_differences(fen1: &str, fen2: &str) -> Result<usize, &'static str> {
-    // Split the FEN strings into their components
-    let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
-    let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
-
-    // Count the number of differences
-    let differences = board1
-        .chars()
-        .zip(board2.chars())
-        .filter(|(c1, c2)| c1 != c2)
-        .count();
-
-    Ok(differences)
-}
+       // Split the FEN strings into their components
+       let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
+       let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
+  
+       // Count the number of differences
+       let differences = board1
+          .chars()
+          .zip(board2.chars())
+          .filter(|(c1, c2)| c1 != c2)
+          .count();
+  
+       Ok(differences)
+    }
 
 fn print_results_table(models_results: Vec<(&str, i16, i16, f32 ,f32)>) {
     // Create a new table
