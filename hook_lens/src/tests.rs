@@ -13,6 +13,8 @@ mod tests{
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
              // kan models
+            ("ultra_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_cnn_models/cnn_hook_lens", 1),
+            ("ultra_kan_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
             //("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_hook_lens", 2),
             //("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_512_hook_lens" , 3),
             //("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_1024_hook_lens" , 4),
@@ -28,12 +30,14 @@ mod tests{
             //("kan_256_grid_size_20", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_20_hook_lens" , 11),   
             //("kan_256_grid_size_30", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_30_hook_lens" , 12),   
             //
-            // kan_cnn models
-            ("kan_cnn_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_hook_lens" , 13),   
-            ("kan_cnn_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_512_hook_lens" , 14),   
-            ("kan_cnn_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_1024_hook_lens" , 15),   
+            //// kan_cnn models
+            //("kan_cnn_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_hook_lens" , 13),   
+            //("kan_cnn_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_512_hook_lens" , 14),   
+            //("kan_cnn_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_1024_hook_lens" , 15),   
 
-            ("kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2_hook_lens" , 16),            ("kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2_hook_lens" , 17),            ];
+           // ("kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2_hook_lens" , 16),               ("kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2_hook_lens" , 17),            
+         ];
+  
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
         let static_str = String::from(" w - - 0 1");
