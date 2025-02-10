@@ -1,16 +1,11 @@
 use burn::data::dataloader::batcher::Batcher;
 use burn::prelude::*;
-use burn_dataset::transform::Mapper;
-use burn_dataset::transform::MapperDataset;
 use burn_dataset::transform::PartialDataset;
 use burn_dataset::transform::ShuffledDataset;
 use burn_dataset::Dataset;
-use burn_dataset::HuggingfaceDatasetLoader;
-use burn_dataset::InMemDataset;
 use burn_dataset::SqliteDataset;
 use nn::Sigmoid;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
