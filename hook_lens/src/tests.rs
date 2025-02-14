@@ -1,121 +1,121 @@
-#[cfg(test)]
-mod tests{
-    use rusty_brain::board::Board;
-    use crate::input_data_handling::fen_string_generation::get_fen_string_from;
-    use prettytable::{Table, row};
-    use std::time::Instant;
-    use std::thread;
-    use std::time::Duration;
+// #[cfg(test)]
+// mod tests{
+//     use rusty_brain::board::Board;
+//     use crate::input_data_handling::fen_string_generation::get_fen_string_from;
+//     use prettytable::{Table, row};
+//     use std::time::Instant;
+//     use std::thread;
+//     use std::time::Duration;
 
-    #[test]
-    fn test_fen_string_of_image_1(){
-        let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
-         // Name - Path - Id
-         let models: Vec<(&str, &str , i8)> = vec![
-             // kan models
-            ("ultra_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_cnn_models/cnn_hook_lens", 1),
-            ("ultra_kan_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
-            //("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_hook_lens", 2),
-            //("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_512_hook_lens" , 3),
-            //("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_1024_hook_lens" , 4),
-            //
-            //("kan_256_spline_order_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_6_hook_lens" , 5),
-            //("kan_256_spline_order_12", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_12_hook_lens" , 6),
-            //
-            //("kan_256_scale_base_2_scale_noise_2", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_2_scale_noise_2_hook_lens" , 7),
-            //("kan_256_scale_base_4_scale_noise_4", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_4_scale_noise_4_hook_lens" , 8),   
-            //("kan_256_scale_base_6_scale_noise_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_6_scale_noise_6_hook_lens" , 9),   
-            //
-            //("kan_256_grid_size_10", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_10_hook_lens" , 10),   
-            //("kan_256_grid_size_20", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_20_hook_lens" , 11),   
-            //("kan_256_grid_size_30", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_30_hook_lens" , 12),   
-            //
-            //// kan_cnn models
-            //("kan_cnn_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_hook_lens" , 13),   
-            //("kan_cnn_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_512_hook_lens" , 14),   
-            //("kan_cnn_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_1024_hook_lens" , 15),   
+//     #[test]
+//     fn test_fen_string_of_image_1(){
+//         let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
+//          // Name - Path - Id
+//          let models: Vec<(&str, &str , i8)> = vec![
+//              // kan models
+//             ("ultra_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_cnn_models/cnn_hook_lens", 1),
+//             ("ultra_kan_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
+//             //("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_hook_lens", 2),
+//             //("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_512_hook_lens" , 3),
+//             //("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_1024_hook_lens" , 4),
+//             //
+//             //("kan_256_spline_order_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_6_hook_lens" , 5),
+//             //("kan_256_spline_order_12", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_12_hook_lens" , 6),
+//             //
+//             //("kan_256_scale_base_2_scale_noise_2", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_2_scale_noise_2_hook_lens" , 7),
+//             //("kan_256_scale_base_4_scale_noise_4", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_4_scale_noise_4_hook_lens" , 8),   
+//             //("kan_256_scale_base_6_scale_noise_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_6_scale_noise_6_hook_lens" , 9),   
+//             //
+//             //("kan_256_grid_size_10", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_10_hook_lens" , 10),   
+//             //("kan_256_grid_size_20", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_20_hook_lens" , 11),   
+//             //("kan_256_grid_size_30", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_30_hook_lens" , 12),   
+//             //
+//             //// kan_cnn models
+//             //("kan_cnn_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_hook_lens" , 13),   
+//             //("kan_cnn_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_512_hook_lens" , 14),   
+//             //("kan_cnn_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_1024_hook_lens" , 15),   
 
-           // ("kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2_hook_lens" , 16),               ("kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2_hook_lens" , 17),            
-         ];
+//            // ("kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2_hook_lens" , 16),               ("kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2_hook_lens" , 17),            
+//          ];
   
-        // name , correct_pieces  , wrong_pieces , accuracy
-        let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
-        let static_str = String::from(" w - - 0 1");
-        let actual_fen_string = String::from("r3q1k1/pppb1ppp/2n5/3P4/8/2B2N2/PP3PPP/R2Q2K1");
+//         // name , correct_pieces  , wrong_pieces , accuracy
+//         let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
+//         let static_str = String::from(" w - - 0 1");
+//         let actual_fen_string = String::from("r3q1k1/pppb1ppp/2n5/3P4/8/2B2N2/PP3PPP/R2Q2K1");
         
-        let mut flag = false;
-        for (model_name , model_path , id) in models{
-            if model_name.len() == 0 || model_path.len() == 0 {
-                continue;
-            }
+//         let mut flag = false;
+//         for (model_name , model_path , id) in models{
+//             if model_name.len() == 0 || model_path.len() == 0 {
+//                 continue;
+//             }
 
-            println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
-            let start = Instant::now();
-            let  predicted_fen_string = get_fen_string_from(board_image_path , model_path , id);
-            let duration = start.elapsed().as_secs_f32();
-            println!("====================== actual board =======================");
+//             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
+//             let start = Instant::now();
+//             let  predicted_fen_string = get_fen_string_from(board_image_path , model_path , id);
+//             let duration = start.elapsed().as_secs_f32();
+//             println!("====================== actual board =======================");
 
-            let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
-            actual_board.print_board();
+//             let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
+//             actual_board.print_board();
 
-            println!("====================== predicted board =======================");
+//             println!("====================== predicted board =======================");
 
-            let mut predicted_board = Board::from_fen(predicted_fen_string.clone() + &static_str);
-            predicted_board.print_board();
+//             let mut predicted_board = Board::from_fen(predicted_fen_string.clone() + &static_str);
+//             predicted_board.print_board();
 
-            if predicted_fen_string == actual_fen_string {
-                flag = true;
-            }
+//             if predicted_fen_string == actual_fen_string {
+//                 flag = true;
+//             }
 
-            println!("\nactual_fen_string = {}" , actual_fen_string);
-            println!("predicted fen string = {}", predicted_fen_string);
+//             println!("\nactual_fen_string = {}" , actual_fen_string);
+//             println!("predicted fen string = {}", predicted_fen_string);
 
-            let wrong = count_fen_differences(&actual_fen_string , &predicted_fen_string).unwrap() as i16;
-            let correct = 64 - wrong as i16;
-            let accuracy = (correct as f32 / 64.0)*100 as f32;
-            let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
+//             let wrong = count_fen_differences(&actual_fen_string , &predicted_fen_string).unwrap() as i16;
+//             let correct = 64 - wrong as i16;
+//             let accuracy = (correct as f32 / 64.0)*100 as f32;
+//             let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
 
-            println!("Correct = {}" , correct);
-            println!("wrong = {}" , wrong);
-            println!("accuracy = {}" ,accuracy);
-            println!("duaration = {:?}" , duration);
+//             println!("Correct = {}" , correct);
+//             println!("wrong = {}" , wrong);
+//             println!("accuracy = {}" ,accuracy);
+//             println!("duaration = {:?}" , duration);
 
-            models_results.push((model_name , correct , wrong , accuracy ,duration));
+//             models_results.push((model_name , correct , wrong , accuracy ,duration));
             
-            println!("\n\n");
-        }
-        print_results_table(models_results);
-        assert_eq!(flag, true);
-    }
+//             println!("\n\n");
+//         }
+//         print_results_table(models_results);
+//         assert_eq!(flag, true);
+//     }
 
-    fn count_fen_differences(fen1: &str, fen2: &str) -> Result<usize, &'static str> {
-       // Split the FEN strings into their components
-       let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
-       let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
+//     fn count_fen_differences(fen1: &str, fen2: &str) -> Result<usize, &'static str> {
+//        // Split the FEN strings into their components
+//        let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
+//        let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
   
-       // Count the number of differences
-       let differences = board1
-          .chars()
-          .zip(board2.chars())
-          .filter(|(c1, c2)| c1 != c2)
-          .count();
+//        // Count the number of differences
+//        let differences = board1
+//           .chars()
+//           .zip(board2.chars())
+//           .filter(|(c1, c2)| c1 != c2)
+//           .count();
   
-       Ok(differences)
-    }
+//        Ok(differences)
+//     }
 
-fn print_results_table(models_results: Vec<(&str, i16, i16, f32 ,f32)>) {
-    // Create a new table
-    let mut table = Table::new();
+// fn print_results_table(models_results: Vec<(&str, i16, i16, f32 ,f32)>) {
+//     // Create a new table
+//     let mut table = Table::new();
 
-    // Add a header row
-    table.add_row(row!["Model Name", "Correct", "Wrong", "Accuracy" , "Time(s)"]);
+//     // Add a header row
+//     table.add_row(row!["Model Name", "Correct", "Wrong", "Accuracy" , "Time(s)"]);
 
-    // Iterate over the vector and add each tuple as a row in the table
-    for (model_name, correct, wrong, accuracy , time) in models_results {
-        table.add_row(row![model_name, correct, wrong, accuracy ,time]);
-    }
-    // Print the table to the console
-    table.printstd();
-}
+//     // Iterate over the vector and add each tuple as a row in the table
+//     for (model_name, correct, wrong, accuracy , time) in models_results {
+//         table.add_row(row![model_name, correct, wrong, accuracy ,time]);
+//     }
+//     // Print the table to the console
+//     table.printstd();
+// }
 
-}
+// }

@@ -2,10 +2,8 @@ use image::imageops;
 use opencv::{core::{Mat, Point, Point2f, Vec2f, Vector}, highgui::{imshow, wait_key_def}, imgcodecs::{self}, imgproc::{self, cvt_color_def, COLOR_BGR2GRAY, LINE_AA}};
 use std::f64::consts::PI;
 
-
-
-pub fn extract_board_sqaures_from(board_image_path : &str)->Vec<(Vec<u8> , u8)>{
-    let mut img = imgcodecs::imread(board_image_path, imgcodecs::IMREAD_COLOR).unwrap();
+pub fn extract_board_sqaures_from(img_data : Vec<u8>) -> Vec<(Vec<u8> , u8)>{
+    let mut img = imgcodecs::imdecode(&opencv::core::Mat::from_slice(&img_data).unwrap(), imgcodecs::IMREAD_COLOR).unwrap();
     //convert image to gray sacle image
     let  gray_scale_image = convert_image_to_gray_scale(&img);
     //apply canny on the gray scale image
@@ -27,11 +25,9 @@ pub fn extract_board_sqaures_from(board_image_path : &str)->Vec<(Vec<u8> , u8)>{
     #[cfg(debug_assertions)]
     draw_intersection_points_on(&mut img , &intersection_points);
     // crop images from the original image and return them with their positions
-    let pieces_images_and_position = crop_images_from(board_image_path , intersection_points);
+    let pieces_images_and_position = crop_images_from(img_data, intersection_points);
     
     pieces_images_and_position
-    
-
 }
 
 fn convert_image_to_gray_scale(colored_image : &Mat)->Mat{
@@ -110,9 +106,9 @@ fn get_intersection_points(s_lines:&Vector<Vec2f> , img : &mut Mat)->Vec<(i32, i
     
 }
 
-fn crop_images_from(original_image_path: &str , intersection_points : Vec<(i32,i32)>)->Vec<(Vec<u8> , u8)>{
+fn crop_images_from(img_data : Vec<u8>, intersection_points : Vec<(i32,i32)>)->Vec<(Vec<u8> , u8)>{
     let mut pieces_images_and_position  = Vec::new();
-    let mut input_image = image::open(original_image_path).unwrap();
+    let mut input_image = image::load_from_memory(&img_data).unwrap();
 
     // calculate edge lenth of the square
     let edge_lengh = intersection_points[8].0- intersection_points[0].0; 

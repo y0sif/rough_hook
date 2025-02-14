@@ -1,9 +1,9 @@
-use opencv::{prelude::*, imgcodecs, highgui, imgproc, core};
+use hook_lens::input_data_handling::fen_string_generation::get_fen_string_from;
+use opencv::{prelude::*, imgcodecs, highgui, imgproc};
 use reqwest;
 use std::error::Error;
 use std::thread::sleep;
 use std::time::Duration;
-use std::sync::{Arc, Mutex};
 
 fn main() -> Result<(), Box<dyn Error>> {
     // put url from ip webcam app here    
@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         imgproc::resize(
             &img_mat,
             &mut resized,
-            opencv::core::Size::new(1800, 1800),
+            opencv::core::Size::new(1000, 1000),
             0.0,
             0.0,
             imgproc::INTER_LINEAR,
@@ -42,8 +42,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             break;
         } else if key == 102 { // 'f' key
             println!("Processing image for FEN string extraction...");
-            // Example: let fen_string = extract_fen_string(&resized);
-            // println!("FEN String: {}", fen_string);
+            let fen_string = get_fen_string_from(img_data,"/home/y0sif/models/cnn_hook_len", 1);
+            println!("FEN String: {}", fen_string);
         }
 
         // Small delay to prevent excessive requests
