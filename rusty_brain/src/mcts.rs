@@ -2,12 +2,13 @@ use crate::board::Board;
 use std::rc::Rc;
 use core::cell::RefCell;
 use rand::Rng;
+use crate::movement::Move;
 
 
 pub struct Hyperparameters {
-    iterations: u32,
-    c: f32,
-    depth: u32, //limit the simulation phase
+    pub iterations: u32,
+    pub c: f32,
+    pub depth: u32, //limit the simulation phase
 }
 
 struct Node {
@@ -57,7 +58,7 @@ impl Node {
     }
 
     fn fully_expanded(&mut self) -> bool {
-        self.children.len() == self.board.generate_legal_moves().len()
+        (self.children.len() == self.board.generate_legal_moves().len()) && self.children.len() != 0
     }
 
     fn terminal(&self) -> bool {
@@ -66,7 +67,13 @@ impl Node {
 }
 
 impl Board {
-    pub fn mcts(&mut self, hyperparameters: &Hyperparameters) {
+
+    pub fn find_best_move_mcts(&mut self, hyperparameters: &Hyperparameters) -> Move {
+        let best_move = self.mcts(&hyperparameters);
+        best_move
+    }
+
+    pub fn mcts(&mut self, hyperparameters: &Hyperparameters) -> Move {
         
         let root_node = Rc::new(RefCell::new(Node::new(self.clone(), None)));
 
@@ -86,48 +93,82 @@ impl Board {
                     .unwrap();
                 current_node = best_child;
             }
-
+            
 
             // <<Phase 2: Expansion>>
-            let mut current_node_mut = current_node.borrow_mut();
-            if !current_node_mut.terminal() {
-                //We need to generate the next move for the new expanded state
-                /*
-                To avoid storing a list of used moves and unused moves, we can
-                make use of the length of the children count to get the move
-                that follows, this exploits the nature of the static order in move generation
-                */
-                let legal_moves = current_node_mut.board.generate_legal_moves();
-                let children_count = current_node_mut.children.len();
-                let chosen_move = legal_moves[children_count];
-                //Copy current board to apply the chosen move to it then assign this board to the new child
-                let mut new_board = current_node_mut.board.clone();
-                new_board.make_move(chosen_move);
-                let new_child = Rc::new(RefCell::new(Node::new(new_board, Some(Rc::clone(&current_node)))));
-                current_node_mut.children.push(new_child); //Parent has expanded
-                
+            {
+                let mut current_node_mut = current_node.borrow_mut();
+                if !current_node_mut.terminal() {
+                    //We need to generate the next move for the new expanded state
+                    /*
+                    To avoid storing a list of used moves and unused moves, we can
+                    make use of the length of the children count to get the move
+                    that follows, this exploits the nature of the static order in move generation
+                    */
+                    let legal_moves = current_node_mut.board.generate_legal_moves();
+                    let children_count = current_node_mut.children.len();
+                    let chosen_move = legal_moves[children_count];
+                    //Copy current board to apply the chosen move to it then assign this board to the new child
+                    let mut new_board = current_node_mut.board.clone();
+                    new_board.make_move(chosen_move);
+                    let new_child = Rc::new(RefCell::new(Node::new(new_board, Some(Rc::clone(&current_node)))));
+                    current_node_mut.children.push(new_child); //Parent has expanded
+                    
+                }
             }
-
 
             // <<Phase 3: Simulation>>
-            let node_to_simulate_from = current_node.borrow();
-            let mut temp_board = node_to_simulate_from.board.clone();
-            let mut current_depth = 0;
-            while !temp_board.checkmate 
-                && !temp_board.stalemate 
-                && !temp_board.draw
-                && current_depth < hyperparameters.depth {
-                let legal_moves = temp_board.generate_legal_moves();
-                let mut rng = rand::thread_rng();
-                let random_index = rng.gen_range(0..legal_moves.len());
-                let random_move = legal_moves[random_index];
-                temp_board.make_move(random_move);
-                current_depth += 1;
-            }
-            let sim_evaluation = temp_board.evaluate();
+            let sim_evaluation = {
+                let node_to_simulate_from = current_node.borrow();
+                let mut temp_board = node_to_simulate_from.board.clone();
+                let mut current_depth = 0;
+                while !temp_board.checkmate 
+                    && !temp_board.stalemate 
+                    && !temp_board.draw
+                    && current_depth < hyperparameters.depth {
+                    let legal_moves = temp_board.generate_legal_moves();
+                    if legal_moves.is_empty() {
+                        break;
+                    }
+                    let mut rng = rand::thread_rng();
+                    let random_index = rng.gen_range(0..legal_moves.len());
+                    let random_move = legal_moves[random_index];
+                    temp_board.make_move(random_move);
+                    current_depth += 1;
+                }
+                temp_board.evaluate()
+            };
 
 
             // <<Phase 4: Backpropagation>>
+            let mut current = Some(Rc::clone(&current_node));
+            while let Some(node) = current {
+                let mut node_mut = node.borrow_mut();
+                node_mut.visits += 1;
+                node_mut.value += sim_evaluation as f32;
+                current = node_mut.parent.clone();
+            }
         }
+
+        let chosen_child_rc = {
+        let root_node_ref = root_node.borrow();
+        root_node_ref
+            .children
+            .iter()
+            .max_by_key(|child| child.borrow().visits)
+            .unwrap()
+            .clone()
+        };
+
+        let chosen_move = chosen_child_rc
+            .borrow()
+            .board
+            .move_log
+            .last()
+            .cloned()
+            .unwrap();
+
+    chosen_move
+
     }
 }
