@@ -291,7 +291,7 @@ impl Board {
         v
     }
     
-    pub fn bishop_pair(&self) -> i32 {
+    fn bishop_pair(&self) -> i32 {
         match self.turn {
             Turn::White => {
                 if self.bitboards.white_bishops.count_ones() < 2 {
@@ -312,7 +312,7 @@ impl Board {
     
     // PAWNS MIDDLE GAME
     
-    fn pawns_mg(&self) -> i32 {
+    pub fn pawns_mg(&self) -> i32 {
         // sum function
         
         let mut v = 0;
@@ -352,81 +352,108 @@ impl Board {
         v
     }
     
-    fn doubled_isolated(&self, square: u8, square_position: u64) -> i32 {
+    pub fn doubled_isolated(&self, square: u8, square_position: u64) -> i32 {
         match self.turn {
             Turn::White => {
+                // Check if the pawn is isolated
                 if self.isolated(square_position) == 1 {
-                    let mut obe = 0;
-                    let mut eop = 0;
-                    let mut ene = 0;
+                    let mut friendly_pawns_below = 0; // Friendly pawns below
+                    let mut enemy_pawns_above = 0;    // Enemy pawns above
+                    let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
 
-                    let above_pawns = Bitboards::north_mask_ex(square) & self.bitboards.white_pawns; 
-                    let under_pawns = Bitboards::south_mask_ex(square) & self.bitboards.white_pawns; 
-                    
-                    obe += above_pawns.count_ones();
-                    eop += under_pawns.count_ones();
+                    // Get the rank of the square (0 = rank 1, 7 = rank 8)
+                    let rank = square / 8;
 
-                    let neighbor_enemy_pawns = Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8) |
-                                                    Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
-                    
-                    let neighbor_enemy_pawns = neighbor_enemy_pawns & self.bitboards.black_pawns;
-                    
-                    ene += neighbor_enemy_pawns.count_ones();
-
-                    if obe > 0 && ene == 0 && eop > 0 {
-                        return 1;
+                    // If the pawn is on the 8th rank, it cannot be doubled isolated
+                    if rank == 7 {
+                        return 0;
                     }
-                }    
+
+                    // Count friendly pawns below the current pawn
+                    friendly_pawns_below += (Bitboards::south_mask_ex(square) & self.bitboards.white_pawns).count_ones();
+
+                    // Count enemy pawns above the current pawn
+                    enemy_pawns_above += (Bitboards::north_mask_ex(square) & self.bitboards.black_pawns).count_ones();
+
+                    // Count enemy pawns on adjacent files
+                    if square % 8 > 0 {
+                        // Check the left file (x - 1), but only if not on the a-file
+                        enemy_pawns_adjacent += (Bitboards::file_mask(square - 1) & self.bitboards.black_pawns).count_ones();
+                    }
+                    if square % 8 < 7 {
+                        // Check the right file (x + 1), but only if not on the h-file
+                        enemy_pawns_adjacent += (Bitboards::file_mask(square + 1) & self.bitboards.black_pawns).count_ones();
+                    }
+
+                    // Check for doubled isolated pawns
+                    if friendly_pawns_below > 0 && enemy_pawns_above > 0 && enemy_pawns_adjacent == 0 {
+                        return 1; // Doubled isolated
+                    }
+                }
             },
             Turn::Black => {
+                // Check if the pawn is isolated
                 if self.isolated(square_position) == 1 {
-                    let mut obe = 0;
-                    let mut eop = 0;
-                    let mut ene = 0;
+                    let mut friendly_pawns_below = 0; // Friendly pawns below
+                    let mut enemy_pawns_above = 0;    // Enemy pawns above
+                    let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
 
-                    let under_pawns = Bitboards::north_mask_ex(square) & self.bitboards.black_pawns; 
-                    let above_pawns = Bitboards::south_mask_ex(square) & self.bitboards.black_pawns; 
-                    
-                    obe += above_pawns.count_ones();
-                    eop += under_pawns.count_ones();
+                    // Get the rank of the square (0 = rank 1, 7 = rank 8)
+                    let rank = square / 8;
 
-                    let neighbor_enemy_pawns = Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8) |
-                                                    Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
-                    
-                    let neighbor_enemy_pawns = neighbor_enemy_pawns & self.bitboards.white_pawns;
-                    
-                    ene += neighbor_enemy_pawns.count_ones();
-
-                    if obe > 0 && ene == 0 && eop > 0 {
-                        return 1;
+                    // If the pawn is on the 1st rank, it cannot be doubled isolated
+                    if rank == 0 {
+                        return 0;
                     }
-                }    
-                
+
+                    // Count friendly pawns below the current pawn
+                    friendly_pawns_below += (Bitboards::north_mask_ex(square) & self.bitboards.black_pawns).count_ones();
+
+                    // Count enemy pawns above the current pawn
+                    enemy_pawns_above += (Bitboards::south_mask_ex(square) & self.bitboards.white_pawns).count_ones();
+
+                    // Count enemy pawns on adjacent files
+                    if square % 8 > 0 {
+                        // Check the left file (x - 1), but only if not on the a-file
+                        enemy_pawns_adjacent += (Bitboards::file_mask(square - 1) & self.bitboards.white_pawns).count_ones();
+                    }
+                    if square % 8 < 7 {
+                        // Check the right file (x + 1), but only if not on the h-file
+                        enemy_pawns_adjacent += (Bitboards::file_mask(square + 1) & self.bitboards.white_pawns).count_ones();
+                    }
+
+                    // Check for doubled isolated pawns
+                    if friendly_pawns_below > 0 && enemy_pawns_above > 0 && enemy_pawns_adjacent == 0 {
+                        return 1; // Doubled isolated
+                    }
+                }
             },
         }
-        
-        0
+
+        0 // Not doubled isolated
     }
 
     fn isolated(&self, square_position: u64) -> i32 {
-        let neighbor_pawns = Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8)
-                                  | Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
-
+        let file = (square_position.trailing_zeros() as u8) % 8;
+        let mut neighbor_pawns = 0u64;
+        if file < 7 {
+            neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8);
+        }
+        if file > 0 {
+            neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
+        }
         match self.turn {
             Turn::White => {
                 if neighbor_pawns & self.bitboards.white_pawns != 0 {
                     return 0;
                 }
-
             },
             Turn::Black => {
                 if neighbor_pawns & self.bitboards.black_pawns != 0 {
                     return 0;
                 }
-
             },
         }
-
         1
     }
 
