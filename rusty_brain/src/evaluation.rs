@@ -1,4 +1,5 @@
 use std::process::id;
+use crate::piece::Piece;
 
 use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
 
@@ -31,10 +32,30 @@ impl Board {
     // PIECE VALUE MIDDLE GAME
     
     fn piece_value_mg(&self) -> i32 {
-        self.piece_value_bonus(true)
+        // self.piece_value_bonus(true)
+        let mut sum = 0;
+
+        match self.turn { 
+            Turn::White => {
+                sum += self.bitboards.white_pawns.count_ones() as i32 * self.piece_value_bonus(Piece::Pawn, true);
+                sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
+                sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
+                sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
+                sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
+            }
+            Turn::Black =>{
+                sum += self.bitboards.black_pawns.count_ones() as i32 * self.piece_value_bonus(Piece::Pawn, true);
+                sum += self.bitboards.black_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
+                sum += self.bitboards.black_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
+                sum += self.bitboards.black_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
+                sum += self.bitboards.black_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
+
+            }
+        }
+        sum
     }
 
-    fn piece_value_bonus(&self, is_middle_game: bool) -> i32 {
+    fn piece_value_bonus(&self ,piece: Piece, is_middle_game: bool) -> i32 {
         // pawn, knight, bishop, rook, queen
         let a = if is_middle_game {
             [124, 781, 825, 1276, 2538]
@@ -42,25 +63,33 @@ impl Board {
             [206, 854, 915, 1380, 2682]
         };
 
+        match piece {
+            Piece::Pawn => a[0],            
+            Piece::Knight =>a[1],
+            Piece::Bishop =>a[2],
+            Piece::Rook =>a[3],
+            Piece::Queen =>a[4],
+            _ => 0
+        }
+    }
+
+    fn non_pawn_material(&self, is_middle_game: bool) -> i32 {
         let mut sum = 0;
 
-        match self.turn {
+        match self.turn { 
             Turn::White => {
-                sum += self.bitboards.white_pawns.count_ones() as i32 * a[0];
-                sum += self.bitboards.white_knights.count_ones() as i32 * a[1];
-                sum += self.bitboards.white_bishops.count_ones() as i32 * a[2];
-                sum += self.bitboards.white_rooks.count_ones() as i32 * a[3];
-                sum += self.bitboards.white_queens.count_ones() as i32 * a[4];
+                sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
+                sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
+                sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
+                sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
             }
-            Turn::Black => {
-                sum += self.bitboards.black_pawns.count_ones() as i32 * a[0];
-                sum += self.bitboards.black_knights.count_ones() as i32 * a[1];
-                sum += self.bitboards.black_bishops.count_ones() as i32 * a[2];
-                sum += self.bitboards.black_rooks.count_ones() as i32 * a[3];
-                sum += self.bitboards.black_queens.count_ones() as i32 * a[4];
+            Turn::Black =>{
+                sum += self.bitboards.black_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
+                sum += self.bitboards.black_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
+                sum += self.bitboards.black_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
+                sum += self.bitboards.black_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
             }
         }
-
         sum
     }
     
