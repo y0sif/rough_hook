@@ -334,7 +334,7 @@ impl Board {
                 v -= 9;
             }
 
-            v -= self.doubled(square_position) * 11;
+            v -= self.doubled(square) * 11;
         
             if self.connected_bonus(square_position, square) == 1{
                 v += self.connected(square_position);
@@ -588,44 +588,93 @@ impl Board {
         0
     }
     
-    fn doubled(&self, square_position: u64) -> i32 {
+    pub fn doubled(&self, square: u8) -> i32 {
+        let file = square % 8;
+        let rank = square / 8;        
+        /*
+        Stockfish evaluates doubled pawns more specifically. It applies a penalty only if:
+
+        1- Another Friendly Pawn is Directly Behind:
+
+            There is a friendly pawn on the square directly behind the current pawn on the same file.
+
+            For example, if White has pawns on c3 and c2, the pawn on c3 is considered doubled because the pawn on c2 is directly behind it.
+
+        2- The Doubled Pawn is Not Supported:
+
+            The doubled pawn is not supported by friendly pawns on adjacent files.
+
+            For example, if the pawn on c3 has no friendly pawns on the b or d files, it is considered unsupported.
+        */
+
         match self.turn {
             Turn::White => {
-                let above_pawn = Bitboards::move_north(square_position);
-                if above_pawn & self.bitboards.white_pawns == 0 {
+                // check for pawn which is directly behind
+                if rank > 0
+                {
+                    let new_square = square - 8;
+                    let new_position = 1 << new_square;
+                    if new_position & self.bitboards.white_pawns == 0 // means no pawns directly behind me
+                    {
+                        return 0;
+                    }
+                    // know check for supoorted pawn, we will move one step down then one step right and left
+                    let mut supported_pawns = 0;
+                    if file < 7 {
+                        let east_square = new_square + 1;
+                        supported_pawns |= 1 << east_square;
+                    }
+                    if file > 0 {
+                        let weast_square = new_square - 1;
+                        supported_pawns |= 1 << weast_square;
+
+                    }
+                    // if there is supported pawns so not doubled
+                    if supported_pawns & self.bitboards.white_pawns != 0
+                    {
+                        return 0;
+                    }
+                    return 1;
+                }
+                else {
                     return 0;
                 }
                 
-                let support_pawns = Bitboards::move_south(square_position);
-                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
-                if support_pawns != 0 {
-                    return 0;
-                }
-                
-                return 1;
             },
             Turn::Black => {
-                let under_pawns = Bitboards::move_south(square_position);
-                if under_pawns & self.bitboards.white_pawns == 0 {
-                    return 0;
-                }
-                
-                let support_pawns = Bitboards::move_north(square_position);
-                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
-                if support_pawns != 0 {
-                    return 0;
-                }
-                
-                return 1;
+               // check for pawn which is directly behind
+               if rank < 7
+               {
+                   let new_square = square + 8;
+                   let new_position = 1 << new_square;
+                   if new_position & self.bitboards.black_pawns == 0 // means no pawns directly behind me
+                   {
+                       return 0;
+                   }
+                   // know check for supoorted pawn, we will move one step down then one step right and left
+                   let mut supported_pawns = 0;
+                   if file < 7 {
+                       let east_square = new_square + 1;
+                       supported_pawns |= 1 << east_square;
+                   }
+                   if file > 0 {
+                       let weast_square = new_square - 1;
+                       supported_pawns |= 1 << weast_square;
+
+                   }
+                   // if there is supported pawns so not doubled
+                   if supported_pawns & self.bitboards.black_pawns != 0
+                   {
+                       return 0;
+                   }
+                   return 1;
+               }
+               else {
+                   return 0;
+               }
+               
             },
         }
-        // if square not pawn return 0
-
-        // if square above pawn is not pawn return 0
-
-        // if pawn have neighbors return 0
-
-        1 
     }
 
     fn connected_bonus(&self, square_position: u64, square: u8) -> i32 {

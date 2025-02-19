@@ -6,7 +6,7 @@ fn main() {
     //let fen = String::from("rnbqkbnr/ppp2ppp/2PpP3/P1P3P1/8/P5P1/8/RNBQKBNR w KQkq - 0 2");
     
 
-    let fen = String::from("1nbqkbnr/pp1p2p1/6p1/P1P1P1P1/P5p1/3p2P1/3P2P1/RNBQKBNR w KQkq c6 0 3");
+    let fen = String::from("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     
     // Create a Bitboards instance from the FEN string
     let board = Board::from_fen(fen);
@@ -19,10 +19,10 @@ fn main() {
         let square = white_pawns.trailing_zeros() as u8;
 
         // Check if the pawn is doubled isolated
-        let is_backward = board.backward(square);
+        let is_doubled = board.doubled(square);
 
         // Print the result
-        println!("Is the white pawn on square {} backwarded? {}", square, is_backward);
+        println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
         
         white_pawns &= white_pawns - 1;
 
