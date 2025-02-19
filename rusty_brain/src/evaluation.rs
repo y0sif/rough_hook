@@ -337,7 +337,7 @@ impl Board {
             v -= self.doubled(square) * 11;
         
             if self.connected_bonus(square_position, square) == 1{
-                v += self.connected(square_position);
+                v += self.connected(square);
             }
             
             v -= 13 * self.weak_unopposeed_pawn(square_position, square);
@@ -352,7 +352,9 @@ impl Board {
         v
     }
     
-    pub fn doubled_isolated(&self, square: u8) -> i32 {
+    // return if current pawn is double isolated or not
+    // return two values only 0 - 1
+    fn doubled_isolated(&self, square: u8) -> i32 {
         match self.turn {
             Turn::White => {
                 // Check if the pawn is isolated
@@ -433,7 +435,9 @@ impl Board {
         0 // Not doubled isolated
     }
 
-    pub fn isolated(&self, square: u8) -> i32 {
+    // return if current pawn is isolated or not
+    // return two values only 0 - 1
+    fn isolated(&self, square: u8) -> i32 {
         let file = square % 8;
         let square_position = 1 << square;
         let mut neighbor_pawns = 0u64;
@@ -458,7 +462,9 @@ impl Board {
         1
     }
 
-    pub fn backward(&self, square: u8) -> i32 {
+    // return if current pawn is backward or not
+    // return two values only 0 - 1
+    fn backward(&self, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
         let square_position = 1 << square;
@@ -588,7 +594,9 @@ impl Board {
         0
     }
     
-    pub fn doubled(&self, square: u8) -> i32 {
+    // return if current pawn is doubled or not
+    // return two values only 0 - 1
+    fn doubled(&self, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;        
         /*
@@ -677,17 +685,120 @@ impl Board {
         }
     }
 
+    // return 1 if the pawn connected or phalanx
+    pub fn connected(&self, square: u8) -> i32 {
+        if self.supported(square) != 0 || self.phalanx(square) == 1{
+            return 1;
+        }   
+
+        0
+    }
+    
+    // return number of pawns support the current pawn
+    // it can return only 0 - 1 - 2
+    fn supported(&self, square: u8) -> i32 {
+        let file = square % 8;
+        let rank = square / 8;
+        match self.turn {
+            Turn::White => {
+                // check for pawn which is directly behind
+                if rank > 0
+                {
+                    let new_square = square - 8;
+                    // know check for supoorted pawn, we will move one step down then one step right and left
+                    let mut supported_pawns = 0;
+                    if file < 7 {
+                        let east_square = new_square + 1;
+                        supported_pawns |= 1 << east_square;
+                    }
+                    if file > 0 {
+                        let weast_square = new_square - 1;
+                        supported_pawns |= 1 << weast_square;
+
+                    }
+                    // number of supported pawns
+                    return (supported_pawns & self.bitboards.white_pawns).count_ones() as i32;
+                    
+                }
+                else {
+                    return 0;
+                }
+
+            },
+            Turn::Black => {
+                  // check for pawn which is directly behind
+                  if rank < 7
+                  {
+                      let new_square = square + 8;
+                      // know check for supoorted pawn, we will move one step down then one step right and left
+                      let mut supported_pawns = 0;
+                      if file < 7 {
+                          let east_square = new_square + 1;
+                          supported_pawns |= 1 << east_square;
+                      }
+                      if file > 0 {
+                          let weast_square = new_square - 1;
+                          supported_pawns |= 1 << weast_square;
+  
+                      }
+                      // number of supported pawns
+                      return (supported_pawns & self.bitboards.black_pawns).count_ones() as i32;
+                      
+                  }
+                  else {
+                      return 0;
+                  }
+  
+            },
+        }
+        
+    }
+    
+    // check if the current pawn is phalanx or not
+    // return onlu two values 0 - 1
+    fn phalanx(&self, square: u8) -> i32 {
+        let file = square % 8;
+        let square_position = 1 << square;
+        let mut phalan = 0;
+        if file < 7
+        {
+            phalan |= Bitboards::move_east(square_position);
+        }
+        if file > 0
+        {
+            phalan |= Bitboards::move_west(square_position);
+        }
+        match self.turn {
+            Turn::White =>
+            {
+                if phalan & self.bitboards.white_pawns != 0 {
+                    return 1;
+                }
+        
+                0
+            },
+            Turn::Black =>{
+                if phalan & self.bitboards.black_pawns != 0 {
+                    return 1;
+                }
+        
+                0
+            },
+        }
+        
+    }
+
     fn connected_bonus(&self, square_position: u64, square: u8) -> i32 {
 
-        if self.connected(square_position) == 0{
+        if self.connected(square) == 0{
             return 0;
         }
 
         let seed = [0, 7, 8, 12, 29, 48, 86];
         
         let op = self.opposed(square);
-        let ph = self.phalanx(square_position);
-        let su = self.supported(square_position);
+        let ph = self.phalanx(square);
+        let su = self.supported(square);
         let bl = match self.turn {
             Turn::White => {
                 if Bitboards::move_north(square_position) & self.bitboards.black_pawns != 0 {
@@ -719,42 +830,6 @@ impl Board {
         }
     }
 
-    fn connected(&self, square_position: u64) -> i32 {
-        if self.supported(square_position) != 0 || self.phalanx(square_position) == 1{
-            return 1;
-        }   
-
-        0
-    }
-    
-    fn supported(&self, square_position: u64) -> i32 {
-        match self.turn {
-            Turn::White => {
-                let support_pawns = Bitboards::move_south(square_position);
-                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
-                
-                return support_pawns.count_ones() as i32;
-
-            },
-            Turn::Black => {
-                let support_pawns = Bitboards::move_north(square_position);
-                let support_pawns = Bitboards::move_east(support_pawns) | Bitboards::move_west(support_pawns);
-                
-                return support_pawns.count_ones() as i32;
-            },
-        }
-        
-    }
-    
-    fn phalanx(&self, square_position: u64) -> i32 {
-        let phalan = Bitboards::move_east(square_position) | Bitboards::move_west(square_position);
-        
-        if phalan != 0 {
-            return 1;
-        }
-
-        0
-    }
 
     fn weak_unopposeed_pawn(&self, square_position: u64, square: u8) -> i32 {
         if self.opposed(square) == 1{
