@@ -3,28 +3,29 @@ use rusty_brain::square::Square;
 use rusty_brain::transposition::TranspositionTable;
 fn main() {
     // FEN string for the board
-    let fen = String::from("1n1qkbnr/1P5p/1p6/1p1b1p2/1p3p2/1p3P2/1P6/1NBQKBNR b KQkq d6 0 2");
+    //let fen = String::from("rnbqkbnr/ppp2ppp/2PpP3/P1P3P1/8/P5P1/8/RNBQKBNR w KQkq - 0 2");
+    
+
+    let fen = String::from("1nbqkbnr/pp1p2p1/6p1/P1P1P1P1/P5p1/3p2P1/3P2P1/RNBQKBNR w KQkq c6 0 3");
     
     // Create a Bitboards instance from the FEN string
     let board = Board::from_fen(fen);
 
     // Get the white pawns bitboard
-    let mut white_pawns = board.bitboards.black_pawns;
+    let mut white_pawns = board.bitboards.white_pawns;
 
     // Iterate over all white pawns
-    let mut square = white_pawns.trailing_zeros() as u8;
-    while square < 64 {
-        // Create a bitboard for the current pawn
-        let pawn_bitboard = 1u64 << square;
+    while white_pawns != 0 {
+        let square = white_pawns.trailing_zeros() as u8;
 
         // Check if the pawn is doubled isolated
-        let is_doubled_isolated = board.doubled_isolated(square, pawn_bitboard);
+        let is_backward = board.backward(square);
 
         // Print the result
-        println!("Is the white pawn on square {} doubled isolated? {}", square, is_doubled_isolated);
-        // Move to the next set bit
-        white_pawns ^= pawn_bitboard; // Clear the current bit
-        square = white_pawns.trailing_zeros() as u8;
+        println!("Is the white pawn on square {} backwarded? {}", square, is_backward);
+        
+        white_pawns &= white_pawns - 1;
+
     }
     
     /* 

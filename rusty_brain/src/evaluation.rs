@@ -326,11 +326,11 @@ impl Board {
             let square = pawn_bitboard.trailing_zeros() as u8;
             let square_position = 1 << square;
 
-            if self.doubled_isolated(square, square_position) == 1{
+            if self.doubled_isolated(square) == 1{
                 v -= 11;
-            }else if self.isolated(square_position) == 1{
+            }else if self.isolated(square) == 1{
                 v -= 5;
-            }else if self.backward(square_position) == 1{
+            }else if self.backward(square) == 1{
                 v -= 9;
             }
 
@@ -352,11 +352,11 @@ impl Board {
         v
     }
     
-    pub fn doubled_isolated(&self, square: u8, square_position: u64) -> i32 {
+    pub fn doubled_isolated(&self, square: u8) -> i32 {
         match self.turn {
             Turn::White => {
                 // Check if the pawn is isolated
-                if self.isolated(square_position) == 1 {
+                if self.isolated(square) == 1 {
                     let mut friendly_pawns_below = 0; // Friendly pawns below
                     let mut enemy_pawns_above = 0;    // Enemy pawns above
                     let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
@@ -393,7 +393,7 @@ impl Board {
             },
             Turn::Black => {
                 // Check if the pawn is isolated
-                if self.isolated(square_position) == 1 {
+                if self.isolated(square) == 1 {
                     let mut friendly_pawns_below = 0; // Friendly pawns below
                     let mut enemy_pawns_above = 0;    // Enemy pawns above
                     let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
@@ -433,8 +433,9 @@ impl Board {
         0 // Not doubled isolated
     }
 
-    fn isolated(&self, square_position: u64) -> i32 {
-        let file = (square_position.trailing_zeros() as u8) % 8;
+    pub fn isolated(&self, square: u8) -> i32 {
+        let file = square % 8;
+        let square_position = 1 << square;
         let mut neighbor_pawns = 0u64;
         if file < 7 {
             neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8);
@@ -457,19 +458,69 @@ impl Board {
         1
     }
 
-    fn backward(&self, square_position: u64) -> i32 {
+    pub fn backward(&self, square: u8) -> i32 {
+        let file = square % 8;
+        let rank = square / 8;
+        let square_position = 1 << square;
+        let mut neighbor_pawns = 0u64;
+        
+        if file < 7 {
+            neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8);
+        }
+        if file > 0 {
+            neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
+        }
         match self.turn {
             Turn::White => {
-                let neighbor_pawns = Bitboards::south_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8) | 
-                                          Bitboards::south_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8) |
-                                          Bitboards::move_east(square_position) | 
-                                          Bitboards::move_west(square_position);
-                if neighbor_pawns & self.bitboards.white_pawns != 0 {
-                    return 0;
+                // in the conditions of bacjward pawn: no friendly pawns on adjacent files, but if the friendly
+                // pawns above the desired pawn no problem
+                let number_of_adjacent_pawns = (neighbor_pawns & self.bitboards.white_pawns).count_ones();
+                if  number_of_adjacent_pawns != 0 {
+                    // We will calculate number of friendly pawns above me and if it equal to number_of_adjacent_pawns so there is no problem
+
+                    let mut friendly_pawns_above = 0;
+
+                    if file < 7 {
+                        friendly_pawns_above |= Bitboards::north_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8);
+                    }
+                    if file > 0 {
+                        friendly_pawns_above |= Bitboards::north_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8);
+                    }
+
+                    let number_of_friendly_pawns_above = (friendly_pawns_above & self.bitboards.white_pawns).count_ones();
+
+                    // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
+                    // so it is valid, other that not valid
+                    if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
+                        return 0;
+                    }    
                 }
-                
-                let enemy_pawns = Bitboards::move_north(Bitboards::move_north(square_position));
-                let enemy_pawns = Bitboards::move_east(enemy_pawns) | Bitboards::move_west(enemy_pawns);
+                // now, for the enemy pawns: 
+                // directly is very easy just go step north
+                let mut enemy_pawns = 0;
+                if rank < 7
+                {
+                    enemy_pawns |= Bitboards::move_north(square_position);
+                }
+
+                // not directly, We will go two steps north then step right and step left
+                if rank < 6 
+                {
+                    // move two steps above, we want square number, then square position
+
+                    let new_square = square + 8 + 8;
+                    // check on left most file and right most file
+                    if file < 7 {
+                        let new_position = 1 << (new_square + 1);
+
+                        enemy_pawns |= new_position;
+                    }
+                    if file > 0 {
+                        let new_position = 1 << (new_square - 1);
+
+                        enemy_pawns |= new_position;
+                    }
+                }
                 
                 if enemy_pawns & self.bitboards.black_pawns != 0 {
                     return 1;
@@ -477,17 +528,55 @@ impl Board {
                 
             },
             Turn::Black => {
-                let neighbor_pawns = Bitboards::north_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8) | 
-                                          Bitboards::north_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8) |
-                                          Bitboards::move_east(square_position) | 
-                                          Bitboards::move_west(square_position);
+                // in the conditions of backward pawn: no friendly pawns on adjacent files, but if the friendly
+                // pawns above the desired pawn no problem
+                let number_of_adjacent_pawns = (neighbor_pawns & self.bitboards.black_pawns).count_ones();
+                if  number_of_adjacent_pawns != 0 {
+                    // We will calculate number of friendly pawns above me and if it equal to number_of_adjacent_pawns so there is no problem
 
-                if neighbor_pawns & self.bitboards.black_pawns != 0 {
-                    return 0;
+                    let mut friendly_pawns_above = 0;
+
+                    if file < 7 {
+                        friendly_pawns_above |= Bitboards::south_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8);
+                    }
+                    if file > 0 {
+                        friendly_pawns_above |= Bitboards::south_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8);
+                    }
+
+                    let number_of_friendly_pawns_above = (friendly_pawns_above & self.bitboards.black_pawns).count_ones();
+
+                    // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
+                    // so it is valid, other that not valid
+                    if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
+                        return 0;
+                    }    
                 }
-                
-                let enemy_pawns = Bitboards::move_north(Bitboards::move_north(square_position));
-                let enemy_pawns = Bitboards::move_east(enemy_pawns) | Bitboards::move_west(enemy_pawns);
+                // now, for the enemy pawns: 
+                // directly is very easy just go step north
+                let mut enemy_pawns = 0;
+                if rank > 0
+                {
+                    enemy_pawns |= Bitboards::move_south(square_position);
+                }
+
+                // not directly, We will go two steps north then step right and step left
+                if rank > 1 
+                {
+                    // move two steps above, we want square number, then square position
+
+                    let new_square = square - 8 - 8;
+                    // check on left most file and right most file
+                    if file < 7 {
+                        let new_position = 1 << (new_square + 1);
+
+                        enemy_pawns |= new_position;
+                    }
+                    if file > 0 {
+                        let new_position = 1 << (new_square - 1);
+
+                        enemy_pawns |= new_position;
+                    }
+                }
                 
                 if enemy_pawns & self.bitboards.white_pawns != 0 {
                     return 1;
@@ -498,7 +587,7 @@ impl Board {
 
         0
     }
-
+    
     fn doubled(&self, square_position: u64) -> i32 {
         match self.turn {
             Turn::White => {
@@ -625,9 +714,9 @@ impl Board {
 
         let mut v = 0;
 
-        if self.isolated(square_position) == 1{
+        if self.isolated(square) == 1{
             v += 1;
-        }else if self.backward(square_position) == 1{
+        }else if self.backward(square) == 1{
             v += 1;
         }
 
