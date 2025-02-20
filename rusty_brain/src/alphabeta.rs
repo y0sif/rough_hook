@@ -29,9 +29,18 @@ impl Board {
             Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
             Turn::Black => self.alpha_beta_min_tt(transposition_table,true, i32::MIN, i32::MAX, depth),
         };
+        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
+        
+        
+        //Iterative deepening, needs move ordering to show its strength
+        // let eval = match self.turn {
+        //     Turn::White => self.iterative_deepening(transposition_table, true, depth),
+        //     Turn::Black => self.iterative_deepening(transposition_table, false, depth),
+        // }; 
+        // (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
         
 
-        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
+        //(self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
 
     }
 
