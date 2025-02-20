@@ -1,32 +1,33 @@
 use rusty_brain::{bitboards::{self, Bitboards}, board::{self, Board}};
 use rusty_brain::square::Square;
 use rusty_brain::transposition::TranspositionTable;
+use rusty_brain::uci;
 fn main() {
     // FEN string for the board
     //let fen = String::from("rnbqkbnr/ppp2ppp/2PpP3/P1P3P1/8/P5P1/8/RNBQKBNR w KQkq - 0 2");
     
 
-    let fen = String::from("rnbqkbnr/1p2p2p/1p1p1p2/5p2/4P3/P2P1P1P/1PP4P/RNBQKBNR w KQkq - 0 3");
+    // let fen = String::from("rnbqkbnr/1p2p2p/1p1p1p2/5p2/4P3/P2P1P1P/1PP4P/RNBQKBNR w KQkq - 0 3");
     
-    // Create a Bitboards instance from the FEN string
-    let board = Board::from_fen(fen);
+    // // Create a Bitboards instance from the FEN string
+    // let board = Board::from_fen(fen);
 
-    // Get the white pawns bitboard
-    let mut white_pawns = board.bitboards.white_pawns;
+    // // Get the white pawns bitboard
+    // let mut white_pawns = board.bitboards.white_pawns;
 
-    // Iterate over all white pawns
-    while white_pawns != 0 {
-        let square = white_pawns.trailing_zeros() as u8;
+    // // Iterate over all white pawns
+    // while white_pawns != 0 {
+    //     let square = white_pawns.trailing_zeros() as u8;
 
-        // Check if the pawn is doubled isolated
-        let is_doubled = board.connected(square);
+    //     // Check if the pawn is doubled isolated
+    //     let is_doubled = board.connected(square);
 
-        // Print the result
-        println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
+    //     // Print the result
+    //     println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
         
-        white_pawns &= white_pawns - 1;
+    //     white_pawns &= white_pawns - 1;
 
-    }
+    // }
     
     /* 
     //let white_fen = String::from("rnbqkbnr/pp1p1ppp/2p1p3/8/8/2P5/PP2PPPP/RN1QKBNR w KQkq - 0 2");
@@ -55,4 +56,6 @@ fn main() {
     // }
     // println!("\nGame ended");
     */
+    let mut uci = uci::Uci::new();
+    uci.listen();
 }
