@@ -38,8 +38,8 @@ impl ChessDataset {
     
     // no panics exist here
     fn new(split: &str) -> Self { // return self
-        let train_db_file = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_old_train_augmented.db");
-        let test_db_file  = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_old_test.db");
+        let train_db_file = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_ultra_augmentation_train.db");
+        let test_db_file  = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_ultra_augmentation_test.db");
         
         match split {
             "train" => {
