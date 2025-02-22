@@ -78,16 +78,16 @@ impl Board {
 
         match self.turn { 
             Turn::White => {
-                sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
-                sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
-                sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
-                sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
+                sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, is_middle_game);
+                sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, is_middle_game);
+                sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, is_middle_game);
+                sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, is_middle_game);
             }
             Turn::Black =>{
-                sum += self.bitboards.black_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
-                sum += self.bitboards.black_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
-                sum += self.bitboards.black_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
-                sum += self.bitboards.black_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
+                sum += self.bitboards.black_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, is_middle_game);
+                sum += self.bitboards.black_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, is_middle_game);
+                sum += self.bitboards.black_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, is_middle_game);
+                sum += self.bitboards.black_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, is_middle_game);
             }
         }
         sum
@@ -373,7 +373,7 @@ impl Board {
             
             let arr = [0, -11, -3];
             
-            v += arr[self.blocked(square_position, square) as usize]; 
+            // v += arr[self.blocked(square_position, square) as usize]; 
 
             pawn_bitboard &= pawn_bitboard - 1;
         }
@@ -849,14 +849,14 @@ impl Board {
             return 0;
         }
 
-        match self.turn {
-            Turn::White => {
+        // match self.turn {
+            // Turn::White => {
                 seed[r - 1] * (2 + ph - op) + 21 * su
-            },
-            Turn::Black => {
-                seed[r + 1] * (2 + ph - op) + 21 * su
-            },
-        }
+            // },
+            // Turn::Black => {
+                // seed[r + 1] * (2 + ph - op) + 21 * su
+            // },
+        // }
     }
 
 
