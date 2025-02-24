@@ -112,6 +112,10 @@ impl Move {
     pub fn is_queen_promo_capture(&self) -> bool {
         (self.encoded_move & (Move::QUEEN_PROMO_CAPTURE as u16) << 12) != 0
     }
+    pub fn flip_vertical(square: u8) -> u8 {
+        square ^ 56
+    }
+    
 }
 
 impl  fmt::Display for Move {

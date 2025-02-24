@@ -1,22 +1,12 @@
-use burn::{config::Config, data::dataloader::batcher::Batcher, module::Module, prelude::Backend, record::{CompactRecorder, Recorder}};
+use burn::{config::Config, data::dataloader::batcher::Batcher, module::Module, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::Tensor};
 
-use crate::{data::{ChessPositionBatcher, ChessPositionItem}, training::TrainingConfig};
+use crate::{data::{ChessPositionBatcher, ChessPositionItem}, model::Model, training::TrainingConfig};
 
+pub fn infer<B: Backend>(model: Model<B>, device: B::Device, features: Vec<i8>) -> f32{
+    let tensor = Tensor::from_data(&*features, &device);
+    let output = model.infer(tensor) * 400.0;
 
-pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessPositionItem) {
-    let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
-        .expect("Config should exist for the model");
-    let record = CompactRecorder::new()
-        .load(format!("{artifact_dir}/model").into(), &device)
-        .expect("Trained model should exist");
+    let predicted = output.flatten::<1>(0, 1).into_data().iter::<f32>().next().unwrap().clone();
 
-    let model = config.model.init::<B>(&device).load_record(record);
-
-    let batcher = ChessPositionBatcher::new(device);
-    let batch = batcher.batch(vec![item.clone()]);
-    let output = model.infer(batch.fens) * 400.0;
-
-    let predicted = output.flatten::<1>(0, 1).into_scalar();
-
-    println!("Predicted {} Expected {}", predicted, item.evaluation);
+    predicted
 }

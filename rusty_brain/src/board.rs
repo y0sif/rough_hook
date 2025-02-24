@@ -1,10 +1,12 @@
 use core::panic;
 use std::collections::HashMap;
+use burn::nn;
+
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
 use crate::magic::Magic;
 use crate::movement::Move;
-use crate::piece::Piece;
+use crate::piece::{Piece, PieceMapping::*};
 use crate::square::Square;
 
 #[derive(Clone, Copy, PartialEq)]
@@ -30,10 +32,12 @@ pub struct Board{
     pub castling_rights_log: Vec<CastlingRights>,
     pub en_passant_square: Option<Square>,
     pub best_move: Option<Move>,
+    pub features: Vec<Vec<i8>>
 }
 
 impl Board {
     pub fn new() -> Self {
+        let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
         Board{
             bitboards: Bitboards::new(),
             turn: Turn::White,
@@ -50,6 +54,7 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
+            features: nnue::data::map(fen)
         }
     }
     
@@ -70,11 +75,14 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
+            features: Vec::new()
         }
     }
     
     pub fn from_fen(fen: String) -> Self {
         let fen_vec: Vec<&str> = fen.split_whitespace().collect();
+        
+        let features = nnue::data::map(fen.to_string());
         
         let turn = match fen_vec[1] {
             "w" => Turn::White,
@@ -116,7 +124,8 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             en_passant_square,
-            best_move: None
+            best_move: None,
+            features
         }
     }
     
@@ -146,36 +155,44 @@ impl Board {
         match self.turn {
             Turn::White => {
                 if start_position & self.bitboards.white_pawns != 0 {
+                    self.features[WP as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
                     match flag {
                         Move::EP_CAPTURE => {
                             self.make_en_passant(end_position);
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
+                            self.features[WP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_queens |= end_position;
+                            self.features[WQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_knights |= end_position;
+                            self.features[WN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_rooks |= end_position;
+                            self.features[WR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_bishops |= end_position;
+                            self.features[WB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::DOUBLE_PAWN_PUSH => {
                             self.en_passant_square = Some(Square::from(move_to_make.get_to() - 8));   
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
+                            self.features[WP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         _ => {
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
+                            self.features[WP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                     }
                     self.board_hashes = HashMap::new();
@@ -183,19 +200,27 @@ impl Board {
                 }else if start_position & self.bitboards.white_knights != 0 {
                     self.bitboards.white_knights &= not_starting_position;
                     self.bitboards.white_knights |= end_position;
+                    self.features[WN as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_bishops != 0 {
                     self.bitboards.white_bishops &= not_starting_position;
                     self.bitboards.white_bishops |= end_position;
+                    self.features[WB as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_rooks != 0 {
                     self.check_rook(&move_to_make);
                     self.bitboards.white_rooks &= not_starting_position;
                     self.bitboards.white_rooks |= end_position;
+                    self.features[WR as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_queens != 0 {
                     self.bitboards.white_queens &= not_starting_position;
                     self.bitboards.white_queens |= end_position;
+                    self.features[WQ as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_king != 0 {
                     match flag {
@@ -206,42 +231,52 @@ impl Board {
                     self.castling_rights.reset_rights(self.turn);
                     self.bitboards.white_king &= not_starting_position;
                     self.bitboards.white_king |= end_position;
+                    self.features[WK as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WK as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }
                 self.turn = Turn::Black;
             },
             Turn::Black => {
                 if start_position & self.bitboards.black_pawns != 0 {
+                    self.features[BP as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
                     match flag {
                         Move::EP_CAPTURE => {
                             self.make_en_passant(end_position);
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
+                            self.features[BP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_queens |= end_position;
+                            self.features[BQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_knights |= end_position;
+                            self.features[BN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_rooks |= end_position;
+                            self.features[BR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_bishops |= end_position;
+                            self.features[BB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::DOUBLE_PAWN_PUSH => {
                             self.en_passant_square = Some(Square::from(move_to_make.get_to() + 8));   
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
+                            self.features[BP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         _ => {
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
+                            self.features[BP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                     }
                     self.board_hashes = HashMap::new();
@@ -249,19 +284,27 @@ impl Board {
                 }else if start_position & self.bitboards.black_knights != 0 {
                     self.bitboards.black_knights &= not_starting_position;
                     self.bitboards.black_knights |= end_position;
+                    self.features[BN as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_bishops != 0 {
                     self.bitboards.black_bishops &= not_starting_position;
                     self.bitboards.black_bishops |= end_position;
+                    self.features[BB as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_rooks != 0 {
                     self.check_rook(&move_to_make);
                     self.bitboards.black_rooks &= not_starting_position;
                     self.bitboards.black_rooks |= end_position;
+                    self.features[BR as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_queens != 0 {
                     self.bitboards.black_queens &= not_starting_position;
                     self.bitboards.black_queens |= end_position;
+                    self.features[BQ as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_king != 0 {
                     match flag {
@@ -272,6 +315,8 @@ impl Board {
                     self.castling_rights.reset_rights(self.turn);
                     self.bitboards.black_king &= not_starting_position;
                     self.bitboards.black_king |= end_position;
+                    self.features[BK as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BK as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }
                 self.half_move_clock +=1;
@@ -291,10 +336,12 @@ impl Board {
             Turn::White => {
                 let black_pawn = end_position >> 8;
                 self.bitboards.black_pawns &= !black_pawn;
+                self.features[BP as usize][Move::flip_vertical(black_pawn.trailing_zeros() as u8) as usize] = 0;
             },
             Turn::Black => {
                 let white_pawn = end_position << 8;
                 self.bitboards.white_pawns &= !white_pawn;
+                self.features[WP as usize][Move::flip_vertical(white_pawn.trailing_zeros() as u8) as usize] = 0;
             }
         }
     }
@@ -551,10 +598,14 @@ impl Board {
             Turn::White => {
                 self.bitboards.white_rooks &= !(1 << Square::H1 as u8);
                 self.bitboards.white_rooks |= 1 << Square::F1 as u8;
+                self.features[WR as usize][Move::flip_vertical(Square::H1 as u8) as usize] = 0;
+                self.features[WR as usize][Move::flip_vertical(Square::F1 as u8) as usize] = 0;
             },
             Turn::Black => {
                 self.bitboards.black_rooks &= !(1 << Square::H8 as u8);
                 self.bitboards.black_rooks |= 1 << Square::F8 as u8;
+                self.features[BR as usize][Move::flip_vertical(Square::H8 as u8) as usize] = 0;
+                self.features[BR as usize][Move::flip_vertical(Square::F8 as u8) as usize] = 0;
             }
         }
     }
@@ -564,10 +615,14 @@ impl Board {
             Turn::White => {
                 self.bitboards.white_rooks &= !(1 << Square::A1 as u8);
                 self.bitboards.white_rooks |= 1 << Square::D1 as u8;
+                self.features[WR as usize][Move::flip_vertical(Square::A1 as u8) as usize] = 0;
+                self.features[WR as usize][Move::flip_vertical(Square::D1 as u8) as usize] = 0;
             },
             Turn::Black => {
                 self.bitboards.black_rooks &= !(1 << Square::A8 as u8);
                 self.bitboards.black_rooks |= 1 << Square::D8 as u8;
+                self.features[BR as usize][Move::flip_vertical(Square::A8 as u8) as usize] = 0;
+                self.features[BR as usize][Move::flip_vertical(Square::D8 as u8) as usize] = 0;
             }
         }
     }

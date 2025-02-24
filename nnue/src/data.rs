@@ -6,6 +6,7 @@ use burn_dataset::Dataset;
 use burn_dataset::SqliteDataset;
 use nn::Sigmoid;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::path::Path;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -108,4 +109,56 @@ impl <B: Backend> Batcher<ChessPositionItem, ChessPositionBatch<B>> for ChessPos
 
         ChessPositionBatch { fens, evaluations }
     }
+}
+
+pub fn map(fen: String) -> Vec<Vec<i8>> {
+    /*
+    White
+    king
+    pawn
+    knight
+    bishop
+    rook
+    queen
+    Black
+    king
+    pawn
+    knight
+    bishop
+    rook
+    queen
+     */
+    let map = HashMap::from([
+        ('K', 0),
+        ('P', 1),
+        ('N', 2),
+        ('B', 3),
+        ('R', 4),
+        ('Q', 5),
+        ('k', 6),
+        ('p', 7),
+        ('n', 8),
+        ('b', 9),
+        ('r', 10),
+        ('q', 11),
+    ]);
+    let mut position = vec![vec![0i8; 64]; 12];
+    let fen_str: Vec<&str> = fen.split_whitespace().collect();
+    let mut count: usize = 0;
+    for piece in fen_str[0].chars(){
+        if piece == '/'{
+            continue;
+        }
+        if piece.is_numeric(){
+            count += piece.to_digit(10).unwrap() as usize;
+            continue;
+        }
+        if let Some(value) = map.get(&piece){
+            position[*value][count] = 1;
+            count += 1
+        }
+    }
+
+
+    position
 }

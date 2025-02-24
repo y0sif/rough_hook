@@ -1,29 +1,29 @@
 use std::io::{self, Write};
+use burn::prelude::Backend;
+use nnue::model::Model;
+
 use crate::board::Board;
 use crate::square::Square;
 use crate::transposition::TranspositionTable;
-pub struct Uci {
+pub struct Uci<B: Backend> {
     current_board: Board,
     // default_depth: u8,
     depth: i32,
     transposition_table: TranspositionTable,
-
-
-
-     
+    model: Model<B>,
 }
 
 struct ucioption {
 
 }
 
-impl Uci {
-    pub fn new() ->Self{
+impl<B: Backend> Uci<B> {
+    pub fn new(model: Model<B>) ->Self{
         Uci {
             current_board : Board::new(),
             depth: 5,
             transposition_table : TranspositionTable::init(),
-
+            model: model,
 
         }
     }

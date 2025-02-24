@@ -2,13 +2,12 @@ use burn::{
     nn::{Linear, LinearConfig},
     prelude::*,
 };
-use nn::{Sigmoid, Tanh};
+use nn::Sigmoid;
 
 #[derive(Module, Debug)]
 pub struct Model<B: Backend> {
     linear1: Linear<B>,
     linear2: Linear<B>,
-    linear3: Linear<B>, 
     activation: Sigmoid
 }
 
@@ -19,8 +18,7 @@ impl ModelConfig {
     pub fn init<B: Backend>(&self, device: &B::Device) -> Model<B> {
         Model{
             linear1: LinearConfig::new(768, 8).init(device),
-            linear2: LinearConfig::new(8, 8).init(device),
-            linear3: LinearConfig::new(8, 1).init(device),
+            linear2: LinearConfig::new(8, 1).init(device),
             activation: Sigmoid::new(),
         }
     }
@@ -31,17 +29,13 @@ impl <B:Backend> Model<B> {
         let x = self.linear1.forward(positions);
         let x = clipped_relu(x); 
         let x = self.linear2.forward(x);
-        let x = clipped_relu(x); 
-        let x = self.linear3.forward(x);
         self.activation.forward(x)
     }
     
     pub fn infer(&self, positions: Tensor<B, 2>) -> Tensor<B, 2> {
         let x = self.linear1.forward(positions);
         let x = clipped_relu(x); 
-        let x = self.linear2.forward(x);
-        let x = clipped_relu(x); 
-        self.linear3.forward(x)
+        self.linear2.forward(x)
     }
 
 }
