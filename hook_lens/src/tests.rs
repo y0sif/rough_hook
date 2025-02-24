@@ -176,7 +176,6 @@ mod tests{
 
                     let label = path.file_name().unwrap().to_string_lossy().to_string();
                     
-                    let 
                     // Read images inside the subdirectory
                     if let Ok(images) = fs::read_dir(&path) {
                         for img_entry in images.flatten() {
@@ -230,4 +229,3 @@ mod tests{
     }
   
 }
-fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
