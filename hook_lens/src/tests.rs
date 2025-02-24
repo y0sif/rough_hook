@@ -1,14 +1,29 @@
 #[cfg(test)]
 mod tests{
+    use burn::backend::wgpu::WgpuDevice;
+    use burn::backend::Wgpu;
+    use imageops::FilterType;
+    use image::{imageops, ImageReader};
     use rusty_brain::board::Board;
+    use crate::data_and_model::inference;
     use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     use prettytable::{Table, row};
+    use std::collections::HashMap;
     use std::time::Instant;
-    use std::thread;
+    use std::{fs, thread};
     use std::time::Duration;
 
     #[test]
-    fn test_fen_string_of_image_1(){
+    fn test_all(){
+        // let flag = test_fen_string_of_image_1();
+        // assert_eq!(flag, true);
+
+        test_models_on_un_seen_data();
+        assert_eq!(1,0);
+
+    }
+
+    fn test_fen_string_of_image_1()->bool{
         let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
          // Name - Path - Id
          let models: Vec<(&str, &str , i8)> = vec![
@@ -85,7 +100,7 @@ mod tests{
             println!("\n\n");
         }
         print_results_table(models_results);
-        assert_eq!(flag, true);
+        return flag;
     }
 
     fn count_fen_differences(fen1: &str, fen2: &str) -> Result<usize, &'static str> {
@@ -103,19 +118,116 @@ mod tests{
        Ok(differences)
     }
 
-fn print_results_table(models_results: Vec<(&str, i16, i16, f32 ,f32)>) {
-    // Create a new table
-    let mut table = Table::new();
+    
 
-    // Add a header row
-    table.add_row(row!["Model Name", "Correct", "Wrong", "Accuracy" , "Time(s)"]);
+    fn test_models_on_un_seen_data(){
+        let mut models_results : Vec<(&str , i16 , i16 , f32, f32)> = Vec::new();
+        let models: Vec<(&str, &str , i8)> = vec![
+             // kan models
+            ("ultra_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_cnn_models/cnn_hook_lens", 1),
+            ("ultra_kan_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
+        ];
+        for (model_name , model_path , id) in models{
+            if model_name.len() == 0 || model_path.len() == 0 {
+                continue;
+            }
+            let start = Instant::now();
+            let (total_num_of_images , correct_predictions) = test_model(model_path, id);
+            let duration = start.elapsed().as_secs_f32();
+            let accuracy = (correct_predictions as f32 / total_num_of_images as f32)*100 as f32;
+            let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
+            models_results.push((model_name ,total_num_of_images , correct_predictions ,accuracy ,duration));
 
-    // Iterate over the vector and add each tuple as a row in the table
-    for (model_name, correct, wrong, accuracy , time) in models_results {
-        table.add_row(row![model_name, correct, wrong, accuracy ,time]);
+            println!("\n======================================================================================\n");
+        }
+        print_results_table(models_results);
     }
-    // Print the table to the console
-    table.printstd();
-}
+    fn test_model(model_path: &str , id:i8)->(i16 ,i16){
 
+        let test_dir_path = "/home/sasa630/Graduation_Project/data/new_test_2";
+        let mut map = HashMap::new();
+        map.insert(0 as u8 , "bb");
+        map.insert(1 as u8 , "bk");
+        map.insert(2 as u8 , "bn");
+        map.insert(3 as u8 , "bp");
+        map.insert(4 as u8 , "bq");
+        map.insert(5 as u8 , "br");
+        map.insert(6 as u8 , "empty");
+        map.insert(7 as u8 , "wb");
+        map.insert(8 as u8 , "wk");
+        map.insert(9 as u8 , "wn");
+        map.insert(10 as u8 , "wp");
+        map.insert(11 as u8 , "wq");
+        map.insert(12 as u8 , "wr");
+
+        let mut total_images = 0;
+        let mut correct_predictions =0;
+         // Read subdirectories (labels)
+        if let Ok(entries) = fs::read_dir(test_dir_path) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+
+               
+
+                if path.is_dir() {
+                   
+                    let mut total_num_of_that_piece = 0;
+                    let mut piece_correct_predictions = 0;
+
+                    let label = path.file_name().unwrap().to_string_lossy().to_string();
+                    
+                    let 
+                    // Read images inside the subdirectory
+                    if let Ok(images) = fs::read_dir(&path) {
+                        for img_entry in images.flatten() {
+                            let img_path = img_entry.path();
+                            if img_path.extension().map_or(false, |ext| ext == "png" || ext == "jpg" || ext == "jpeg") {
+                                    let img = image::open(img_path).unwrap();
+                                    let img = img.resize_exact(32, 32, FilterType::Nearest);
+                                    let rgb_image = img.to_rgb8();
+                                    let image = rgb_image.into_raw(); // Convert to Vec<u8>
+
+                                    let prediction = map[&inference::infer::<Wgpu>(model_path ,id , WgpuDevice::default(), image.to_vec())];
+
+                                    total_num_of_that_piece +=1;
+                                    if prediction == label{
+                                        piece_correct_predictions +=1;
+                                    }
+
+
+                                    total_images+=1;
+                                    if prediction == label {
+                                        correct_predictions+=1;
+                                    }
+                                    
+                            } 
+                        }
+
+                        let accuracy = (piece_correct_predictions as f32 / total_num_of_that_piece as f32)*100 as f32;
+                        let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
+                        println!("piece = {}  , total = {} ,  correct = {} , with accuracy = {}",label , total_num_of_that_piece,piece_correct_predictions,accuracy);
+                    }
+                }
+                
+            }
+        }
+        (total_images , correct_predictions)
+    }
+
+    fn print_results_table(models_results: Vec<(&str, i16, i16, f32 ,f32)>) {
+        // Create a new table
+        let mut table = Table::new();
+    
+        // Add a header row
+        table.add_row(row!["Model Name", "Total", "Correct", "Accuracy" , "Time(s)"]);
+    
+        // Iterate over the vector and add each tuple as a row in the table
+        for (model_name, correct, wrong, accuracy , time) in models_results {
+            table.add_row(row![model_name, correct, wrong, accuracy ,time]);
+        }
+        // Print the table to the console
+        table.printstd();
+    }
+  
 }
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff

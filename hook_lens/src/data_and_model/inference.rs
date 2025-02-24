@@ -62,6 +62,7 @@ where
     let model = Cnn::new(13, &device);
     
     let model = model.load_record(record);
+    
     let img = TensorData::new(image, Shape::new([32, 32, 3]));
     let img = Tensor::<B, 3>::from_data(img.convert::<B::FloatElem>(), &device)
         .swap_dims(2, 1) // [H, C, W]
