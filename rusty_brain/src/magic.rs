@@ -1,3 +1,5 @@
+use burn::backend::Wgpu;
+
 use crate::{bitboards::Bitboards, board::Board};
 pub struct Magic;
 
@@ -45,18 +47,18 @@ impl Magic {
         let piece_bitboard = match is_rook {
             true => {
                 |current_position, blocker| {
-                    Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north)
-                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_east)
-                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south)
-                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_west)
+                    Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north)
+                    |Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_east)
+                    |Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south)
+                    |Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_west)
                 }
             },
             false => {
                 |current_position, blocker| {
-                    Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north_east)
-                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north_west)
-                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south_east)
-                    |Board::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south_west)
+                    Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north_east)
+                    |Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_north_west)
+                    |Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south_east)
+                    |Board::<Wgpu<f32, i32>>::get_sliding_bitboard(current_position, blocker, blocker, Bitboards::move_south_west)
                 }
             }
         };

@@ -1,3 +1,5 @@
+use burn::prelude::Backend;
+
 use crate::zobrist::Zobrist;
 use crate::movement::Move;
 use crate::board::Board;
@@ -29,12 +31,12 @@ impl TranspositionTable {
         }
     }
 
-    pub fn retrieve_from_table(&self, board: &mut Board) -> Option<&TTEntry> {
+    pub fn retrieve_from_table<B: Backend>(&self, board: &mut Board<B>) -> Option<&TTEntry> {
         let position_hash = self.zobrist_key.zobrist_hash(&board);
         self.table.get(&position_hash)
     }
 
-    pub fn store_in_table(&mut self, board: &mut Board, best_move: Option<Move>, depth_left: i32, best_value: i32, alpha: i32, beta: i32) {
+    pub fn store_in_table<B: Backend>(&mut self, board: &mut Board<B>, best_move: Option<Move>, depth_left: i32, best_value: i32, alpha: i32, beta: i32) {
         let position_hash = self.zobrist_key.zobrist_hash(&board);
         let node = if best_value <= alpha {
             Node::UpperBound

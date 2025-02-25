@@ -6,11 +6,12 @@ use crate::board::Board;
 use crate::square::Square;
 use crate::transposition::TranspositionTable;
 pub struct Uci<B: Backend> {
-    current_board: Board,
+    current_board: Board<B>,
     // default_depth: u8,
     depth: i32,
     transposition_table: TranspositionTable,
     model: Model<B>,
+    device: B::Device
 }
 
 struct ucioption {
@@ -18,13 +19,13 @@ struct ucioption {
 }
 
 impl<B: Backend> Uci<B> {
-    pub fn new(model: Model<B>) ->Self{
+    pub fn new(model: Model<B>, device: B::Device) ->Self{
         Uci {
-            current_board : Board::new(),
+            current_board : Board::new(model.clone(), device.clone()),
             depth: 5,
             transposition_table : TranspositionTable::init(),
             model: model,
-
+            device 
         }
     }
 
@@ -90,8 +91,8 @@ impl<B: Backend> Uci<B> {
         let vector = self.filter_by_params(parameters, input_params);
         for (param, value) in vector {
             match param.as_str(){
-                "startpos" => self.current_board = Board::new(),
-                "fen" => self.current_board = Board::from_fen(value),
+                "startpos" => self.current_board = Board::new(self.model.clone(), self.device.clone()),
+                "fen" => self.current_board = Board::from_fen(value, self.model.clone(), self.device.clone()),
                 "moves" => {
                     let moves = value.split_whitespace();
                     for one_move in moves {
@@ -113,7 +114,7 @@ impl<B: Backend> Uci<B> {
     fn ucinewgame(&mut self){
         //clears hash and any information collected abou previous games.
         //should call isready after to check if it's done clearing, which would return readyok
-        self.current_board = Board::new();
+        self.current_board = Board::new(self.model.clone(), self.device.clone());
         self.transposition_table = TranspositionTable::init()
     }
 

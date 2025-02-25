@@ -1,11 +1,13 @@
-use std::cmp::max;
 use std::i32;
+use burn::prelude::Backend;
+use burn::tensor::Tensor;
+
 use crate::board::{Board, Turn};
 use crate::movement::Move;
 use crate::transposition::{TranspositionTable, Node};
 
 
-impl Board {
+impl<B: Backend> Board<B>{
 
     pub fn find_best_move(&mut self, transposition_table: &mut TranspositionTable, depth: i32) -> (Move, i32) {
 
@@ -195,7 +197,8 @@ impl Board {
         }
 
         if depth_left == 0 {
-            return self.evaluate();
+            let tensor = Tensor::<B, 1>::from_data(&*self.features.clone().into_iter().flat_map(|x| x).collect::<Vec<i8>>(), &self.device);
+            return (self.model.infer(tensor.unsqueeze()) * 400.0).flatten::<1>(0, 1).into_data().iter::<f32>().next().unwrap().clone() as i32;
         }
 
         let mut best_value = i32::MIN;
@@ -265,7 +268,8 @@ impl Board {
         }
         
         if depth_left == 0 {
-            return self.evaluate();
+            let tensor = Tensor::<B, 1>::from_data(&*self.features.clone().into_iter().flat_map(|x| x).collect::<Vec<i8>>(), &self.device);
+            return (self.model.infer(tensor.unsqueeze()) * 400.0).flatten::<1>(0, 1).into_data().iter::<f32>().next().unwrap().clone() as i32;
         }
 
         let mut best_value = i32::MAX;

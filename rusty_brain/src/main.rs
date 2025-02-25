@@ -4,7 +4,7 @@ use burn::{backend::wgpu::WgpuDevice, config::Config, module::Module, record::{C
 use burn::backend::Wgpu;
 fn main() {
     let device = WgpuDevice::default();
-    let artifact_dir = "/tmp/nnue";
+    let artifact_dir = "/tmp/nnue_8";
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
         .expect("Config should exist for the model");
     let record = CompactRecorder::new()
@@ -13,6 +13,6 @@ fn main() {
 
     let model = config.model.init::<Wgpu<f32, i32>>(&device).load_record(record);
 
-    let mut uci = uci::Uci::<Wgpu<f32, i32>>::new(model);
+    let mut uci = uci::Uci::<Wgpu<f32, i32>>::new(model, device.clone());
     uci.listen();
 }

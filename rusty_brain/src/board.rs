@@ -1,6 +1,8 @@
 use core::panic;
 use std::collections::HashMap;
 use burn::nn;
+use burn::prelude::Backend;
+use nnue::model::Model;
 
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
@@ -16,7 +18,7 @@ pub enum Turn {
 }
 
 #[derive(Clone)]
-pub struct Board{
+pub struct Board<B: Backend>{
     pub bitboards: Bitboards,
     pub turn: Turn,
     pub rook_attacks: [Vec<u64>; 64],
@@ -32,11 +34,13 @@ pub struct Board{
     pub castling_rights_log: Vec<CastlingRights>,
     pub en_passant_square: Option<Square>,
     pub best_move: Option<Move>,
-    pub features: Vec<Vec<i8>>
+    pub features: Vec<Vec<i8>>,
+    pub model: Model<B>,
+    pub device: B::Device
 }
 
-impl Board {
-    pub fn new() -> Self {
+impl<B:Backend> Board<B> {
+    pub fn new(model: Model<B>, device: B::Device) -> Self {
         let fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_string();
         Board{
             bitboards: Bitboards::new(),
@@ -54,11 +58,13 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
-            features: nnue::data::map(fen)
+            features: nnue::data::map(fen),
+            model,
+            device
         }
     }
     
-    pub fn empty() -> Self{
+    pub fn empty(model: Model<B>, device: B::Device) -> Self{
         Board {
             bitboards: Bitboards::empty(),
             turn: Turn::White,
@@ -75,11 +81,13 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
-            features: Vec::new()
+            features: Vec::new(),
+            model,
+            device
         }
     }
     
-    pub fn from_fen(fen: String) -> Self {
+    pub fn from_fen(fen: String, model: Model<B>, device: B::Device) -> Self {
         let fen_vec: Vec<&str> = fen.split_whitespace().collect();
         
         let features = nnue::data::map(fen.to_string());
@@ -125,7 +133,9 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square,
             best_move: None,
-            features
+            features,
+            model,
+            device
         }
     }
     

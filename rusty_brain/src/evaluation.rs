@@ -1,9 +1,11 @@
 use std::process::id;
+use burn::prelude::Backend;
+
 use crate::piece::Piece;
 
 use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
 
-impl Board {
+impl<B: Backend> Board<B> {
     pub fn evaluate(&mut self) -> i32 {
         let mg = self.middle_game_evaluation(true);
         mg
@@ -206,7 +208,7 @@ impl Board {
 
     // IMBALANCE TOTAL
     
-    fn imbalance_total(&self, flip: &Board) -> i32 {
+    fn imbalance_total(&self, flip: &Board<B>) -> i32 {
         let mut v = 0;
         v += self.imbalance() - flip.imbalance();
         v += self.bishop_pair() - flip.bishop_pair();

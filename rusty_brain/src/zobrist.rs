@@ -1,3 +1,4 @@
+use burn::prelude::Backend;
 use rand::Rng;
 use crate::board::{Board, Turn};
 
@@ -54,7 +55,7 @@ impl Zobrist {
     //  2) one number to indicate it is black to move
     //  3) four numbers for castling rights
     //  4) eight numbers to indicate the files with valid en passant
-    pub fn zobrist_hash(&self, board: &Board) -> u64 {
+    pub fn zobrist_hash<B: Backend>(&self, board: &Board<B>) -> u64 {
         let mut hash_value = 0u64;
 
         let mut occupied_squares = board.bitboards.get_ally_pieces(Turn::White)
