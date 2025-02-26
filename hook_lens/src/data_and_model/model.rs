@@ -1,3 +1,5 @@
+use std::usize;
+
 use burn::{
     nn::{
         conv::{Conv2d, Conv2dConfig},
@@ -10,10 +12,26 @@ use burn::{
 
 use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
 
+pub trait DeepLearningModel<B: Backend> 
+where 
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+{
+    fn new(nput: usize, device: &Device<B>)->Self;
+    fn forward(&self, x: Tensor<B, 4>)->Tensor<B ,2>;
+}
+
+pub trait KanDeepLearningModel<B: Backend>
+where 
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+{
+    fn new(nput: usize, device: &Device<B>)->Self;
+    fn forward(&self, x: Tensor<B, 4>)->Tensor<B ,2>;
+}
 
 // CNN Model
 #[derive(Module, Debug)]
-pub struct Cnn<B: Backend> {
+pub struct Cnn<B: Backend>
+{
     activation: Relu,
     dropout: Dropout,
     pool: MaxPool2d,
@@ -34,8 +52,12 @@ pub struct Cnn<B: Backend> {
     fc3: Linear<B>,
 }
 
-impl<B: Backend> Cnn<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self {
+impl<B: Backend> DeepLearningModel<B> for  Cnn<B> 
+where 
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self 
+    {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
             .init(device);
@@ -94,7 +116,7 @@ impl<B: Backend> Cnn<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
         let x = self.activation.forward(x);
@@ -140,14 +162,16 @@ impl<B: Backend> Cnn<B> {
 
 // Kan Model (256)
 #[derive(Module, Debug)]
-pub struct Kan<B: Backend> {
+pub struct Kan<B: Backend>
+{
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> Kan<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend>DeepLearningModel<B> for  Kan<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -160,7 +184,7 @@ impl<B: Backend> Kan<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -173,10 +197,11 @@ pub struct Kan512<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> Kan512<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for Kan512<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+ {
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -189,7 +214,7 @@ impl<B: Backend> Kan512<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -201,10 +226,11 @@ pub struct Kan1024<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> Kan1024<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for Kan1024<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+ {
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -217,7 +243,7 @@ impl<B: Backend> Kan1024<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -229,10 +255,11 @@ pub struct kan_256_spline_order_12<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_256_spline_order_12<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_spline_order_12<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -245,7 +272,7 @@ impl<B: Backend> kan_256_spline_order_12<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -257,10 +284,11 @@ pub struct kan_256_spline_order_6<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_256_spline_order_6<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_spline_order_6<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -273,7 +301,7 @@ impl<B: Backend> kan_256_spline_order_6<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -285,10 +313,11 @@ pub struct kan_256_scale_base_2_scale_noise_2<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend>kan_256_scale_base_2_scale_noise_2<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_scale_base_2_scale_noise_2<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -301,7 +330,7 @@ impl<B: Backend>kan_256_scale_base_2_scale_noise_2<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -314,10 +343,11 @@ pub struct kan_256_scale_base_4_scale_noise_4<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend>kan_256_scale_base_4_scale_noise_4<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_scale_base_4_scale_noise_4<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -330,7 +360,7 @@ impl<B: Backend>kan_256_scale_base_4_scale_noise_4<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -343,10 +373,11 @@ pub struct kan_256_scale_base_6_scale_noise_6<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend>kan_256_scale_base_6_scale_noise_6<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_scale_base_6_scale_noise_6<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -359,7 +390,7 @@ impl<B: Backend>kan_256_scale_base_6_scale_noise_6<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -372,10 +403,11 @@ pub struct kan_256_grid_size_10<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend>kan_256_grid_size_10<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_grid_size_10<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -388,7 +420,7 @@ impl<B: Backend>kan_256_grid_size_10<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -401,10 +433,11 @@ pub struct kan_256_grid_size_20<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend>kan_256_grid_size_20<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_grid_size_20<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -417,7 +450,7 @@ impl<B: Backend>kan_256_grid_size_20<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -430,10 +463,11 @@ pub struct kan_256_grid_size_30<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend>kan_256_grid_size_30<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_256_grid_size_30<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let kan_layer = EfficientKan::new(&KanOptions::new([
             3072,
@@ -446,7 +480,7 @@ impl<B: Backend>kan_256_grid_size_30<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
         
         self.kan_layer.forward(x)
@@ -476,10 +510,11 @@ pub struct kan_cnn_256<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_cnn_256<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_cnn_256<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
@@ -539,7 +574,7 @@ impl<B: Backend> kan_cnn_256<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
         let x = self.activation.forward(x);
@@ -594,10 +629,11 @@ pub struct kan_cnn_512<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_cnn_512<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_cnn_512<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
@@ -657,7 +693,7 @@ impl<B: Backend> kan_cnn_512<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
         let x = self.activation.forward(x);
@@ -712,10 +748,11 @@ pub struct kan_cnn_1024<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_cnn_1024<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_cnn_1024<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
@@ -775,7 +812,7 @@ impl<B: Backend> kan_cnn_1024<B> {
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
         let x = self.activation.forward(x);
@@ -830,10 +867,11 @@ pub struct kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2<B:
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
@@ -893,7 +931,7 @@ impl<B: Backend> kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_nois
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
         let x = self.activation.forward(x);
@@ -948,10 +986,11 @@ pub struct kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2<B:
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2<B> {
-    pub fn new(num_classes: usize, device: &Device<B>) -> Self
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+impl<B: Backend> DeepLearningModel<B> for kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2<B> 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn new(num_classes: usize, device: &Device<B>) -> Self
     {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
@@ -1011,7 +1050,7 @@ impl<B: Backend> kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_nois
         }
     }
 
-    pub fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
+    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
         let x = self.activation.forward(x);
