@@ -95,7 +95,7 @@ impl Board {
     
     // PSQT MIDDLE GAME
 
-    fn psqt_mg(&self) -> i32 {
+    pub fn psqt_mg(&self) -> i32 {
         self.psqt_bonus(true)
     }
     
@@ -365,7 +365,7 @@ impl Board {
 
             v -= self.doubled(square) * 11;
         
-            if self.connected_bonus(square_position, square) == 1{
+            if self.connected_bonus(square) == 1{
                 v += self.connected(square);
             }
             
@@ -817,7 +817,7 @@ impl Board {
         
     }
 
-    fn connected_bonus(&self, square_position: u64, square: u8) -> i32 {
+    pub fn connected_bonus(&self, square: u8) -> i32 {
 
         if self.connected(square) == 0{
             return 0;
@@ -828,37 +828,32 @@ impl Board {
         let op = self.opposed(square);
         let ph = self.phalanx(square);
         let su = self.supported(square);
-        let bl = match self.turn {
-            Turn::White => {
-                if Bitboards::move_north(square_position) & self.bitboards.black_pawns != 0 {
-                    return 1;
-                }
-                0
-            },
-            Turn::Black => {
-                if Bitboards::move_south(square_position) & self.bitboards.white_pawns != 0 {
-                    return 1;
-                }
-                0
-            },
-        };
         
-        let r = Square::from(square).rank() as usize;
+        // unusable variable
+        // let bl = match self.turn {
+        //     Turn::White => {
+        //         if Bitboards::move_north(square_position) & self.bitboards.black_pawns != 0 {
+        //             return 1;
+        //         }
+        //         0
+        //     },
+        //     Turn::Black => {
+        //         if Bitboards::move_south(square_position) & self.bitboards.white_pawns != 0 {
+        //             return 1;
+        //         }
+        //         0
+        //     },
+        // };
+        
+        let r = (Square::from(square).rank() as usize) + 1;
         
         if r < 2 || r > 7 {
             return 0;
         }
 
-        // match self.turn {
-            // Turn::White => {
-                seed[r - 1] * (2 + ph - op) + 21 * su
-            // },
-            // Turn::Black => {
-                // seed[r + 1] * (2 + ph - op) + 21 * su
-            // },
-        // }
+        seed[r - 1] * (2 + ph - op) + 21 * su
+         
     }
-
 
     fn weak_unopposeed_pawn(&self, square_position: u64, square: u8) -> i32 {
         if self.opposed(square) == 1{
@@ -1200,41 +1195,159 @@ impl Board {
         0
     }
 
-    // COLOR FLIP FOR BOARD
+    /*
+        this logic is correct and tested using psqt_bonus function
 
+        Yousse, Please check it again and look for performance and you can test it with other function,
+        then update the code, remove Turn:White or Turn:Black from code
+
+     */
+    // Function to flip the board vertically while keeping columns intact
     pub fn color_flip(&self) -> Self {
+        // Clone the current board
         let mut clone_board = self.clone();
 
-        // Swap pawns
-        let temp = clone_board.bitboards.white_pawns;
-        clone_board.bitboards.white_pawns = clone_board.bitboards.black_pawns;
-        clone_board.bitboards.black_pawns = temp;
+        fn flip_vertical(bb: u64) -> u64 {
+            let mut flipped = 0;
+            for rank in 0..8 {
+                for file in 0..8 {
+                    let from_index = rank * 8 + file;
+                    let to_index = (7 - rank) * 8 + file;
+                    if (bb >> from_index) & 1 == 1 {
+                        flipped |= 1 << to_index;
+                    }
+                }
+            }
+            flipped
+        }
 
-        // Swap knights
-        let temp = clone_board.bitboards.white_knights;
-        clone_board.bitboards.white_knights = clone_board.bitboards.black_knights;
-        clone_board.bitboards.black_knights = temp;
+        // Flip the bitboards correctly
+        clone_board.bitboards.white_pawns = flip_vertical(self.bitboards.black_pawns);
+        clone_board.bitboards.white_bishops = flip_vertical(self.bitboards.black_bishops);
+        clone_board.bitboards.white_knights = flip_vertical(self.bitboards.black_knights);
+        clone_board.bitboards.white_rooks = flip_vertical(self.bitboards.black_rooks);
+        clone_board.bitboards.white_queens = flip_vertical(self.bitboards.black_queens);
+        clone_board.bitboards.white_king = flip_vertical(self.bitboards.black_king);
 
-        // Swap bishops
-        let temp = clone_board.bitboards.white_bishops;
-        clone_board.bitboards.white_bishops = clone_board.bitboards.black_bishops;
-        clone_board.bitboards.black_bishops = temp;
+        clone_board.bitboards.black_pawns = flip_vertical(self.bitboards.white_pawns);
+        clone_board.bitboards.black_bishops = flip_vertical(self.bitboards.white_bishops);
+        clone_board.bitboards.black_knights = flip_vertical(self.bitboards.white_knights);
+        clone_board.bitboards.black_rooks = flip_vertical(self.bitboards.white_rooks);
+        clone_board.bitboards.black_queens = flip_vertical(self.bitboards.white_queens);
+        clone_board.bitboards.black_king = flip_vertical(self.bitboards.white_king);
 
-        // Swap rooks
-        let temp = clone_board.bitboards.white_rooks;
-        clone_board.bitboards.white_rooks = clone_board.bitboards.black_rooks;
-        clone_board.bitboards.black_rooks = temp;
-
-        // Swap queens
-        let temp = clone_board.bitboards.white_queens;
-        clone_board.bitboards.white_queens = clone_board.bitboards.black_queens;
-        clone_board.bitboards.black_queens = temp;
-
-        // Swap kings
-        let temp = clone_board.bitboards.white_king;
-        clone_board.bitboards.white_king = clone_board.bitboards.black_king;
-        clone_board.bitboards.black_king = temp;
-
+        // Return the modified cloned board
         clone_board
     }
+
+    /*
+        Using reverse_bits method logic
+        the logic is not corredt as in flipping we should make vertical flipping
+        means if a black pawn at a7 it must be turned to a1, which means we should keep the column the same
+        then flipping rows only
+        8 <-> 1
+        7 <-> 2
+        6 <-> 3
+        5 <-> 4
+        
+        this logic do this correctly but also do horizontal flipping also, example:
+        
+        White:♚ - Black:♔
+
+        8 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖ 
+        7 ♙ ♙ ♙ . ♙ . ♙ ♙
+        6 . . . ♙ . . . .
+        5 . ♟ . . . . . ♟
+        4 . . . ♟ . ♙ . .
+        3 ♟ . ♟ . . ♟ . .
+        2 . . . . . ♟ . ♟
+        1 ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+        a b c d e f g h
+
+        -------------------------
+
+        White:♚ - Black:♔
+
+        8 ♖ ♘ ♗ ♔ ♕ ♗ ♘ ♖
+        7 ♙ . ♙ . . . . .
+        6 . . ♙ . . ♙ . ♙
+        5 . . ♟ . ♙ . . .
+        4 ♙ . . . . . ♙ .
+        3 . . . . ♟ . . .
+        2 ♟ ♟ . ♟ . ♟ ♟ ♟
+        1 ♜ ♞ ♝ ♚ ♛ ♝ ♞ ♜
+        a b c d e f g h
+
+     */
+    // pub fn color_flip(&self) -> Self {
+    //     // Clone the current board
+    //     let mut clone_board = self.clone();
+
+    //     // Flip the bitboards vertically using reverse_bits
+    //     clone_board.bitboards.white_pawns = self.bitboards.black_pawns.reverse_bits();
+    //     clone_board.bitboards.white_bishops = self.bitboards.black_bishops.reverse_bits();
+    //     clone_board.bitboards.white_knights = self.bitboards.black_knights.reverse_bits();
+    //     clone_board.bitboards.white_rooks = self.bitboards.black_rooks.reverse_bits();
+    //     clone_board.bitboards.white_queens = self.bitboards.black_queens.reverse_bits();
+    //     clone_board.bitboards.white_king = self.bitboards.black_king.reverse_bits();
+
+    //     clone_board.bitboards.black_pawns = self.bitboards.white_pawns.reverse_bits();
+    //     clone_board.bitboards.black_bishops = self.bitboards.white_bishops.reverse_bits();
+    //     clone_board.bitboards.black_knights = self.bitboards.white_knights.reverse_bits();
+    //     clone_board.bitboards.black_rooks = self.bitboards.white_rooks.reverse_bits();
+    //     clone_board.bitboards.black_queens = self.bitboards.white_queens.reverse_bits();
+    //     clone_board.bitboards.black_king = self.bitboards.white_king.reverse_bits();
+
+    //     // Return the modified cloned board
+    //     clone_board
+    // }
+
+    /*
+        Youssef Logic
+        the logic is not corredt as in flipping we should make vertical flipping
+        means if a black pawn at a7 it must be turned to a1, which means we should keep the column the same
+        then flipping rows only
+        8 <-> 1
+        7 <-> 2
+        6 <-> 3
+        5 <-> 4
+
+     */
+    // pub fn color_flip(&self) -> Self {
+    //     let mut clone_board = self.clone();
+
+    //     // Swap pawns
+    //     let temp = clone_board.bitboards.white_pawns;
+    //     clone_board.bitboards.white_pawns = clone_board.bitboards.black_pawns;
+    //     clone_board.bitboards.black_pawns = temp;
+
+    //     // Swap knights
+    //     let temp = clone_board.bitboards.white_knights;
+    //     clone_board.bitboards.white_knights = clone_board.bitboards.black_knights;
+    //     clone_board.bitboards.black_knights = temp;
+
+    //     // Swap bishops
+    //     let temp = clone_board.bitboards.white_bishops;
+    //     clone_board.bitboards.white_bishops = clone_board.bitboards.black_bishops;
+    //     clone_board.bitboards.black_bishops = temp;
+
+    //     // Swap rooks
+    //     let temp = clone_board.bitboards.white_rooks;
+    //     clone_board.bitboards.white_rooks = clone_board.bitboards.black_rooks;
+    //     clone_board.bitboards.black_rooks = temp;
+
+    //     // Swap queens
+    //     let temp = clone_board.bitboards.white_queens;
+    //     clone_board.bitboards.white_queens = clone_board.bitboards.black_queens;
+    //     clone_board.bitboards.black_queens = temp;
+
+    //     // Swap kings
+    //     let temp = clone_board.bitboards.white_king;
+    //     clone_board.bitboards.white_king = clone_board.bitboards.black_king;
+    //     clone_board.bitboards.black_king = temp;
+
+    //     clone_board
+    // }
+
+
 }
