@@ -20,13 +20,6 @@ where
     fn forward(&self, x: Tensor<B, 4>)->Tensor<B ,2>;
 }
 
-pub trait KanDeepLearningModel<B: Backend>
-where 
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
-{
-    fn new(nput: usize, device: &Device<B>)->Self;
-    fn forward(&self, x: Tensor<B, 4>)->Tensor<B ,2>;
-}
 
 // CNN Model
 #[derive(Module, Debug)]

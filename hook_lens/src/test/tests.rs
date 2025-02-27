@@ -13,6 +13,7 @@ mod tests{
     use std::time::Instant;
     use std::{fs, thread};
     use std::time::Duration;
+    use crate::test::test_models_repository::repository;
 
     #[test]
     fn test_all(){
@@ -124,14 +125,14 @@ mod tests{
     fn test_models_on_un_seen_data()
     where
     {
+        // to store the results of the models on it then use it to create a table that contain info all tested models
         let mut models_results : Vec<(&str , i16 , i16 , f32, f32)> = Vec::new();
-        let models: Vec<(&str, &str , i8)> = vec![
-             // kan models
-            //("ultra_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_cnn_models/cnn_hook_lens", 1),
-            ("ultra_kan_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
-        ];
-     
-        for (model_name , model_path , id) in models{
+        // get the models to be tested from the repository of test models
+        let mut repository = repository::new();
+        repository.load_all_models();
+        
+             
+        for (model_name , model_path , id) in repository.test_models{
             let model :ModelEnum<Wgpu> = load_model_paramter::<Wgpu>(id, &model_path, WgpuDevice::default());
             if model_name.len() == 0 || model_path.len() == 0 {
                 continue;
