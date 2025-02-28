@@ -1210,13 +1210,8 @@ impl Board {
         fn flip_vertical(bb: u64) -> u64 {
             let mut flipped = 0;
             for rank in 0..8 {
-                for file in 0..8 {
-                    let from_index = rank * 8 + file;
-                    let to_index = (7 - rank) * 8 + file;
-                    if (bb >> from_index) & 1 == 1 {
-                        flipped |= 1 << to_index;
-                    }
-                }
+                let rank_bits = (bb >> (rank * 8)) & 0xFF;
+                flipped |= rank_bits << ((7 - rank) * 8);
             }
             flipped
         }
