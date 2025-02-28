@@ -1,8 +1,7 @@
 use core::panic;
 use std::collections::HashMap;
-use burn::nn;
 use burn::prelude::Backend;
-use nnue::model::Model;
+use kanue::model::Model;
 
 use crate::bitboards::Bitboards;
 use crate::castling::CastlingRights;
@@ -58,7 +57,7 @@ impl<B:Backend> Board<B> {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
-            features: nnue::data::map(fen),
+            features: kanue::data::map(fen),
             model,
             device
         }
@@ -90,7 +89,7 @@ impl<B:Backend> Board<B> {
     pub fn from_fen(fen: String, model: Model<B>, device: B::Device) -> Self {
         let fen_vec: Vec<&str> = fen.split_whitespace().collect();
         
-        let features = nnue::data::map(fen.to_string());
+        let features = kanue::data::map(fen.to_string());
         
         let turn = match fen_vec[1] {
             "w" => Turn::White,
@@ -355,7 +354,7 @@ impl<B:Backend> Board<B> {
             }
         }
     }
-    pub fn get_en_passant_check(&self ,king_position: &u64, pawn_position1: &u64 , pawn_position2:&u64 , en_passant_position : u64)->bool{
+    pub fn get_en_passant_check(&self ,king_position: &u64, pawn_position1: &u64 , pawn_position2:&u64)->bool{
         let mut mask:u64 =0;
         let king_square = king_position.trailing_zeros() as u8;
         let pawn_sqaure = pawn_position1.trailing_zeros() as u8;
@@ -1272,7 +1271,7 @@ impl<B:Backend> Board<B> {
             let legal_position = check_bitboard & Self::get_legal_bitboard(self, &(start_square as u8), pins, &valid_position);
 
             if legal_position != 0 {
-                if self.get_en_passant_check(&king_position, &ally_pawn_position, &enemy_pawn_position , en_passant_position) == false{
+                if self.get_en_passant_check(&king_position, &ally_pawn_position, &enemy_pawn_position ) == false{
                     let en_passant_move = Move::encode(start_square as u8, en_passant_capture as u8, Move::EP_CAPTURE); 
                     moves.push(en_passant_move);
                 }

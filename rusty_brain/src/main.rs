@@ -1,10 +1,10 @@
 use rusty_brain::uci;
-use nnue::training::TrainingConfig;
+use kanue::training::TrainingConfig;
 use burn::{backend::wgpu::WgpuDevice, config::Config, module::Module, record::{CompactRecorder, Recorder}};
 use burn::backend::Wgpu;
 fn main() {
     let device = WgpuDevice::default();
-    let artifact_dir = "/tmp/nnue_8";
+    let artifact_dir = "/tmp/kanue_8";
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
         .expect("Config should exist for the model");
     let record = CompactRecorder::new()

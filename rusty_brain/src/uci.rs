@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 use burn::prelude::Backend;
-use nnue::model::Model;
+use kanue::model::Model;
 
 use crate::board::Board;
 use crate::square::Square;

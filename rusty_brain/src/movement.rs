@@ -122,7 +122,7 @@ impl  fmt::Display for Move {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let start = self.get_from();
         let end = self.get_to();
-        let flag = self.get_flags();
+        // let flag = self.get_flags();
         write!(f, "{}{}", Square::from(start).to_string().to_lowercase(), Square::from(end).to_string().to_lowercase())
     }
 }
