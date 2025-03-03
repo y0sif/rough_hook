@@ -3333,6 +3333,12 @@ dependencies = [
 [[package]]
 name = "rough_guard"
 version = "0.1.0"
+dependencies = [
+ "burn",
+ "burn-cuda",
+ "burn-dataset",
+ "serde",
+]
 
 [[package]]
 name = "rusqlite"
