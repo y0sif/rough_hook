@@ -1,17 +1,16 @@
-use std::ptr::null;
 
-
-pub struct repository<'a>{
+pub struct Repository<'a>{
     pub test_models: Vec<(&'a str , & 'a str, i8)>
 }
 
-impl<'a> repository<'a> {
+impl<'a> Repository<'a> {
 
     pub fn new()->Self{
-        repository{
+        Repository{
             test_models: Vec::new()
         }
     }
+    
     pub fn load_all_models(& mut self){
         self. test_models = vec![
              // kan models
@@ -20,16 +19,20 @@ impl<'a> repository<'a> {
         ]
     }
 
-    pub fn get_model_by_id(self , id : i8)->(&'a str , &'a str, i8){
-        let mut target_model = ("" , "" ,0);
-        for model in self.test_models{
-            if model.2 == id {
-                target_model = (model.0 , model.1 , model.2)
+    pub fn load_models_by_ids(&mut self , required_models_ids : Vec<i8>){
+        self.load_all_models();
+        let mut required_models  = Vec::new();
+
+        for required_model_id in required_models_ids {
+            for model in &self.test_models {
+                if model.2 == required_model_id{
+                    required_models.push((model.0 , model.1 , model.2));
+                }
             }
         }
-        match target_model.2 {
-            0=> panic!("there is no model with such id ]"),
-            _=> target_model
+        if required_models.len()== 0 {
+            panic!(" #### there is not any model match any of the ids you enterd ####");
         }
+        self.test_models = required_models;
     }
 }

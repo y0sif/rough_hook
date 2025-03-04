@@ -1,124 +1,104 @@
 #[cfg(test)]
 mod tests{
     use burn::backend::wgpu::WgpuDevice;
-    use burn::backend::{self, Wgpu};
-    use burn::prelude::Backend;
+    use burn::backend::Wgpu;
     use imageops::FilterType;
-    use image::{imageops, ImageReader};
+    use image::imageops;
     use rusty_brain::board::Board;
     use crate::data_and_model::inference::{self, load_model_paramter , ModelEnum};
+    use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     //use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     use prettytable::{Table, row};
     use std::collections::HashMap;
     use std::time::Instant;
-    use std::{fs, thread};
-    use std::time::Duration;
-    use crate::test::test_models_repository::repository;
+    use std::fs;
+    use crate::test::test_models_repository::Repository;
 
     #[test]
     fn test_all(){
-        // let flag = test_fen_string_of_image_1();
-        // assert_eq!(flag, true);
 
+        // comment one of them to test the another one
+
+        // rela life test (test the models in real board)
+        let flag = test_fen_string_of_image_1();
+        assert_eq!(flag, true);
+
+        // generalization test
         test_models_on_un_seen_data();
         assert_eq!(1,0);
 
     }
 
-    // fn test_fen_string_of_image_1()->bool{
-    //     let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
-    //      // Name - Path - Id
-    //      let models: Vec<(&str, &str , i8)> = vec![
-    //          // kan models
-    //         ("ultra_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_cnn_models/cnn_hook_lens", 1),
-    //         ("ultra_kan_cnn", "/home/sasa630/Graduation_Project/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
-    //         //("KAN_256", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_hook_lens", 2),
-    //         //("KAN_512", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_512_hook_lens" , 3),
-    //         //("KAN_1024", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_1024_hook_lens" , 4),
-    //         //
-    //         //("kan_256_spline_order_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_6_hook_lens" , 5),
-    //         //("kan_256_spline_order_12", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_spline_order_12_hook_lens" , 6),
-    //         //
-    //         //("kan_256_scale_base_2_scale_noise_2", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_2_scale_noise_2_hook_lens" , 7),
-    //         //("kan_256_scale_base_4_scale_noise_4", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_4_scale_noise_4_hook_lens" , 8),   
-    //         //("kan_256_scale_base_6_scale_noise_6", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_scale_base_6_scale_noise_6_hook_lens" , 9),   
-    //         //
-    //         //("kan_256_grid_size_10", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_10_hook_lens" , 10),   
-    //         //("kan_256_grid_size_20", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_20_hook_lens" , 11),   
-    //         //("kan_256_grid_size_30", "/home/sasa630/Graduation_Project/hook_lens_models/Kan_models/kan_256_grid_size_30_hook_lens" , 12),   
-    //         //
-    //         //// kan_cnn models
-    //         //("kan_cnn_256", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_hook_lens" , 13),   
-    //         //("kan_cnn_512", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_512_hook_lens" , 14),   
-    //         //("kan_cnn_1024", "/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_1024_hook_lens" , 15),   
+    fn test_fen_string_of_image_1()->bool{
+        let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
+         // Name - Path - Id
+        let mut repository = Repository::new();
 
-    //        // ("kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2_hook_lens" , 16),               ("kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2","/home/sasa630/Graduation_Project/hook_lens_models/kan_cnn_models/kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_noise_2_hook_lens" , 17),            
-    //      ];
+        repository.load_all_models();   
+        //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
   
-    //     // name , correct_pieces  , wrong_pieces , accuracy
-    //     let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
-    //     let static_str = String::from(" w - - 0 1");
-    //     let actual_fen_string = String::from("r3q1k1/pppb1ppp/2n5/3P4/8/2B2N2/PP3PPP/R2Q2K1");
+        // name , correct_pieces  , wrong_pieces , accuracy
+        let mut models_results : Vec<(&str , i16 , i16 , f32 , f32)> = Vec::new();
+        let static_str = String::from(" w - - 0 1");
+        let actual_fen_string = String::from("r3q1k1/pppb1ppp/2n5/3P4/8/2B2N2/PP3PPP/R2Q2K1");
         
-    //     let mut flag = false;
-    //     for (model_name , model_path , id) in models{
-    //         if model_name.len() == 0 || model_path.len() == 0 {
-    //             continue;
-    //         }
+        let mut flag = false;
+        for (model_name , model_path , id) in repository.test_models{
+            let model :ModelEnum<Wgpu> = load_model_paramter::<Wgpu>(id, &model_path, WgpuDevice::default());
+           
+            println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
+            let start = Instant::now();
+            let  predicted_fen_string = get_fen_string_from(board_image_path , model);
+            let duration = start.elapsed().as_secs_f32();
+            println!("====================== actual board =======================");
 
-    //         println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
-    //         let start = Instant::now();
-    //         let  predicted_fen_string = get_fen_string_from(board_image_path , model_path , id);
-    //         let duration = start.elapsed().as_secs_f32();
-    //         println!("====================== actual board =======================");
+            let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
+            actual_board.print_board();
 
-    //         let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
-    //         actual_board.print_board();
+            println!("====================== predicted board =======================");
 
-    //         println!("====================== predicted board =======================");
+            let mut predicted_board = Board::from_fen(predicted_fen_string.clone() + &static_str);
+            predicted_board.print_board();
 
-    //         let mut predicted_board = Board::from_fen(predicted_fen_string.clone() + &static_str);
-    //         predicted_board.print_board();
+            if predicted_fen_string == actual_fen_string {
+                flag = true;
+            }
 
-    //         if predicted_fen_string == actual_fen_string {
-    //             flag = true;
-    //         }
+            println!("\nactual_fen_string = {}" , actual_fen_string);
+            println!("predicted fen string = {}", predicted_fen_string);
 
-    //         println!("\nactual_fen_string = {}" , actual_fen_string);
-    //         println!("predicted fen string = {}", predicted_fen_string);
+            let wrong = count_fen_differences(&actual_fen_string , &predicted_fen_string).unwrap() as i16;
+            let correct = 64 - wrong as i16;
+            let accuracy = (correct as f32 / 64.0)*100 as f32;
+            let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
 
-    //         let wrong = count_fen_differences(&actual_fen_string , &predicted_fen_string).unwrap() as i16;
-    //         let correct = 64 - wrong as i16;
-    //         let accuracy = (correct as f32 / 64.0)*100 as f32;
-    //         let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
+            println!("Correct = {}" , correct);
+            println!("wrong = {}" , wrong);
+            println!("accuracy = {}" ,accuracy);
+            println!("duaration = {:?}" , duration);
 
-    //         println!("Correct = {}" , correct);
-    //         println!("wrong = {}" , wrong);
-    //         println!("accuracy = {}" ,accuracy);
-    //         println!("duaration = {:?}" , duration);
-
-    //         models_results.push((model_name , correct , wrong , accuracy ,duration));
+            models_results.push((model_name , correct , wrong , accuracy ,duration));
             
-    //         println!("\n\n");
-    //     }
-    //     print_results_table(models_results);
-    //     return flag;
-    // }
+            println!("\n\n");
+        }
+        print_results_table(models_results);
+        return flag;
+    }
 
-    // fn count_fen_differences(fen1: &str, fen2: &str) -> Result<usize, &'static str> {
-    //    // Split the FEN strings into their components
-    //    let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
-    //    let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
+    fn count_fen_differences(fen1: &str, fen2: &str) -> Result<usize, &'static str> {
+       // Split the FEN strings into their components
+       let board1 = fen1.split(' ').next().ok_or("Invalid FEN string")?;
+       let board2 = fen2.split(' ').next().ok_or("Invalid FEN string")?;
   
-    //    // Count the number of differences
-    //    let differences = board1
-    //       .chars()
-    //       .zip(board2.chars())
-    //       .filter(|(c1, c2)| c1 != c2)
-    //       .count();
+       // Count the number of differences
+       let differences = board1
+          .chars()
+          .zip(board2.chars())
+          .filter(|(c1, c2)| c1 != c2)
+          .count();
   
-    //    Ok(differences)
-    // }
+       Ok(differences)
+    }
 
     
 
@@ -128,9 +108,11 @@ mod tests{
         // to store the results of the models on it then use it to create a table that contain info all tested models
         let mut models_results : Vec<(&str , i16 , i16 , f32, f32)> = Vec::new();
         // get the models to be tested from the repository of test models
-        let mut repository = repository::new();
-        repository.load_all_models();
-        
+        let mut repository = Repository::new();
+
+        repository.load_all_models();    
+        //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
+       
              
         for (model_name , model_path , id) in repository.test_models{
             let model :ModelEnum<Wgpu> = load_model_paramter::<Wgpu>(id, &model_path, WgpuDevice::default());

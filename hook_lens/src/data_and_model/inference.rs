@@ -1,6 +1,5 @@
 use burn::{module::Module, prelude::Backend, record::{CompactRecorder, Recorder}, tensor::{Device, Shape, Tensor, TensorData}};
-use super::model::{self, DeepLearningModel};
-use std::marker::PhantomData;
+use super::model:: DeepLearningModel;
 // use cnn models
 use super::model::{Cnn, CnnRecord};
 // use kan models
@@ -27,8 +26,8 @@ use super::model::{kan_cnn_256_grid_size_20_spline_order_8_scale_base_2_scale_no
 
 #[derive(Module, Debug )]
 pub enum ModelEnum<B:Backend>{
-    cnn(Cnn<B>) ,
-    kan_cnn_256(kan_cnn_256<B>)
+    Cnn(Cnn<B>) ,
+    Kan_cnn_256(kan_cnn_256<B>)
 }
 
 impl<B:Backend> DeepLearningModel<B> for ModelEnum<B> 
@@ -42,8 +41,8 @@ where
 
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         match self {
-            ModelEnum::cnn(model) => model.forward(x),
-            ModelEnum::kan_cnn_256(model) => model.forward(x),
+            ModelEnum::Cnn(model) => model.forward(x),
+            ModelEnum::Kan_cnn_256(model) => model.forward(x),
         }
     }
 }
@@ -80,20 +79,20 @@ where
     
 
     let inner_model = match model_object {
-        ModelEnum::cnn(cnn_model) =>{
+        ModelEnum::Cnn(cnn_model) =>{
             let record= CompactRecorder::new()
             .load(format!("{artifact_dir}/model").into(), &device)
             .expect("Trained model should exist");
             let model = cnn_model.load_record(record);
-            ModelEnum::cnn(model)
+            ModelEnum::Cnn(model)
             
         } , 
-        ModelEnum::kan_cnn_256(kan_cnn_256) =>{
+        ModelEnum::Kan_cnn_256(kan_cnn_256) =>{
             let record= CompactRecorder::new()
             .load(format!("{artifact_dir}/model").into(), &device)
             .expect("Trained model should exist");
             let model = kan_cnn_256.load_record(record);
-            ModelEnum::kan_cnn_256(model)
+            ModelEnum::Kan_cnn_256(model)
         }
     };
 
@@ -109,8 +108,8 @@ where
 {
 
     match id {
-        1=> ModelEnum::cnn(Cnn::new(13 , device)) ,
-        13=>ModelEnum::kan_cnn_256(kan_cnn_256::new(13, device)),
+        1=> ModelEnum::Cnn(Cnn::new(13 , device)) ,
+        13=>ModelEnum::Kan_cnn_256(kan_cnn_256::new(13, device)),
         _=> panic!("not valid model Id")
     }
 }
