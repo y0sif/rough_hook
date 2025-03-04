@@ -1,9 +1,9 @@
 use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::loss::CrossEntropyLossConfig, optim::AdamConfig, prelude::Backend, record::CompactRecorder, tensor::{backend::AutodiffBackend, Int, Tensor}, train::{metric::{store::{Aggregate, Direction, Split}, LossMetric}, ClassificationOutput, LearnerBuilder, MetricEarlyStoppingStrategy, StoppingCondition, TrainOutput, TrainStep, ValidStep}};
-use crate::{data::{ChessGameBatch, ChessGameBatcher, ChessGameDataSet}, model::{Model, ModelConfig}};
+use crate::{data::{ChessGameBatcher, ChessGameDataSet, FeaturesBatch}, model::{Model, ModelConfig}};
 impl <B: Backend> Model<B> {
     pub fn forward_classification(
         &self,
-        features: ChessGameBatch<B>,
+        features: Tensor<B,2>,
         label: Tensor<B, 1, Int>,
     ) -> ClassificationOutput<B> {
         let output = self.forward(features);
@@ -12,18 +12,18 @@ impl <B: Backend> Model<B> {
         ClassificationOutput::new(loss, output, label)    }
 }
 
-impl<B: AutodiffBackend> TrainStep<ChessGameBatch<B>, ClassificationOutput<B>> for Model<B> {
-    fn step(&self, batch: ChessGameBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
+impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for Model<B> {
+    fn step(&self, batch: FeaturesBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
         let label = batch.label.clone();
-        let item = self.forward_classification(batch, label);
+        let item = self.forward_classification(batch.features, label);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
 
-impl <B: Backend> ValidStep<ChessGameBatch<B>, ClassificationOutput<B>> for Model<B> {
-    fn step(&self, batch: ChessGameBatch<B>) -> ClassificationOutput<B> {
+impl <B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Model<B> {
+    fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
         let label = batch.label.clone();
-        self.forward_classification(batch, label) 
+        self.forward_classification(batch.features, label) 
     }
 }
 

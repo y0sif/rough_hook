@@ -21,7 +21,7 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
     let batch = batcher.batch(vec![item]);
 
     // Forward pass
-    let output = model.forward(batch);
+    let output = model.forward(batch.features);
 
     // Apply softmax to get probabilities
     let probabilities = softmax(output, 1);

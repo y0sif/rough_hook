@@ -52,14 +52,17 @@ impl ChessGameDataSet {
     }
     
     fn new(split: &str) -> Self {
-        let db_file = Path::new("rough_guard_db/pgn_features.db");
-        let dataset = SqliteDataset::from_db_file(db_file, split).unwrap();
+        let db_file = Path::new("C:\\Users\\user\\Desktop\\Home\\Study\\University\\GP\\rough_hook\\rough_guard\\db\\pgn_features.db");
+        let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
         let dataset = ShuffledDataset::with_seed(dataset, 42);
+        
+        let total = dataset.len();
+        let train_count = (total as f32 * 0.8).round() as usize;
         
         type PartialData = PartialDataset<ShuffledDataset<SqliteDataset<ChessGameItem>, ChessGameItem>, ChessGameItem>;
         let data_split = match split {
-            "train" => PartialData::new(dataset, 0, 400000),
-            "test" => PartialData::new(dataset, 400000, 600000),
+            "train" => PartialData::new(dataset, 0, train_count),
+            "test" => PartialData::new(dataset, train_count, total),
             _ => panic!("Invalid split type"),
         };
 
@@ -77,6 +80,12 @@ impl<B: Backend> ChessGameBatcher<B> {
     pub fn new(device: B::Device) -> Self {
         Self { device }
     }
+}
+
+#[derive(Debug, Clone)]
+pub struct FeaturesBatch<B: Backend> {
+    pub features: Tensor<B, 2>,
+    pub label: Tensor<B, 1, Int>,
 }
 
 #[derive(Debug, Clone)]
@@ -121,8 +130,8 @@ impl<B: Backend> ChessGameBatch<B> {
     }
 }
 
-impl<B: Backend> Batcher<ChessGameItem, ChessGameBatch<B>> for ChessGameBatcher<B> {
-    fn batch(&self, items: Vec<ChessGameItem>) -> ChessGameBatch<B> {
+impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B> {
+    fn batch(&self, items: Vec<ChessGameItem>) -> FeaturesBatch<B> {
         let label = Tensor::cat(
             items.iter()
                 .map(|item| Tensor::<B, 1, Int>::from_data([item.label], &self.device))
@@ -146,7 +155,7 @@ impl<B: Backend> Batcher<ChessGameItem, ChessGameBatch<B>> for ChessGameBatcher<
             0,
         );
         
-        ChessGameBatch {
+        let batch = ChessGameBatch {
             white_response_time: feature_tensors(|item| &item.white_response_time),
             white_remaining_time: feature_tensors(|item| &item.white_remaining_time),
             white_win_chance: feature_tensors(|item| &item.white_win_chance),
@@ -163,6 +172,10 @@ impl<B: Backend> Batcher<ChessGameItem, ChessGameBatch<B>> for ChessGameBatcher<
             
             bucket,
             label,
+        };
+        FeaturesBatch{
+            features: batch.flatten(),
+            label: batch.label
         }
     }
 }

@@ -3,8 +3,6 @@ use burn::{
     prelude::*, tensor::activation::relu
 };
 
-use crate::data::ChessGameBatch;
-
 #[derive(Module, Debug)]
 pub struct Model<B: Backend> {
     linear1: Linear<B>,
@@ -26,7 +24,7 @@ impl ModelConfig {
 }
 
 impl<B: Backend> Model<B> {
-    fn forward_pass(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
+    pub fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
         let x = self.linear1.forward(games);
         let x = relu(x);
         let x = self.linear2.forward(x);
@@ -34,11 +32,7 @@ impl<B: Backend> Model<B> {
         self.linear3.forward(x)
     }
 
-    pub fn forward(&self, batch: ChessGameBatch<B>) -> Tensor<B, 2> {
-        self.forward_pass(batch.flatten())
-    }
-
-    pub fn infer(&self, batch: ChessGameBatch<B>) -> Tensor<B, 2> {
-        self.forward_pass(batch.flatten().detach())
+    pub fn infer(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
+        self.forward(games.detach())
     }
 }
