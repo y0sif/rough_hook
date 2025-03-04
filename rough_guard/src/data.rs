@@ -9,23 +9,69 @@ use std::path::Path;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChessGameItem {
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub white_response_time: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub white_remaining_time: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub white_win_chance: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub white_move_accuracy: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub white_board_material: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub white_legal_moves: Vec<i32>,
 
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub black_response_time: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub black_remaining_time: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub black_win_chance: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub black_move_accuracy: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub black_board_material: Vec<i32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
     pub black_legal_moves: Vec<i32>,
 
-    pub bucket: i32,
+    pub bucket_index: i32,
     pub label: i32,
-} 
+}
+
+pub fn deserialize_chess_blob<'de, D>(deserializer: D) -> Result<Vec<i32>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    use serde::de::Error;
+    
+    let bytes: Vec<u8> = Vec::deserialize(deserializer)?;
+    
+    // Validate length for exactly 20 i32 elements (80 bytes)
+    if bytes.len() != 80 {
+        return Err(Error::custom(format!(
+            "Invalid blob length: expected 80 bytes, got {}",
+            bytes.len()
+        )));
+    }
+
+    bytes.chunks_exact(4)
+        .map(|chunk| {
+            chunk.try_into()
+                .map_err(|_| Error::custom("Failed to convert 4-byte chunk to array"))
+                .map(i32::from_le_bytes)
+        })
+        .collect()
+}
+
+pub fn test_deserialization() {
+    let dataset = ChessGameDataSet::train();
+    let item = dataset.get(0).unwrap();
+    
+    println!("First element: {}", item.bucket_index);
+    item.black_move_accuracy.iter().for_each(|item| println!("{}", item));
+}
+
 
 type MappedDataset = Box<dyn Dataset<ChessGameItem>>;
 pub struct ChessGameDataSet {
@@ -67,6 +113,7 @@ impl ChessGameDataSet {
         };
 
         let dataset = Box::new(data_split);
+
         ChessGameDataSet { dataset }
     }
 }
@@ -104,7 +151,7 @@ pub struct ChessGameBatch<B: Backend> {
     pub black_board_material: Tensor<B, 2>,
     pub black_legal_moves: Tensor<B, 2>,
 
-    pub bucket: Tensor<B, 1>,
+    pub bucket_index: Tensor<B, 2>,
     pub label: Tensor<B, 1, Int>,
 }
 
@@ -123,7 +170,7 @@ impl<B: Backend> ChessGameBatch<B> {
             self.black_move_accuracy.clone(), 
             self.black_board_material.clone(), 
             self.black_legal_moves.clone(),
-            self.bucket.clone().unsqueeze(),
+            self.bucket_index.clone(),
         ];
 
         Tensor::cat(tensors, 1)
@@ -132,6 +179,7 @@ impl<B: Backend> ChessGameBatch<B> {
 
 impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B> {
     fn batch(&self, items: Vec<ChessGameItem>) -> FeaturesBatch<B> {
+
         let label = Tensor::cat(
             items.iter()
                 .map(|item| Tensor::<B, 1, Int>::from_data([item.label], &self.device))
@@ -148,12 +196,12 @@ impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B
             )
         };
 
-        let bucket = Tensor::cat(
+        let bucket_index = Tensor::cat(
             items.iter()
-                .map(|item| Tensor::<B, 1>::from_data([item.bucket], &self.device))
+                .map(|item| Tensor::<B, 1>::from_data([item.bucket_index], &self.device))
                 .collect::<Vec<_>>(),
             0,
-        );
+        ).unsqueeze_dim(1);
         
         let batch = ChessGameBatch {
             white_response_time: feature_tensors(|item| &item.white_response_time),
@@ -170,7 +218,7 @@ impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B
             black_board_material: feature_tensors(|item| &item.black_board_material),
             black_legal_moves: feature_tensors(|item| &item.black_legal_moves),
             
-            bucket,
+            bucket_index,
             label,
         };
         FeaturesBatch{
