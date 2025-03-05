@@ -43,16 +43,17 @@ impl ChessPositionDataSet {
     }
 
     fn new(split: &str) -> Self{
-        let db_file = Path::new("nnue/data_in_sql_lite/chess_positions_nnue.db");
+        let db_file = Path::new("kanue/data_in_sql_lite/chess_positions_nnue.db");
         
-        let dataset = SqliteDataset::from_db_file(db_file, split).unwrap();
+        let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
         
         let dataset= ShuffledDataset::<SqliteDataset<ChessPositionItem>, ChessPositionItem>::with_seed(dataset, 42);
         type PartialData = PartialDataset<ShuffledDataset::<SqliteDataset<ChessPositionItem>, ChessPositionItem>, ChessPositionItem>;
+        let len = dataset.len();
 
         let data_split = match split {
-            "train" => PartialData::new(dataset, 0, 800000), // Get first 80% dataset
-            "test" => PartialData::new(dataset, 800000, 1000000), // Take remaining 20%
+            "train" => PartialData::new(dataset, 0, len*8/10), // Get first 80% dataset
+            "test" => PartialData::new(dataset, len*8/10, len), // Take remaining 20%
             _ => panic!("Invalid split type"),                     // Handle unexpected split types
         };
 

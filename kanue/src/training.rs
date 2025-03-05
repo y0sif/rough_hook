@@ -32,9 +32,9 @@ pub struct TrainingConfig{
     pub optimizer: AdamConfig,
     #[config(default = 10)]
     pub num_epochs: usize,
-    #[config(default = 64)]
+    #[config(default = 128)]
     pub batch_size: usize,
-    #[config(default = 4)]
+    #[config(default = 16)]
     pub num_workers: usize,
     #[config(default = 42)]
     pub seed: u64,
@@ -80,7 +80,7 @@ where
             Aggregate::Mean,
             Direction::Lowest,
             Split::Valid,
-            StoppingCondition::NoImprovementSince { n_epochs: 1 },
+            StoppingCondition::NoImprovementSince { n_epochs: 2 },
         ))
         .devices(vec![device.clone()])
         .num_epochs(config.num_epochs)

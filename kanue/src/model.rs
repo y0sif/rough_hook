@@ -17,7 +17,7 @@ impl ModelConfig {
         B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
     {
         Model{
-            kan: EfficientKan::new(&KanOptions::new([768, 8, 1]), device),
+            kan: EfficientKan::new(&KanOptions::new([768, 256, 1]), device),
             activation: Sigmoid::new(),
         }
     }
