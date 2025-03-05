@@ -1,4 +1,4 @@
-use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::loss::CrossEntropyLossConfig, optim::AdamConfig, prelude::Backend, record::CompactRecorder, tensor::{backend::AutodiffBackend, Int, Tensor}, train::{metric::{store::{Aggregate, Direction, Split}, LossMetric}, ClassificationOutput, LearnerBuilder, MetricEarlyStoppingStrategy, StoppingCondition, TrainOutput, TrainStep, ValidStep}};
+use burn::{config::Config, data::dataloader::DataLoaderBuilder, module::Module, nn::loss::CrossEntropyLossConfig, optim::AdamConfig, prelude::Backend, record::CompactRecorder, tensor::{backend::AutodiffBackend, Int, Tensor}, train::{metric::{store::{Aggregate, Direction, Split}, LossMetric, AccuracyMetric}, ClassificationOutput, LearnerBuilder, MetricEarlyStoppingStrategy, StoppingCondition, TrainOutput, TrainStep, ValidStep}};
 use crate::{data::{ChessGameBatcher, ChessGameDataSet, FeaturesBatch}, model::{Model, ModelConfig}};
 impl <B: Backend> Model<B> {
     pub fn forward_classification(
@@ -71,6 +71,8 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
         .build(ChessGameDataSet::test());
 
     let learner = LearnerBuilder::new(artifact_dir)
+        .metric_train_numeric(AccuracyMetric::new())
+        .metric_valid_numeric(AccuracyMetric::new())
         .metric_train_numeric(LossMetric::new())
         .metric_valid_numeric(LossMetric::new())
         .with_file_checkpointer(CompactRecorder::new())
