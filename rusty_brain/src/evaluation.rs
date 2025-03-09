@@ -31,27 +31,16 @@ impl Board {
     
     // PIECE VALUE MIDDLE GAME
     
-    fn piece_value_mg(&self) -> i32 {
+    pub fn piece_value_mg(&self) -> i32 {
         // self.piece_value_bonus(true)
         let mut sum = 0;
 
-        match self.turn { 
-            Turn::White => {
-                sum += self.bitboards.white_pawns.count_ones() as i32 * self.piece_value_bonus(Piece::Pawn, true);
-                sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
-                sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
-                sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
-                sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
-            }
-            Turn::Black =>{
-                sum += self.bitboards.black_pawns.count_ones() as i32 * self.piece_value_bonus(Piece::Pawn, true);
-                sum += self.bitboards.black_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
-                sum += self.bitboards.black_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
-                sum += self.bitboards.black_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
-                sum += self.bitboards.black_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
+        sum += self.bitboards.white_pawns.count_ones() as i32 * self.piece_value_bonus(Piece::Pawn, true);
+        sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, true);
+        sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
+        sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
+        sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
 
-            }
-        }
         sum
     }
 
@@ -76,20 +65,11 @@ impl Board {
     fn non_pawn_material(&self, is_middle_game: bool) -> i32 {
         let mut sum = 0;
 
-        match self.turn { 
-            Turn::White => {
-                sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, is_middle_game);
-                sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, is_middle_game);
-                sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, is_middle_game);
-                sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, is_middle_game);
-            }
-            Turn::Black =>{
-                sum += self.bitboards.black_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, is_middle_game);
-                sum += self.bitboards.black_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, is_middle_game);
-                sum += self.bitboards.black_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, is_middle_game);
-                sum += self.bitboards.black_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, is_middle_game);
-            }
-        }
+        sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, is_middle_game);
+        sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, is_middle_game);
+        sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, is_middle_game);
+        sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, is_middle_game);
+
         sum
     }
     
@@ -160,53 +140,31 @@ impl Board {
             sum
         };
         
-        match self.turn {
-            Turn::White => {
-                let mut pawn_bitboard = self.bitboards.white_pawns;
-                 
-                while pawn_bitboard != 0 {
-                    let square = pawn_bitboard.trailing_zeros() as u8;
-                    let rank = Square::from(square).rank() as usize;
-                    let file = Square::from(square).file() as usize;
-                    
-                    sum += p_bonus[rank][file];
-                    
-                    pawn_bitboard &= pawn_bitboard - 1;
-                }
 
-                sum += calculate_bonus(self.bitboards.white_knights, &bonus[0], 1);
-                sum += calculate_bonus(self.bitboards.white_bishops, &bonus[1], 1);
-                sum += calculate_bonus(self.bitboards.white_rooks, &bonus[2], 1);
-                sum += calculate_bonus(self.bitboards.white_queens, &bonus[3], 1);
-                sum += calculate_bonus(self.bitboards.white_king, &bonus[4], 1);
-            }
-            Turn::Black => {
-                let mut pawn_bitboard = self.bitboards.black_pawns;
-                 
-                while pawn_bitboard != 0 {
-                    let square = pawn_bitboard.trailing_zeros() as u8;
-                    let rank = Square::from(square).rank() as usize;
-                    let file = Square::from(square).file() as usize;
-                    
-                    sum += p_bonus[7-rank][file];
-                    
-                    pawn_bitboard &= pawn_bitboard - 1;
-                }
-
-                sum += calculate_bonus(self.bitboards.black_knights, &bonus[0], -1);
-                sum += calculate_bonus(self.bitboards.black_bishops, &bonus[1], -1);
-                sum += calculate_bonus(self.bitboards.black_rooks, &bonus[2], -1);
-                sum += calculate_bonus(self.bitboards.black_queens, &bonus[3], -1);
-                sum += calculate_bonus(self.bitboards.black_king, &bonus[4], -1);
-            }
+        let mut pawn_bitboard = self.bitboards.white_pawns;
+            
+        while pawn_bitboard != 0 {
+            let square = pawn_bitboard.trailing_zeros() as u8;
+            let rank = Square::from(square).rank() as usize;
+            let file = Square::from(square).file() as usize;
+            
+            sum += p_bonus[rank][file];
+            
+            pawn_bitboard &= pawn_bitboard - 1;
         }
+
+        sum += calculate_bonus(self.bitboards.white_knights, &bonus[0], 1);
+        sum += calculate_bonus(self.bitboards.white_bishops, &bonus[1], 1);
+        sum += calculate_bonus(self.bitboards.white_rooks, &bonus[2], 1);
+        sum += calculate_bonus(self.bitboards.white_queens, &bonus[3], 1);
+        sum += calculate_bonus(self.bitboards.white_king, &bonus[4], 1);
 
         sum
     }
 
     // IMBALANCE TOTAL
     
-    fn imbalance_total(&self, flip: &Board) -> i32 {
+    pub fn imbalance_total(&self, flip: &Board) -> i32 {
         let mut v = 0;
         v += self.imbalance() - flip.imbalance();
         v += self.bishop_pair() - flip.bishop_pair();
@@ -266,8 +224,6 @@ impl Board {
                 sum += through_piece(self.bitboards.black_rooks, &enemy_table[idx], 4, idx);
                 sum += through_piece(self.bitboards.black_queens, &enemy_table[idx], 5, idx);
                 
-                match self.turn {
-                    Turn::White => {
                         if bishop[0] > 1 {
                             sum += enemy_table[idx][0];
                             //println!("Here1");
@@ -276,16 +232,6 @@ impl Board {
                             //println!("Here2");
                             sum += ally_table[idx][0]
                         }
-                    },
-                    Turn::Black => {
-                        if bishop[0] > 1 {
-                            sum += ally_table[idx][0]
-                        }
-                        if bishop[1] > 1 {
-                            sum += enemy_table[idx][0]
-                        }
-                    }
-                }
 
                 bb &= bb - 1;
             }
@@ -293,50 +239,26 @@ impl Board {
             sum
         };
 
-        match self.turn {
-            Turn::White => {
-                bishop[0] = self.bitboards.black_bishops.count_ones();
-                bishop[1] = self.bitboards.white_bishops.count_ones();
-                
-                v += calculate_bonus(&bishop, self.bitboards.white_pawns, &qo, &qt, 1);
-                v += calculate_bonus(&bishop, self.bitboards.white_knights, &qo, &qt, 2);
-                v += calculate_bonus(&bishop, self.bitboards.white_bishops, &qo, &qt, 3);
-                v += calculate_bonus(&bishop, self.bitboards.white_rooks, &qo, &qt,4);
-                v += calculate_bonus(&bishop, self.bitboards.white_queens, &qo, &qt,5);
-
-            },
-            Turn::Black => {
-                bishop[0] = self.bitboards.white_bishops.count_ones();
-                bishop[1] = self.bitboards.black_bishops.count_ones();
-
-                v += calculate_bonus(&bishop, self.bitboards.black_pawns, &qt, &qo, 1);
-                v += calculate_bonus(&bishop, self.bitboards.black_knights, &qt, &qo, 2);
-                v += calculate_bonus(&bishop, self.bitboards.black_bishops, &qt, &qo, 3);
-                v += calculate_bonus(&bishop, self.bitboards.black_rooks, &qt, &qo,4);
-                v += calculate_bonus(&bishop, self.bitboards.black_queens, &qt, &qo,5);
-            }
-        }
+        bishop[0] = self.bitboards.black_bishops.count_ones();
+        bishop[1] = self.bitboards.white_bishops.count_ones();
+        
+        v += calculate_bonus(&bishop, self.bitboards.white_pawns, &qo, &qt, 1);
+        v += calculate_bonus(&bishop, self.bitboards.white_knights, &qo, &qt, 2);
+        v += calculate_bonus(&bishop, self.bitboards.white_bishops, &qo, &qt, 3);
+        v += calculate_bonus(&bishop, self.bitboards.white_rooks, &qo, &qt,4);
+        v += calculate_bonus(&bishop, self.bitboards.white_queens, &qo, &qt,5);
 
         v
     }
     
     fn bishop_pair(&self) -> i32 {
-        match self.turn {
-            Turn::White => {
-                if self.bitboards.white_bishops.count_ones() < 2 {
-                    return 0;
-                }else{
-                    return 1438;
-                }
-            },
-            Turn::Black => {
-                if self.bitboards.black_bishops.count_ones() < 2 {
-                    return 0;
-                }else{
-                    return 1438;
-                }
-            }
-        }     
+
+        if self.bitboards.white_bishops.count_ones() < 2 {
+            return 0;
+        }else{
+            return 1438;
+        }
+   
     }
     
     // PAWNS MIDDLE GAME
@@ -346,10 +268,7 @@ impl Board {
         
         let mut v = 0;
         
-        let mut pawn_bitboard = match self.turn {
-            Turn::White => self.bitboards.white_pawns,
-            Turn::Black => self.bitboards.black_pawns,
-        };
+        let mut pawn_bitboard = self.bitboards.white_pawns; 
         
         while pawn_bitboard != 0 {
             let square = pawn_bitboard.trailing_zeros() as u8;
@@ -383,82 +302,42 @@ impl Board {
     
     // return if current pawn is double isolated or not
     // return two values only 0 - 1
-    fn doubled_isolated(&self, square: u8) -> i32 {
-        match self.turn {
-            Turn::White => {
-                // Check if the pawn is isolated
-                if self.isolated(square) == 1 {
-                    let mut friendly_pawns_below = 0; // Friendly pawns below
-                    let mut enemy_pawns_above = 0;    // Enemy pawns above
-                    let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
+    pub fn doubled_isolated(&self, square: u8) -> i32 {
 
-                    // Get the rank of the square (0 = rank 1, 7 = rank 8)
-                    let rank = square / 8;
+        // Check if the pawn is isolated
+        if self.isolated(square) == 1 {
+            let mut friendly_pawns_below = 0; // Friendly pawns below
+            let mut enemy_pawns_above = 0;    // Enemy pawns above
+            let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
 
-                    // If the pawn is on the 8th rank, it cannot be doubled isolated
-                    if rank == 7 {
-                        return 0;
-                    }
+            // Get the rank of the square (0 = rank 1, 7 = rank 8)
+            let rank = square / 8;
 
-                    // Count friendly pawns below the current pawn
-                    friendly_pawns_below += (Bitboards::south_mask_ex(square) & self.bitboards.white_pawns).count_ones();
+            // If the pawn is on the 8th rank, it cannot be doubled isolated
+            if rank == 7 {
+                return 0;
+            }
 
-                    // Count enemy pawns above the current pawn
-                    enemy_pawns_above += (Bitboards::north_mask_ex(square) & self.bitboards.black_pawns).count_ones();
+            // Count friendly pawns below the current pawn
+            friendly_pawns_below += (Bitboards::south_mask_ex(square) & self.bitboards.white_pawns).count_ones();
 
-                    // Count enemy pawns on adjacent files
-                    if square % 8 > 0 {
-                        // Check the left file (x - 1), but only if not on the a-file
-                        enemy_pawns_adjacent += (Bitboards::file_mask(square - 1) & self.bitboards.black_pawns).count_ones();
-                    }
-                    if square % 8 < 7 {
-                        // Check the right file (x + 1), but only if not on the h-file
-                        enemy_pawns_adjacent += (Bitboards::file_mask(square + 1) & self.bitboards.black_pawns).count_ones();
-                    }
+            // Count enemy pawns above the current pawn
+            enemy_pawns_above += (Bitboards::north_mask_ex(square) & self.bitboards.black_pawns).count_ones();
 
-                    // Check for doubled isolated pawns
-                    if friendly_pawns_below > 0 && enemy_pawns_above > 0 && enemy_pawns_adjacent == 0 {
-                        return 1; // Doubled isolated
-                    }
-                }
-            },
-            Turn::Black => {
-                // Check if the pawn is isolated
-                if self.isolated(square) == 1 {
-                    let mut friendly_pawns_below = 0; // Friendly pawns below
-                    let mut enemy_pawns_above = 0;    // Enemy pawns above
-                    let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
+            // Count enemy pawns on adjacent files
+            if square % 8 > 0 {
+                // Check the left file (x - 1), but only if not on the a-file
+                enemy_pawns_adjacent += (Bitboards::file_mask(square - 1) & self.bitboards.black_pawns).count_ones();
+            }
+            if square % 8 < 7 {
+                // Check the right file (x + 1), but only if not on the h-file
+                enemy_pawns_adjacent += (Bitboards::file_mask(square + 1) & self.bitboards.black_pawns).count_ones();
+            }
 
-                    // Get the rank of the square (0 = rank 1, 7 = rank 8)
-                    let rank = square / 8;
-
-                    // If the pawn is on the 1st rank, it cannot be doubled isolated
-                    if rank == 0 {
-                        return 0;
-                    }
-
-                    // Count friendly pawns below the current pawn
-                    friendly_pawns_below += (Bitboards::north_mask_ex(square) & self.bitboards.black_pawns).count_ones();
-
-                    // Count enemy pawns above the current pawn
-                    enemy_pawns_above += (Bitboards::south_mask_ex(square) & self.bitboards.white_pawns).count_ones();
-
-                    // Count enemy pawns on adjacent files
-                    if square % 8 > 0 {
-                        // Check the left file (x - 1), but only if not on the a-file
-                        enemy_pawns_adjacent += (Bitboards::file_mask(square - 1) & self.bitboards.white_pawns).count_ones();
-                    }
-                    if square % 8 < 7 {
-                        // Check the right file (x + 1), but only if not on the h-file
-                        enemy_pawns_adjacent += (Bitboards::file_mask(square + 1) & self.bitboards.white_pawns).count_ones();
-                    }
-
-                    // Check for doubled isolated pawns
-                    if friendly_pawns_below > 0 && enemy_pawns_above > 0 && enemy_pawns_adjacent == 0 {
-                        return 1; // Doubled isolated
-                    }
-                }
-            },
+            // Check for doubled isolated pawns
+            if friendly_pawns_below > 0 && enemy_pawns_above > 0 && enemy_pawns_adjacent == 0 {
+                return 1; // Doubled isolated
+            }
         }
 
         0 // Not doubled isolated
@@ -466,7 +345,7 @@ impl Board {
 
     // return if current pawn is isolated or not
     // return two values only 0 - 1
-    fn isolated(&self, square: u8) -> i32 {
+    pub fn isolated(&self, square: u8) -> i32 {
         let file = square % 8;
         let square_position = 1 << square;
         let mut neighbor_pawns = 0u64;
@@ -476,24 +355,17 @@ impl Board {
         if file > 0 {
             neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
         }
-        match self.turn {
-            Turn::White => {
-                if neighbor_pawns & self.bitboards.white_pawns != 0 {
-                    return 0;
-                }
-            },
-            Turn::Black => {
-                if neighbor_pawns & self.bitboards.black_pawns != 0 {
-                    return 0;
-                }
-            },
+
+        if neighbor_pawns & self.bitboards.white_pawns != 0 {
+            return 0;
         }
+
         1
     }
 
     // return if current pawn is backward or not
     // return two values only 0 - 1
-    fn backward(&self, square: u8) -> i32 {
+    pub fn backward(&self, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
         let square_position = 1 << square;
@@ -505,121 +377,62 @@ impl Board {
         if file > 0 {
             neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_west(square_position).trailing_zeros() as u8);
         }
-        match self.turn {
-            Turn::White => {
-                // in the conditions of bacjward pawn: no friendly pawns on adjacent files, but if the friendly
-                // pawns above the desired pawn no problem
-                let number_of_adjacent_pawns = (neighbor_pawns & self.bitboards.white_pawns).count_ones();
-                if  number_of_adjacent_pawns != 0 {
-                    // We will calculate number of friendly pawns above me and if it equal to number_of_adjacent_pawns so there is no problem
 
-                    let mut friendly_pawns_above = 0;
+        // in the conditions of bacjward pawn: no friendly pawns on adjacent files, but if the friendly
+        // pawns above the desired pawn no problem
+        let number_of_adjacent_pawns = (neighbor_pawns & self.bitboards.white_pawns).count_ones();
+        if  number_of_adjacent_pawns != 0 {
+            // We will calculate number of friendly pawns above me and if it equal to number_of_adjacent_pawns so there is no problem
 
-                    if file < 7 {
-                        friendly_pawns_above |= Bitboards::north_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8);
-                    }
-                    if file > 0 {
-                        friendly_pawns_above |= Bitboards::north_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8);
-                    }
+            let mut friendly_pawns_above = 0;
 
-                    let number_of_friendly_pawns_above = (friendly_pawns_above & self.bitboards.white_pawns).count_ones();
+            if file < 7 {
+                friendly_pawns_above |= Bitboards::north_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8);
+            }
+            if file > 0 {
+                friendly_pawns_above |= Bitboards::north_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8);
+            }
 
-                    // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
-                    // so it is valid, other that not valid
-                    if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
-                        return 0;
-                    }    
-                }
-                // now, for the enemy pawns: 
-                // directly is very easy just go step north
-                let mut enemy_pawns = 0;
-                if rank < 7
-                {
-                    enemy_pawns |= Bitboards::move_north(square_position);
-                }
+            let number_of_friendly_pawns_above = (friendly_pawns_above & self.bitboards.white_pawns).count_ones();
 
-                // not directly, We will go two steps north then step right and step left
-                if rank < 6 
-                {
-                    // move two steps above, we want square number, then square position
-
-                    let new_square = square + 8 + 8;
-                    // check on left most file and right most file
-                    if file < 7 {
-                        let new_position = 1 << (new_square + 1);
-
-                        enemy_pawns |= new_position;
-                    }
-                    if file > 0 {
-                        let new_position = 1 << (new_square - 1);
-
-                        enemy_pawns |= new_position;
-                    }
-                }
-                
-                if enemy_pawns & self.bitboards.black_pawns != 0 {
-                    return 1;
-                }
-                
-            },
-            Turn::Black => {
-                // in the conditions of backward pawn: no friendly pawns on adjacent files, but if the friendly
-                // pawns above the desired pawn no problem
-                let number_of_adjacent_pawns = (neighbor_pawns & self.bitboards.black_pawns).count_ones();
-                if  number_of_adjacent_pawns != 0 {
-                    // We will calculate number of friendly pawns above me and if it equal to number_of_adjacent_pawns so there is no problem
-
-                    let mut friendly_pawns_above = 0;
-
-                    if file < 7 {
-                        friendly_pawns_above |= Bitboards::south_mask_ex(Bitboards::move_east(square_position).trailing_zeros() as u8);
-                    }
-                    if file > 0 {
-                        friendly_pawns_above |= Bitboards::south_mask_ex(Bitboards::move_west(square_position).trailing_zeros() as u8);
-                    }
-
-                    let number_of_friendly_pawns_above = (friendly_pawns_above & self.bitboards.black_pawns).count_ones();
-
-                    // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
-                    // so it is valid, other that not valid
-                    if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
-                        return 0;
-                    }    
-                }
-                // now, for the enemy pawns: 
-                // directly is very easy just go step north
-                let mut enemy_pawns = 0;
-                if rank > 0
-                {
-                    enemy_pawns |= Bitboards::move_south(square_position);
-                }
-
-                // not directly, We will go two steps north then step right and step left
-                if rank > 1 
-                {
-                    // move two steps above, we want square number, then square position
-
-                    let new_square = square - 8 - 8;
-                    // check on left most file and right most file
-                    if file < 7 {
-                        let new_position = 1 << (new_square + 1);
-
-                        enemy_pawns |= new_position;
-                    }
-                    if file > 0 {
-                        let new_position = 1 << (new_square - 1);
-
-                        enemy_pawns |= new_position;
-                    }
-                }
-                
-                if enemy_pawns & self.bitboards.white_pawns != 0 {
-                    return 1;
-                }
-                
-            },
+            // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
+            // so it is valid, other that not valid
+            if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
+                return 0;
+            }    
+        }
+        // now, for the enemy pawns: 
+        // directly is very easy just go step north
+        let mut enemy_pawns = 0;
+        if rank < 7
+        {
+            enemy_pawns |= Bitboards::move_north(square_position);
         }
 
+        // not directly, We will go two steps north then step right and step left
+        if rank < 6 
+        {
+            // move two steps above, we want square number, then square position
+
+            let new_square = square + 8 + 8;
+            // check on left most file and right most file
+            if file < 7 {
+                let new_position = 1 << (new_square + 1);
+
+                enemy_pawns |= new_position;
+            }
+            if file > 0 {
+                let new_position = 1 << (new_square - 1);
+
+                enemy_pawns |= new_position;
+            }
+        }
+        
+        if enemy_pawns & self.bitboards.black_pawns != 0 {
+            return 1;
+        }
+        
+    
         0
     }
     
@@ -644,74 +457,37 @@ impl Board {
             For example, if the pawn on c3 has no friendly pawns on the b or d files, it is considered unsupported.
         */
 
-        match self.turn {
-            Turn::White => {
-                // check for pawn which is directly behind
-                if rank > 0
-                {
-                    let new_square = square - 8;
-                    let new_position = 1 << new_square;
-                    if new_position & self.bitboards.white_pawns == 0 // means no pawns directly behind me
-                    {
-                        return 0;
-                    }
-                    // know check for supoorted pawn, we will move one step down then one step right and left
-                    let mut supported_pawns = 0;
-                    if file < 7 {
-                        let east_square = new_square + 1;
-                        supported_pawns |= 1 << east_square;
-                    }
-                    if file > 0 {
-                        let weast_square = new_square - 1;
-                        supported_pawns |= 1 << weast_square;
+        // check for pawn which is directly behind
+        if rank > 0
+        {
+            let new_square = square - 8;
+            let new_position = 1 << new_square;
+            if new_position & self.bitboards.white_pawns == 0 // means no pawns directly behind me
+            {
+                return 0;
+            }
+            // know check for supoorted pawn, we will move one step down then one step right and left
+            let mut supported_pawns = 0;
+            if file < 7 {
+                let east_square = new_square + 1;
+                supported_pawns |= 1 << east_square;
+            }
+            if file > 0 {
+                let weast_square = new_square - 1;
+                supported_pawns |= 1 << weast_square;
 
-                    }
-                    // if there is supported pawns so not doubled
-                    if supported_pawns & self.bitboards.white_pawns != 0
-                    {
-                        return 0;
-                    }
-                    return 1;
-                }
-                else {
-                    return 0;
-                }
-                
-            },
-            Turn::Black => {
-               // check for pawn which is directly behind
-               if rank < 7
-               {
-                   let new_square = square + 8;
-                   let new_position = 1 << new_square;
-                   if new_position & self.bitboards.black_pawns == 0 // means no pawns directly behind me
-                   {
-                       return 0;
-                   }
-                   // know check for supoorted pawn, we will move one step down then one step right and left
-                   let mut supported_pawns = 0;
-                   if file < 7 {
-                       let east_square = new_square + 1;
-                       supported_pawns |= 1 << east_square;
-                   }
-                   if file > 0 {
-                       let weast_square = new_square - 1;
-                       supported_pawns |= 1 << weast_square;
-
-                   }
-                   // if there is supported pawns so not doubled
-                   if supported_pawns & self.bitboards.black_pawns != 0
-                   {
-                       return 0;
-                   }
-                   return 1;
-               }
-               else {
-                   return 0;
-               }
-               
-            },
+            }
+            // if there is supported pawns so not doubled
+            if supported_pawns & self.bitboards.white_pawns != 0
+            {
+                return 0;
+            }
+            return 1;
         }
+        else {
+            return 0;
+        }
+              
     }
 
     // return 1 if the pawn connected or phalanx
@@ -728,59 +504,29 @@ impl Board {
     fn supported(&self, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
-        match self.turn {
-            Turn::White => {
-                // check for pawn which is directly behind
-                if rank > 0
-                {
-                    let new_square = square - 8;
-                    // know check for supoorted pawn, we will move one step down then one step right and left
-                    let mut supported_pawns = 0;
-                    if file < 7 {
-                        let east_square = new_square + 1;
-                        supported_pawns |= 1 << east_square;
-                    }
-                    if file > 0 {
-                        let weast_square = new_square - 1;
-                        supported_pawns |= 1 << weast_square;
 
-                    }
-                    // number of supported pawns
-                    return (supported_pawns & self.bitboards.white_pawns).count_ones() as i32;
-                    
-                }
-                else {
-                    return 0;
-                }
+        // check for pawn which is directly behind
+        if rank > 0
+        {
+            let new_square = square - 8;
+            // know check for supoorted pawn, we will move one step down then one step right and left
+            let mut supported_pawns = 0;
+            if file < 7 {
+                let east_square = new_square + 1;
+                supported_pawns |= 1 << east_square;
+            }
+            if file > 0 {
+                let weast_square = new_square - 1;
+                supported_pawns |= 1 << weast_square;
 
-            },
-            Turn::Black => {
-                  // check for pawn which is directly behind
-                  if rank < 7
-                  {
-                      let new_square = square + 8;
-                      // know check for supoorted pawn, we will move one step down then one step right and left
-                      let mut supported_pawns = 0;
-                      if file < 7 {
-                          let east_square = new_square + 1;
-                          supported_pawns |= 1 << east_square;
-                      }
-                      if file > 0 {
-                          let weast_square = new_square - 1;
-                          supported_pawns |= 1 << weast_square;
-  
-                      }
-                      // number of supported pawns
-                      return (supported_pawns & self.bitboards.black_pawns).count_ones() as i32;
-                      
-                  }
-                  else {
-                      return 0;
-                  }
-  
-            },
+            }
+            // number of supported pawns
+            return (supported_pawns & self.bitboards.white_pawns).count_ones() as i32;
+            
         }
-        
+        else {
+            return 0;
+        } 
     }
     
     // check if the current pawn is phalanx or not
@@ -797,24 +543,12 @@ impl Board {
         {
             phalan |= Bitboards::move_west(square_position);
         }
-        match self.turn {
-            Turn::White =>
-            {
-                if phalan & self.bitboards.white_pawns != 0 {
-                    return 1;
-                }
-        
-                0
-            },
-            Turn::Black =>{
-                if phalan & self.bitboards.black_pawns != 0 {
-                    return 1;
-                }
-        
-                0
-            },
+
+        if phalan & self.bitboards.white_pawns != 0 {
+            return 1;
         }
-        
+
+        0
     }
 
     pub fn connected_bonus(&self, square: u8) -> i32 {
@@ -872,59 +606,31 @@ impl Board {
     }
 
     fn opposed(&self, square: u8) -> i32 {
-
-        match self.turn {
-            Turn::White => {
-                let op = Bitboards::north_mask_ex(square) & self.bitboards.black_pawns;
-                
-                if op != 0 {
-                    return 1;
-                }
-            },
-            Turn::Black => {
-                let op = Bitboards::south_mask_ex(square) & self.bitboards.white_pawns;
-                
-                if op != 0 {
-                    return 1;
-                }
-                
-            },
+        let op = Bitboards::north_mask_ex(square) & self.bitboards.black_pawns;
+        
+        if op != 0 {
+            return 1;
         }
 
         0
     }
     
     fn blocked(&self, square_position: u64, square: u8) -> i32 {
-        match self.turn {
-            Turn::White => {
-                let rank = Square::from(square).rank();
-                
-                if rank != Rank::Second && rank != Rank::Third {
-                    return 0;
-                }
-                
-                if Bitboards::move_north(square_position) & self.bitboards.black_pawns == 0 {
-                    return 0;
-                }
-                
-                return 4 - rank as i32;
-            },
-            Turn::Black => {
-                let rank = Square::from(square).rank();
-                
-                if rank != Rank::Seventh && rank != Rank::Sixth {
-                    return 0;
-                }
-                
-                if Bitboards::move_south(square_position) & self.bitboards.white_pawns == 0 {
-                    return 0;
-                }
-                
-                return rank as i32;
-            },
+
+        let rank = Square::from(square).rank();
+        
+        if rank != Rank::Second && rank != Rank::Third {
+            return 0;
         }
+        
+        if Bitboards::move_north(square_position) & self.bitboards.black_pawns == 0 {
+            return 0;
+        }
+        
+        return 4 - rank as i32;
+
     }
-    
+
     // MOBILITY MIDDLE GAME
 
     fn mobility_mg(&self) -> i32 {
@@ -1344,5 +1050,12 @@ impl Board {
     //     clone_board
     // }
 
+    fn phase(&self, is_middle_game: bool) -> i32 {
+        let mid_game_limit = 15258;
+        let end_game_limit = 3915;
+        let mut npm = self.non_pawn_material(is_middle_game) + self.color_flip().non_pawn_material(is_middle_game);
+        npm = i32::max(end_game_limit, i32::min(npm, mid_game_limit));
+        ((npm - end_game_limit) * 128) / (mid_game_limit - end_game_limit)
+    }
 
 }
