@@ -637,6 +637,138 @@ impl Board {
         }
     }
 
+    // PIECES MIDDLES GAME
+
+    fn pieces_mg(&self) -> i32 {
+        
+        0
+    }
+
+    fn outpost_total(&self) -> i32 {
+    
+        0
+    }
+
+    fn outpost(&self) -> i32 {
+    
+        0
+    } 
+
+    fn outpost_square(&self) -> i32 {
+        //needs Rank function, might be able to fix from bitboards rank 
+        0
+    }
+
+    fn pawn_attacks_span(&self) -> i32 {
+
+        0
+    }
+
+    fn minor_behind_pawn(&self) -> i32 {
+
+        0
+    }
+
+    fn bishop_pawns(&self) -> i32 {
+
+        0
+    }
+
+    fn pawn_attack(&self) -> i32 { //might be able to remove and replace 
+
+        0
+    }
+
+    fn bishop_xray_pawns(&self) -> i32 {
+
+        0
+    }
+
+    fn rook_on_queen_file(&self) -> i32 {
+
+        0
+    }
+
+    fn rook_on_king_ring(&self) -> i32 {
+
+        0
+    }
+
+    fn king_attackers_count(&self) -> i32 { //might be able to remove and replace
+
+        0
+    }
+
+    fn king_ring(&self) -> i32 {
+
+        0
+    }
+
+    fn knight_attack(&self) -> i32 { //WILL be able to replace
+
+        0
+    }
+
+    fn bishop_xray_attack(&self) -> i32 {
+
+        0
+    }
+
+    fn pinned_direction(&self) -> i32 { //WILL be able to replace
+
+        0
+    } 
+
+    fn rook_xray_attack(&self) -> i32 {
+
+        0
+    }
+
+    fn queen_attack(&self) -> i32 { //WILL be able to replace most likely
+        
+        0
+    }
+
+    fn bishop_on_king_ring(&self) ->i32 {
+        
+        0
+    }
+
+    fn rook_on_file(&self) -> i32 {
+
+        0
+    }
+
+    fn trapped_rook(&self) -> i32 {
+
+        0
+    }
+
+    fn weak_queen(&self) -> i32 {
+
+        0
+    }
+
+    fn queen_infiltration(&self) -> i32 {
+
+        0
+    }
+
+    fn king_protector(&self) -> i32 {
+
+        0
+    }
+
+    fn king_distance(&self) -> i32 {
+
+        0
+    }
+
+    fn long_diagonal_bishop(&self) -> i32 {
+
+        0
+    }
+
     // MOBILITY MIDDLE GAME
 
     fn mobility_mg(&self) -> i32 {
