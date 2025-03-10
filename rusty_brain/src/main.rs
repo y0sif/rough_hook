@@ -4,7 +4,7 @@ use rusty_brain::transposition::TranspositionTable;
 use rusty_brain::uci;
 fn main() {
 
-    let fen = String::from("rnbqkbnr/pPp3pp/P3p1PP/4P3/3p4/2pP1p2/2P2P2/RNBQKBNR w KQkq - 0 3");
+    let fen = String::from("rnbqkbnr/pp1ppppp/8/2p5/3P4/4P3/PPP2PPP/RNBQKBNR b KQkq - 0 2");
     
     // // Create a Bitboards instance from the FEN string
     let mut board = Board::from_fen(fen);
@@ -22,43 +22,43 @@ fn main() {
     let mut black_pawns = color_flip_board.bitboards.white_pawns;
 
     // // Test Flipping Color
-    // // let sum_white = board.psqt_mg();
-    // // let sum_black = color_flip_board.psqt_mg();
+    let sum_white = board.pawns_mg();
+    let sum_black = color_flip_board.pawns_mg();
 
-    let mut sum_white = 0;
-    let mut sum_black = 0;
+    // let mut sum_white = 0;
+    // let mut sum_black = 0;
 
 
-    // Iterate over all white pawns
-     while white_pawns != 0 {
-         let white_square = white_pawns.trailing_zeros() as u8;
-         let square_position = 1 << white_square;
+    // // Iterate over all white pawns
+    //  while white_pawns != 0 {
+    //      let white_square = white_pawns.trailing_zeros() as u8;
+    //      let square_position = 1 << white_square;
 
-         // Check if the pawn is doubled isolated
-         sum_white += board.blocked(square_position, white_square);
+    //      // Check if the pawn is doubled isolated
+    //      sum_white += board.blocked(square_position, white_square);
 
-         // Print the result
-         //println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
+    //      // Print the result
+    //      //println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
         
-         white_pawns &= white_pawns - 1;
+    //      white_pawns &= white_pawns - 1;
 
 
-    }
+    // }
 
-    // Iterate over all white pawns
-    while black_pawns != 0 {
-        let black_square = black_pawns.trailing_zeros() as u8;
-        let square_position = 1 << black_square;
+    // // Iterate over all white pawns
+    // while black_pawns != 0 {
+    //     let black_square = black_pawns.trailing_zeros() as u8;
+    //     let square_position = 1 << black_square;
 
-        // Check if the pawn is doubled isolated
-        sum_black += color_flip_board.blocked(square_position, black_square);
+    //     // Check if the pawn is doubled isolated
+    //     sum_black += color_flip_board.blocked(square_position, black_square);
 
-        // Print the result
-        //println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
+    //     // Print the result
+    //     //println!("Is the white pawn on square {} doubled? {}", square, is_doubled);
         
-        black_pawns &= black_pawns - 1;
+    //     black_pawns &= black_pawns - 1;
 
-    }
+    // }
 
     println!("White Sum = {}", sum_white);
     println!("Black Sum = {}", sum_black);

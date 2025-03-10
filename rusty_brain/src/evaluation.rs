@@ -31,7 +31,7 @@ impl Board {
     
     // PIECE VALUE MIDDLE GAME
     
-    pub fn piece_value_mg(&self) -> i32 {
+    fn piece_value_mg(&self) -> i32 {
         // self.piece_value_bonus(true)
         let mut sum = 0;
 
@@ -75,7 +75,7 @@ impl Board {
     
     // PSQT MIDDLE GAME
 
-    pub fn psqt_mg(&self) -> i32 {
+    fn psqt_mg(&self) -> i32 {
         self.psqt_bonus(true)
     }
     
@@ -164,7 +164,7 @@ impl Board {
 
     // IMBALANCE TOTAL
     
-    pub fn imbalance_total(&self, flip: &Board) -> i32 {
+    fn imbalance_total(&self, flip: &Board) -> i32 {
         let mut v = 0;
         v += self.imbalance() - flip.imbalance();
         v += self.bishop_pair() - flip.bishop_pair();
@@ -284,15 +284,15 @@ impl Board {
 
             v -= self.doubled(square) * 11;
         
-            if self.connected_bonus(square_position,square) == 1{
-                v += self.connected(square_position,square);
+            if self.connected(square_position,square) == 1{
+                v += self.connected_bonus(square_position,square);
             }
             
             v -= 13 * self.weak_unopposeed_pawn(square_position, square);
             
             let arr = [0, -11, -3];
             
-            // v += arr[self.blocked(square_position, square) as usize]; 
+            v += arr[self.blocked(square_position, square) as usize]; 
 
             pawn_bitboard &= pawn_bitboard - 1;
         }
@@ -302,7 +302,7 @@ impl Board {
     
     // return if current pawn is double isolated or not
     // return two values only 0 - 1
-    pub fn doubled_isolated(&self,square_position: u64, square: u8) -> i32 {
+    fn doubled_isolated(&self,square_position: u64, square: u8) -> i32 {
 
         // Check if the pawn is isolated
         if self.isolated(square_position, square) == 1 {
@@ -345,7 +345,7 @@ impl Board {
 
     // return if current pawn is isolated or not
     // return two values only 0 - 1
-    pub fn isolated(&self,square_position: u64, square: u8) -> i32 {
+    fn isolated(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let mut neighbor_pawns = 0u64;
         if file < 7 {
@@ -364,7 +364,7 @@ impl Board {
 
     // return if current pawn is backward or not
     // return two values only 0 - 1
-    pub fn backward(&self,square_position: u64, square: u8) -> i32 {
+    fn backward(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
         let mut neighbor_pawns = 0u64;
@@ -489,7 +489,7 @@ impl Board {
     }
 
     // return 1 if the pawn connected or phalanx
-    pub fn connected(&self, square_position: u64, square: u8) -> i32 {
+    fn connected(&self, square_position: u64, square: u8) -> i32 {
         if self.supported(square) != 0 || self.phalanx(square_position, square) == 1{
             return 1;
         }   
@@ -548,7 +548,7 @@ impl Board {
         0
     }
 
-    pub fn connected_bonus(&self,square_position: u64, square: u8) -> i32 {
+    fn connected_bonus(&self,square_position: u64, square: u8) -> i32 {
 
         if self.connected(square_position, square) == 0{
             return 0;
@@ -614,7 +614,7 @@ impl Board {
     
     // Only considers white pawns on ranks 5 and 6 (1-based).
 
-    pub fn blocked(&self, square_position: u64, square: u8) -> i32 {
+    fn blocked(&self, square_position: u64, square: u8) -> i32 {
 
         let rank = (Square::from(square).rank() as usize) + 1;
         
