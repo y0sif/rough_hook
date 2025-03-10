@@ -274,18 +274,18 @@ impl Board {
             let square = pawn_bitboard.trailing_zeros() as u8;
             let square_position = 1 << square;
 
-            if self.doubled_isolated(square) == 1{
+            if self.doubled_isolated(square_position, square) == 1{
                 v -= 11;
-            }else if self.isolated(square) == 1{
+            }else if self.isolated(square_position,square) == 1{
                 v -= 5;
-            }else if self.backward(square) == 1{
+            }else if self.backward(square_position,square) == 1{
                 v -= 9;
             }
 
             v -= self.doubled(square) * 11;
         
-            if self.connected_bonus(square) == 1{
-                v += self.connected(square);
+            if self.connected_bonus(square_position,square) == 1{
+                v += self.connected(square_position,square);
             }
             
             v -= 13 * self.weak_unopposeed_pawn(square_position, square);
@@ -302,10 +302,10 @@ impl Board {
     
     // return if current pawn is double isolated or not
     // return two values only 0 - 1
-    pub fn doubled_isolated(&self, square: u8) -> i32 {
+    pub fn doubled_isolated(&self,square_position: u64, square: u8) -> i32 {
 
         // Check if the pawn is isolated
-        if self.isolated(square) == 1 {
+        if self.isolated(square_position, square) == 1 {
             let mut friendly_pawns_below = 0; // Friendly pawns below
             let mut enemy_pawns_above = 0;    // Enemy pawns above
             let mut enemy_pawns_adjacent = 0; // Enemy pawns on adjacent files
@@ -345,9 +345,8 @@ impl Board {
 
     // return if current pawn is isolated or not
     // return two values only 0 - 1
-    pub fn isolated(&self, square: u8) -> i32 {
+    pub fn isolated(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
-        let square_position = 1 << square;
         let mut neighbor_pawns = 0u64;
         if file < 7 {
             neighbor_pawns |= Bitboards::file_mask_to_end(Bitboards::move_east(square_position).trailing_zeros() as u8);
@@ -365,10 +364,9 @@ impl Board {
 
     // return if current pawn is backward or not
     // return two values only 0 - 1
-    pub fn backward(&self, square: u8) -> i32 {
+    pub fn backward(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
-        let square_position = 1 << square;
         let mut neighbor_pawns = 0u64;
         
         if file < 7 {
@@ -491,8 +489,8 @@ impl Board {
     }
 
     // return 1 if the pawn connected or phalanx
-    pub fn connected(&self, square: u8) -> i32 {
-        if self.supported(square) != 0 || self.phalanx(square) == 1{
+    pub fn connected(&self, square_position: u64, square: u8) -> i32 {
+        if self.supported(square) != 0 || self.phalanx(square_position, square) == 1{
             return 1;
         }   
 
@@ -531,9 +529,8 @@ impl Board {
     
     // check if the current pawn is phalanx or not
     // return onlu two values 0 - 1
-    fn phalanx(&self, square: u8) -> i32 {
+    fn phalanx(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
-        let square_position = 1 << square;
         let mut phalan = 0;
         if file < 7
         {
@@ -551,16 +548,16 @@ impl Board {
         0
     }
 
-    pub fn connected_bonus(&self, square: u8) -> i32 {
+    pub fn connected_bonus(&self,square_position: u64, square: u8) -> i32 {
 
-        if self.connected(square) == 0{
+        if self.connected(square_position, square) == 0{
             return 0;
         }
 
         let seed = [0, 7, 8, 12, 29, 48, 86];
         
         let op = self.opposed(square);
-        let ph = self.phalanx(square);
+        let ph = self.phalanx(square_position, square);
         let su = self.supported(square);
         
         // unusable variable
@@ -596,16 +593,16 @@ impl Board {
 
         let mut v = 0;
 
-        if self.isolated(square) == 1{
+        if self.isolated(square_position,square) == 1{
             v += 1;
-        }else if self.backward(square) == 1{
+        }else if self.backward(square_position, square) == 1{
             v += 1;
         }
 
         v
     }
 
-    fn opposed(&self, square: u8) -> i32 {
+    fn opposed(&self,square: u8) -> i32 {
         let op = Bitboards::north_mask_ex(square) & self.bitboards.black_pawns;
         
         if op != 0 {
@@ -615,11 +612,13 @@ impl Board {
         0
     }
     
-    fn blocked(&self, square_position: u64, square: u8) -> i32 {
+    // Only considers white pawns on ranks 5 and 6 (1-based).
 
-        let rank = Square::from(square).rank();
+    pub fn blocked(&self, square_position: u64, square: u8) -> i32 {
+
+        let rank = (Square::from(square).rank() as usize) + 1;
         
-        if rank != Rank::Second && rank != Rank::Third {
+        if rank != 5 && rank != 6 {
             return 0;
         }
         
@@ -627,8 +626,15 @@ impl Board {
             return 0;
         }
         
-        return 4 - rank as i32;
-
+        // based on understanding stock fish logic
+        // if the pawn at rank 6 (1 based) the function must return 2
+        // if the pawn at rank 5 (1 based) the function must return 1
+        if rank == 5{
+            return 1;
+        }
+        else{ // must be rank 6
+            return 2;
+        }
     }
 
     // MOBILITY MIDDLE GAME
