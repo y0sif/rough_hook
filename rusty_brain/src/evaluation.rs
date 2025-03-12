@@ -16,6 +16,7 @@ impl Board {
         v += self.psqt_mg() - color_flip_board.psqt_mg();
         v += self.imbalance_total(&color_flip_board);
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
+        v += self.pieces_mg() - color_flip_board.pieces_mg();
         v += self.mobility_mg() - color_flip_board.mobility_mg();
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
@@ -640,8 +641,20 @@ impl Board {
     // PIECES MIDDLES GAME
 
     fn pieces_mg(&self) -> i32 {
-        
-        0
+        let mut v = 0;
+        v += [0, 31, -7, 30, 56][self.outpost_total() as usize];
+        v += 18 * self.minor_behind_pawn();
+        v -= 3 * self.bishop_pawns();
+        v -= 4 * self.bishop_xray_pawns();
+        v += 6 * self.rook_on_queen_file();
+        v += 16 * self.rook_on_king_ring();
+        v += self.rook_on_file();
+        v -= self.trapped_rook() * 55 ; //idk incomplete for now
+        v -= 56 * self.weak_queen();
+        v -= 2 * self.queen_infiltration();
+        //king protector line idk
+        v += 45 * self.long_diagonal_bishop();
+        return v;
     }
 
     fn outpost_total(&self) -> i32 {
@@ -660,13 +673,24 @@ impl Board {
     }
 
     fn pawn_attacks_span(&self) -> i32 {
-
+    
         0
     }
 
     fn minor_behind_pawn(&self) -> i32 {
-
-        0
+        let mut sum = 0;
+        let mut knights_and_bishops_bitboard = self.bitboards.white_knights | self.bitboards.white_bishops;
+        while knights_and_bishops_bitboard != 0{
+            let square: u8 = knights_and_bishops_bitboard.trailing_zeros() as u8;
+            let above_square = square + 8;
+            if above_square < 63 {
+                if self.bitboards.white_pawns & (1 << above_square) !=0{
+                    sum +=1;
+                } 
+            }
+            knights_and_bishops_bitboard &= knights_and_bishops_bitboard -1;
+        }
+        sum
     }
 
     fn bishop_pawns(&self) -> i32 {
@@ -685,8 +709,19 @@ impl Board {
     }
 
     fn rook_on_queen_file(&self) -> i32 {
-
-        0
+        let mut sum =0;
+        let mut rook_bitboard = self.bitboards.white_rooks;
+        let queen = self.bitboards.white_queens.trailing_zeros() as u8;
+        let queen_file = Square::from(queen).file();
+        while rook_bitboard != 0 {
+            let rook = rook_bitboard.trailing_zeros() as u8;
+            let rook_file = Square::from(rook).file();
+            if queen_file == rook_file{
+                sum +=1
+            }
+            rook_bitboard &= rook_bitboard -1;
+        }
+        sum
     }
 
     fn rook_on_king_ring(&self) -> i32 {
@@ -734,9 +769,18 @@ impl Board {
         0
     }
 
-    fn rook_on_file(&self) -> i32 {
-
-        0
+    fn rook_on_file(&self) -> i32 { //not tested
+        let mut sum =0;
+        let all_pawn_bitboard = self.bitboards.white_pawns | self.bitboards.black_pawns;
+        let mut rook_bitboard = self.bitboards.white_rooks;
+        while rook_bitboard != 0 {
+            let square = rook_bitboard.trailing_zeros() as u8;
+            let file_mask = Bitboards::file_mask_to_end(square);
+            let num_of_pawns_masked = file_mask & rook_bitboard;
+            sum += num_of_pawns_masked.count_ones() as i32 -2;
+            rook_bitboard &= rook_bitboard -1;
+        }
+        sum
     }
 
     fn trapped_rook(&self) -> i32 {
