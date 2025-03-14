@@ -10,36 +10,36 @@ use std::path::Path;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChessGameItem {
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub white_response_time: Vec<i32>,
+    pub white_response_time: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub white_remaining_time: Vec<i32>,
+    pub white_remaining_time: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub white_win_chance: Vec<i32>,
+    pub white_win_chance: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub white_move_accuracy: Vec<i32>,
+    pub white_move_accuracy: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub white_board_material: Vec<i32>,
+    pub white_board_material: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub white_legal_moves: Vec<i32>,
+    pub white_legal_moves: Vec<f32>,
 
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub black_response_time: Vec<i32>,
+    pub black_response_time: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub black_remaining_time: Vec<i32>,
+    pub black_remaining_time: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub black_win_chance: Vec<i32>,
+    pub black_win_chance: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub black_move_accuracy: Vec<i32>,
+    pub black_move_accuracy: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub black_board_material: Vec<i32>,
+    pub black_board_material: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub black_legal_moves: Vec<i32>,
+    pub black_legal_moves: Vec<f32>,
 
     pub bucket_index: i32,
     pub label: i32,
 }
 
-pub fn deserialize_chess_blob<'de, D>(deserializer: D) -> Result<Vec<i32>, D::Error>
+pub fn deserialize_chess_blob<'de, D>(deserializer: D) -> Result<Vec<f32>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
@@ -47,7 +47,7 @@ where
     
     let bytes: Vec<u8> = Vec::deserialize(deserializer)?;
     
-    // Validate length for exactly 20 i32 elements (80 bytes)
+    // Validate length for exactly 20 f32 elements (80 bytes)
     if bytes.len() != 80 {
         return Err(Error::custom(format!(
             "Invalid blob length: expected 80 bytes, got {}",
@@ -59,7 +59,7 @@ where
         .map(|chunk| {
             chunk.try_into()
                 .map_err(|_| Error::custom("Failed to convert 4-byte chunk to array"))
-                .map(i32::from_le_bytes)
+                .map(f32::from_le_bytes)
         })
         .collect()
 }
@@ -68,8 +68,8 @@ pub fn test_deserialization() {
     let dataset = ChessGameDataSet::train();
     let item = dataset.get(0).unwrap();
     
-    println!("First element: {}", item.bucket_index);
-    item.black_move_accuracy.iter().for_each(|item| println!("{}", item));
+    //println!("First element: {}", item.bucket_index);
+    item.white_response_time.iter().for_each(|item| println!("{}", item));
 }
 
 
@@ -98,14 +98,14 @@ impl ChessGameDataSet {
     }
     
     fn new(split: &str) -> Self {
-        let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features.db");
+        let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_with_norm.db");
         let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
         let dataset = ShuffledDataset::with_seed(dataset, 42);
         
         let total = dataset.len();
         let train_count = (total as f32 * 0.8).round() as usize;
         
-        type PartialData = PartialDataset<ShuffledDataset<SqliteDataset<ChessGameItem>, ChessGameItem>, ChessGameItem>;
+        type PartialData = PartialDataset<ShuffledDataset<SqliteDataset<ChessGameItem>,ChessGameItem>, ChessGameItem>;
         let data_split = match split {
             "train" => PartialData::new(dataset, 0, train_count),
             "test" => PartialData::new(dataset, train_count, total),
@@ -187,7 +187,7 @@ impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B
             0,
         );
         
-        let feature_tensors = |f: fn(&ChessGameItem) -> &Vec<i32>| -> Tensor<B, 2> {
+        let feature_tensors = |f: fn(&ChessGameItem) -> &Vec<f32>| -> Tensor<B, 2> {
             Tensor::cat(
                 items.iter()
                     .map(|item| Tensor::<B, 1>::from_data(f(item).as_slice(), &self.device).unsqueeze())
