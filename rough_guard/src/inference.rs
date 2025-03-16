@@ -4,8 +4,7 @@ use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
     record::{CompactRecorder, Recorder},
-    tensor::activation::softmax
-};
+    tensor::{activation::softmax, cast::ToElement}};
 
 pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameItem) {
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
@@ -14,8 +13,9 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
         .load(format!("{artifact_dir}/model").into(), &device)
         .expect("Trained model should exist; run train first");
 
-    let model: Model<B> = config.model.init(&device).load_record(record);
-
+    let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
+    let model: Model<B> = config.model.init(&device, dummy_weights).load_record(record);
+    
     let label = item.label;
     let batcher = ChessGameBatcher::new(device);
     let batch = batcher.batch(vec![item]);
