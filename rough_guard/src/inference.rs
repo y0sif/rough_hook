@@ -15,7 +15,7 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
 
     let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
     let model: Model<B> = config.model.init(&device, dummy_weights).load_record(record);
-    
+
     let label = item.label;
     let batcher = ChessGameBatcher::new(device);
     let batch = batcher.batch(vec![item]);
@@ -25,7 +25,31 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
 
     // Apply softmax to get probabilities
     let probabilities = softmax(output, 1);
-    let predicted = probabilities.argmax(1).flatten::<1>(0, 1).into_scalar();
+    let predicted = probabilities.clone().argmax(1).flatten::<1>(0, 1).into_scalar();
 
-    println!("Predicted {} Expected {}", predicted, label);
+    println!("Predicted: {} ({}), Actual: {}", 
+         predicted,
+         match predicted.to_i32() {
+             0 => "Clean Game",
+             1 => "White Cheating",
+             2 => "Black Cheating",
+             3 => "Both Cheating",
+             _ => unreachable!()
+         },
+         label
+     );
+     
+     // Print confidence distribution
+     let probs: Vec<f32> = probabilities
+         .squeeze::<1>(0)
+         .into_data()
+         .convert::<f32>()
+         .to_vec()
+         .unwrap();
+     
+     println!("Confidence:");
+     println!("- None:    {:.2}%", probs[0] * 100.0);
+     println!("- White:   {:.2}%", probs[1] * 100.0);
+     println!("- Black:   {:.2}%", probs[2] * 100.0);
+     println!("- Both: {:.2}%", probs[3] * 100.0);
 }
