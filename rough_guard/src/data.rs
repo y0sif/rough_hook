@@ -98,7 +98,7 @@ impl ChessGameDataSet {
     }
     
     fn new(split: &str) -> Self {
-        let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_with_norm.db");
+        let db_file = Path::new("C:\\Users\\user\\Desktop\\Home\\Study\\University\\GP\\rough_hook\\rough_guard\\data_in_sql_lite\\pgn_features_with_norm.db");
         let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
         let dataset = ShuffledDataset::with_seed(dataset, 42);
         

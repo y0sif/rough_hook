@@ -4,7 +4,7 @@ use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
     record::{CompactRecorder, Recorder},
-    tensor::activation::softmax
+    tensor::{activation::softmax, cast::ToElement}
 };
 
 pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameItem) {
@@ -14,7 +14,8 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
         .load(format!("{artifact_dir}/model").into(), &device)
         .expect("Trained model should exist; run train first");
 
-    let model: Model<B> = config.model.init(&device).load_record(record);
+    let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
+    let model: Model<B> = config.model.init(&device, dummy_weights).load_record(record);
 
     let label = item.label;
     let batcher = ChessGameBatcher::new(device);
@@ -25,7 +26,31 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
 
     // Apply softmax to get probabilities
     let probabilities = softmax(output, 1);
-    let predicted = probabilities.argmax(1).flatten::<1>(0, 1).into_scalar();
+    let predicted = probabilities.clone().argmax(1).flatten::<1>(0, 1).into_scalar();
 
-    println!("Predicted {} Expected {}", predicted, label);
+    println!("Predicted: {} ({}), Actual: {}", 
+        predicted,
+        match predicted.to_i32() {
+            0 => "Draw",
+            1 => "White Win",
+            2 => "Black Win",
+            3 => "Unknown",
+            _ => unreachable!()
+        },
+        label
+    );
+    
+    // Print confidence distribution
+    let probs: Vec<f32> = probabilities
+        .squeeze::<1>(0)
+        .into_data()
+        .convert::<f32>()
+        .to_vec()
+        .unwrap();
+    
+    println!("Confidence:");
+    println!("- None:    {:.2}%", probs[0] * 100.0);
+    println!("- White:   {:.2}%", probs[1] * 100.0);
+    println!("- Black:   {:.2}%", probs[2] * 100.0);
+    println!("- Both: {:.2}%", probs[3] * 100.0);
 }
