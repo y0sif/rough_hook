@@ -102,10 +102,12 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
     let train_dataset = ChessGameDataSet::train();
     let class_weights = compute_class_weights::<B>(&train_dataset, &device);
 
-    let vec: Vec<f32> = class_weights.clone().into_data().convert::<f32>().to_vec().unwrap();
-    println!("{:?}", vec);
+    //let vec: Vec<f32> = class_weights.clone().into_data().convert::<f32>().to_vec().unwrap();
+    //println!("{:?}", vec);
 
     let learner = LearnerBuilder::new(artifact_dir)
+        .metric_train_numeric(AccuracyMetric::new())
+        .metric_valid_numeric(AccuracyMetric::new())
         .metric_train_numeric(LossMetric::new())
         .metric_valid_numeric(LossMetric::new())
         .with_file_checkpointer(CompactRecorder::new())
@@ -113,7 +115,7 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
             Aggregate::Mean,
             Direction::Lowest,
             Split::Valid,
-            StoppingCondition::NoImprovementSince { n_epochs: 1 },
+            StoppingCondition::NoImprovementSince { n_epochs: 3 },
         ))
         .devices(vec![device.clone()])
         .num_epochs(config.num_epochs)
