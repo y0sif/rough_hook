@@ -57,9 +57,9 @@ impl <B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Model
 pub struct TrainingConfig{
     pub model: ModelConfig,
     pub optimizer: AdamConfig,
-    #[config(default = 10)]
+    #[config(default = 100)]
     pub num_epochs: usize,
-    #[config(default = 64)]
+    #[config(default = 16)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
