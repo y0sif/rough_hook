@@ -3337,7 +3337,6 @@ dependencies = [
  "burn",
  "burn-cuda",
  "burn-dataset",
- "once_cell",
  "serde",
 ]
 

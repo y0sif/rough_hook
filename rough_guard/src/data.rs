@@ -98,17 +98,16 @@ impl ChessGameDataSet {
     }
     
     fn new(split: &str) -> Self {
-        let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_with_norm.db");
+        let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_without_norm.db");
         let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
         let dataset = ShuffledDataset::with_seed(dataset, 42);
         
-        let total = dataset.len();
-        let train_count = (total as f32 * 0.8).round() as usize;
+        let len = dataset.len();
         
         type PartialData = PartialDataset<ShuffledDataset<SqliteDataset<ChessGameItem>,ChessGameItem>, ChessGameItem>;
         let data_split = match split {
-            "train" => PartialData::new(dataset, 0, train_count),
-            "test" => PartialData::new(dataset, train_count, total),
+            "train" => PartialData::new(dataset, 0, len*8/10),
+            "test" => PartialData::new(dataset, len*8/10, len),
             _ => panic!("Invalid split type"),
         };
 

@@ -58,9 +58,9 @@ impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Model<
 pub struct TrainingConfig{
     pub model: ModelConfig,
     pub optimizer: AdamConfig,
-    #[config(default = 10)]
+    #[config(default = 100)]
     pub num_epochs: usize,
-    #[config(default = 64)]
+    #[config(default = 128)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
@@ -115,7 +115,7 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
             Aggregate::Mean,
             Direction::Lowest,
             Split::Valid,
-            StoppingCondition::NoImprovementSince { n_epochs: 3 },
+            StoppingCondition::NoImprovementSince { n_epochs: 10 },
         ))
         .devices(vec![device.clone()])
         .num_epochs(config.num_epochs)
