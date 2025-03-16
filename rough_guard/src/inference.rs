@@ -31,10 +31,10 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
     println!("Predicted: {} ({}), Actual: {}", 
         predicted,
         match predicted.to_i32() {
-            0 => "Draw",
-            1 => "White Win",
-            2 => "Black Win",
-            3 => "Unknown",
+            0 => "Clean Game",
+            1 => "White Cheating",
+            2 => "Black Cheating",
+            3 => "Both Cheating",
             _ => unreachable!()
         },
         label
@@ -49,8 +49,8 @@ pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameI
         .unwrap();
     
     println!("Confidence:");
-    println!("- None:    {:.2}%", probs[0] * 100.0);
-    println!("- White:   {:.2}%", probs[1] * 100.0);
-    println!("- Black:   {:.2}%", probs[2] * 100.0);
-    println!("- Both: {:.2}%", probs[3] * 100.0);
+    println!("- No Cheat:    {:.2}%", probs[0] * 100.0);
+    println!("- White Cheat:   {:.2}%", probs[1] * 100.0);
+    println!("- Black Cheat:   {:.2}%", probs[2] * 100.0);
+    println!("- Both Cheat: {:.2}%", probs[3] * 100.0);
 }
