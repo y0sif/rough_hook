@@ -1,6 +1,5 @@
 use burn::data::dataloader::batcher::Batcher;
 use burn::prelude::*;
-use burn_dataset::transform::PartialDataset;
 use burn_dataset::transform::ShuffledDataset;
 use burn_dataset::Dataset;
 use burn_dataset::SqliteDataset;
@@ -100,20 +99,75 @@ impl ChessGameDataSet {
     fn new(split: &str) -> Self {
         let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_without_norm.db");
         let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
-        let dataset = ShuffledDataset::with_seed(dataset, 42);
         
-        let len = dataset.len();
+        // Create stratified train/test splits
+        let (train_indices, test_indices) = Self::create_stratified_split(&dataset);
         
-        type PartialData = PartialDataset<ShuffledDataset<SqliteDataset<ChessGameItem>,ChessGameItem>, ChessGameItem>;
-        let data_split = match split {
-            "train" => PartialData::new(dataset, 0, len*8/10),
-            "test" => PartialData::new(dataset, len*8/10, len),
+        // Create a filtered dataset using the appropriate indices
+        let indices = match split {
+            "train" => train_indices,
+            "test" => test_indices,
             _ => panic!("Invalid split type"),
         };
-
-        let dataset = Box::new(data_split);
+        
+        // Create a filtered dataset and shuffle it
+        let dataset = FilteredDataset {
+            source: dataset,
+            indices,
+        };
+        
+        let dataset = ShuffledDataset::with_seed(Box::new(dataset), 42);
+        let dataset = Box::new(dataset);
 
         ChessGameDataSet { dataset }
+    }
+    
+    fn create_stratified_split(dataset: &SqliteDataset<ChessGameItem>) -> (Vec<usize>, Vec<usize>) {
+        // Group indices by class
+        let mut class_indices: Vec<Vec<usize>> = vec![Vec::new(), Vec::new(), Vec::new(), Vec::new()];
+        
+        for i in 0..dataset.len() {
+            if let Some(item) = dataset.get(i) {
+                let label = item.label as usize;
+                if label < 4 {
+                    class_indices[label].push(i);
+                }
+            }
+        }
+        
+        // Create train and test indices with stratified split
+        let mut train_indices = Vec::new();
+        let mut test_indices = Vec::new();
+        
+        for indices in class_indices.iter() {
+            let train_count = indices.len() * 8 / 10; // 80% for training
+            
+            // Add indices to respective splits
+            train_indices.extend(indices.iter().take(train_count).cloned());
+            test_indices.extend(indices.iter().skip(train_count).cloned());
+        }
+        
+        (train_indices, test_indices)
+    }
+}
+
+// Define the FilteredDataset struct outside the impl block
+struct FilteredDataset<D: Dataset<ChessGameItem>> {
+    source: D,
+    indices: Vec<usize>,
+}
+
+impl<D: Dataset<ChessGameItem>> Dataset<ChessGameItem> for FilteredDataset<D> {
+    fn get(&self, index: usize) -> Option<ChessGameItem> {
+        if index < self.indices.len() {
+            self.source.get(self.indices[index])
+        } else {
+            None
+        }
+    }
+    
+    fn len(&self) -> usize {
+        self.indices.len()
     }
 }
 

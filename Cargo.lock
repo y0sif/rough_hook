@@ -3337,6 +3337,7 @@ dependencies = [
  "burn",
  "burn-cuda",
  "burn-dataset",
+ "rand",
  "serde",
 ]
 
