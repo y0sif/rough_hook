@@ -4,7 +4,8 @@ use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
     record::{CompactRecorder, Recorder},
-    tensor::{activation::softmax, cast::ToElement}};
+    tensor::{activation::softmax, cast::ToElement}
+};
 
 pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameItem) {
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))

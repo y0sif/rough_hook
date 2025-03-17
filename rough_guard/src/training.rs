@@ -46,7 +46,7 @@ impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> fo
     }
 }
 
-impl <B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Model<B> {
+impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Model<B> {
     fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
         let label = batch.label.clone();
         self.forward_classification(batch.features, label, self.class_weights.clone()) 
@@ -59,7 +59,7 @@ pub struct TrainingConfig{
     pub optimizer: AdamConfig,
     #[config(default = 100)]
     pub num_epochs: usize,
-    #[config(default = 16)]
+    #[config(default = 128)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
@@ -83,6 +83,7 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
 
     B::seed(config.seed);
 
+    // Build your dataloaders.
     let batcher_train = ChessGameBatcher::<B>::new(device.clone());
     let batcher_valid = ChessGameBatcher::<B::InnerBackend>::new(device.clone());
     let dataloader_train = DataLoaderBuilder::new(batcher_train)
@@ -91,7 +92,7 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
         .num_workers(config.num_workers)
         .build(ChessGameDataSet::train());
     
-    let dataloader_test= DataLoaderBuilder::new(batcher_valid)
+    let dataloader_test = DataLoaderBuilder::new(batcher_valid)
         .batch_size(config.batch_size)
         .num_workers(config.num_workers)
         .build(ChessGameDataSet::test());
@@ -113,7 +114,7 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
             Aggregate::Mean,
             Direction::Lowest,
             Split::Valid,
-            StoppingCondition::NoImprovementSince { n_epochs: 3 },
+            StoppingCondition::NoImprovementSince { n_epochs: 10 },
         ))
         .devices(vec![device.clone()])
         .num_epochs(config.num_epochs)
@@ -122,7 +123,7 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
             config.model.init::<B>(&device, class_weights),
             config.optimizer.init(),
             config.learning_rate,
-    );
+        );
 
     let model_trained = learner.fit(dataloader_train, dataloader_test);
 

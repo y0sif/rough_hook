@@ -8,3 +8,4 @@ burn = { version = "0.14.0", features = ["train", "wgpu", "vision"] }
 burn-cuda = "0.14.0"
 burn-dataset = "*"
 serde = "*"
+rand = "0.8"
