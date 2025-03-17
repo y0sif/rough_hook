@@ -7,7 +7,10 @@ use burn::{
     tensor::{activation::softmax, cast::ToElement}
 };
 
-pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameItem) {
+pub fn infer<B: Backend>(artifact_dir: &str, device: B::Device, item: ChessGameItem) 
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
         .expect("Config should exist for the model; run train first");
     let record = CompactRecorder::new()
