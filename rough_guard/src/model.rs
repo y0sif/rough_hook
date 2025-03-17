@@ -11,16 +11,12 @@ pub struct Model<B: Backend> {
     linear3: Linear<B>,
     linear4: Linear<B>,
     linear5: Linear<B>,
-<<<<<<< HEAD
     linear6: Linear<B>,
     linear7: Linear<B>,
     linear8: Linear<B>,
     linear9: Linear<B>,
     linear10: Linear<B>,
     pub class_weights: Tensor<B, 1>
-=======
-    linear6: Linear<B>
->>>>>>> 00ed597 (training ready big model)
 }
 
 #[derive(Config, Debug)]
