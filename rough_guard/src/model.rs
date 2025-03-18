@@ -16,6 +16,8 @@ pub struct Model<B: Backend> {
     linear8: Linear<B>,
     linear9: Linear<B>,
     linear10: Linear<B>,
+    linear11: Linear<B>,
+    linear12: Linear<B>,
     pub class_weights: Tensor<B, 1>
 }
 
@@ -30,11 +32,13 @@ impl ModelConfig {
             linear3: LinearConfig::new(128, 256).init(device),
             linear4: LinearConfig::new(256, 512).init(device),
             linear5: LinearConfig::new(512, 1024).init(device),
-            linear6: LinearConfig::new(1024, 512).init(device),
-            linear7: LinearConfig::new(512, 256).init(device),
-            linear8: LinearConfig::new(256, 128).init(device),
-            linear9: LinearConfig::new(128, 64).init(device),
-            linear10: LinearConfig::new(64, 4).init(device),
+            linear6: LinearConfig::new(1024, 2048).init(device),
+            linear7: LinearConfig::new(2048, 1024).init(device),
+            linear8: LinearConfig::new(1024, 512).init(device),
+            linear9: LinearConfig::new(512, 256).init(device),
+            linear10: LinearConfig::new(256, 128).init(device),
+            linear11: LinearConfig::new(128, 64).init(device),
+            linear12: LinearConfig::new(64, 4).init(device),
             class_weights
         }
     }
@@ -60,7 +64,11 @@ impl<B: Backend> Model<B> {
         let x = relu(x);
         let x = self.linear9.forward(x);
         let x = relu(x);
-        self.linear10.forward(x)
+        let x = self.linear10.forward(x);
+        let x = relu(x);
+        let x = self.linear11.forward(x);
+        let x = relu(x);
+        self.linear12.forward(x)
     }
 
     pub fn infer(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
