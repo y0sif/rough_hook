@@ -24,7 +24,7 @@ impl ModelConfig {
                 241,
                 128,
                 4
-            ]).with_grid_size(2).with_spline_order(2), device),
+            ]).with_grid_size(6).with_spline_order(6), device),
             class_weights
         }
     }
