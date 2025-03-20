@@ -17,6 +17,8 @@ use burn::{
     },
 };
 
+use super::model::CustomCnn;
+
 const NUM_CLASSES: u8 = 13;
 const ARTIFACT_DIR: &str = "/tmp/hook_lens";
 
@@ -49,6 +51,35 @@ impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<
     }
 }
 
+impl<B: Backend> CustomCnn<B> {
+    pub fn forward_classification(
+        &self,
+        images: Tensor<B, 4>,
+        targets: Tensor<B, 1, Int>,
+    ) -> ClassificationOutput<B> {
+        
+        let output = self.forward(images);
+        let loss = CrossEntropyLossConfig::new()
+            .init(&output.device())
+            .forward(output.clone(), targets.clone());
+
+        ClassificationOutput::new(loss, output, targets)
+    }
+}
+
+impl<B: AutodiffBackend> TrainStep<ChessBoardBatch<B>, ClassificationOutput<B>> for CustomCnn<B> {
+    fn step(&self, batch: ChessBoardBatch<B>) -> TrainOutput<ClassificationOutput<B>> {
+        let item = self.forward_classification(batch.images, batch.targets);
+        TrainOutput::new(self, item.loss.backward(), item)
+    }
+}
+
+impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for CustomCnn<B> {
+    fn step(&self, batch: ChessBoardBatch<B>) -> ClassificationOutput<B> {
+        self.forward_classification(batch.images, batch.targets)
+    }
+}
+
 #[derive(Config)]
 pub struct TrainingConfig {
     pub optimizer: AdamConfig,
@@ -69,7 +100,7 @@ fn create_artifact_dir(artifact_dir: &str) {
     std::fs::create_dir_all(artifact_dir).ok();
 }
 
-pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
+pub fn train<B: AutodiffBackend>(model: CustomCnn<B>, config: TrainingConfig, device: B::Device) {
     create_artifact_dir(ARTIFACT_DIR);
 
     config
@@ -106,7 +137,7 @@ pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
         .num_epochs(config.num_epochs)
         .summary()
         .build(
-            Cnn::new(NUM_CLASSES.into(), &device),
+            model,
             config.optimizer.init(),
             config.learning_rate,
         );
