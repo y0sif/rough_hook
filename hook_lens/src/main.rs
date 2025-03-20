@@ -1,4 +1,4 @@
-use burn::{backend::{Autodiff, Wgpu}, optim::AdamConfig};
+use burn::{backend::Autodiff, optim::AdamConfig};
 use hook_lens::data_and_model::training::{train, TrainingConfig};
 use burn::backend::libtorch::{LibTorch, LibTorchDevice};
 
