@@ -8,6 +8,8 @@ use burn::{
     prelude::*,
 };
 
+use burn_efficient_kan::*;
+
 #[derive(Module, Debug)]
 pub struct Cnn<B: Backend> {
     activation: Relu,
@@ -47,9 +49,7 @@ pub struct CustomCnn<B: Backend> {
     batch4: BatchNorm<B, 2>,
     batch5: BatchNorm<B, 2>,
     batch6: BatchNorm<B, 2>,
-    fc1: Linear<B>,
-    fc2: Linear<B>,
-    fc3: Linear<B>,
+    kan_layer: EfficientKan<B>,
 }
 
 impl<B: Backend> Cnn<B> {
@@ -172,9 +172,11 @@ impl<B: Backend> CustomCnn<B> {
         device: &Device<B>) -> Self {
         let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
 
-        let fc1 = LinearConfig::new(2048, 512).init(device);
-        let fc2 = LinearConfig::new(512, 64).init(device);
-        let fc3 = LinearConfig::new(64, num_classes).init(device);
+        let kan_layer = EfficientKan::new(&KanOptions::new([
+            2048,
+            256,
+            num_classes as u32
+            ]), device);
 
         let dropout = DropoutConfig::new(0.25).init();
 
@@ -194,9 +196,7 @@ impl<B: Backend> CustomCnn<B> {
             batch4,
             batch5,
             batch6,
-            fc1,
-            fc2,
-            fc3
+            kan_layer
         }
     }
 
@@ -230,14 +230,6 @@ impl<B: Backend> CustomCnn<B> {
 
         let x = x.flatten(1, 3);
 
-        let x = self.fc1.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.fc2.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.dropout.forward(x);
-
-        self.fc3.forward(x)
+        self.kan_layer.forward(x)
     }
 }
