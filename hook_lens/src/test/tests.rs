@@ -109,7 +109,7 @@ mod tests {
 
         //repository.load_all_models();    
         //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
-        repository.load_models_by_ids(vec![23]); // uncomment it to provide the models you want to test
+        repository.load_models_by_ids(vec![21 ,22]); // uncomment it to provide the models you want to test
              
         for (model_name , model_path , id) in repository.test_models{
             let model :ModelEnum<Cuda<f32, i32>> = load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());

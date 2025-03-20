@@ -22,19 +22,11 @@ use super::model::{Kan512, Kan512Record};
 //use cnn_kan models
 use super::model::{kan_cnn_1024, kan_cnn_1024Record};
 use super::model::{kan_cnn_256, kan_cnn_256Record};
-use super::model::{
-    kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2,
-    kan_cnn_256_grid_size_10_spline_order_6_scale_base_2_scale_noise_2Record,
-};
-use super::model::{
-    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2,
-    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2Record,
 
-    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2,
-    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2Record,
-
-    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2,
-    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2Record,
+use super::model::{
+    kan_cnn , 
+    kan_cnnRecord
+    
 };
 use super::model::{kan_cnn_512, kan_cnn_512Record};
 
@@ -42,16 +34,9 @@ use super::model::{kan_cnn_512, kan_cnn_512Record};
 pub enum ModelEnum<B: Backend> {
     Cnn(Cnn<B>),
     Kan_cnn_256(kan_cnn_256<B>),
-    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-        kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2<B>,
-    ),
-    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-        kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2<B>,
-    ),
-    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-        kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2<B>,
-    ),
-
+    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B , 256 , 15 , 12 , 4 , 2>),
+    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B , 512 , 15 , 12 , 4 , 2>),
+    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B , 1024 , 15 , 12 , 4 , 2>),
 }
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
@@ -66,15 +51,9 @@ where
         match self {
             ModelEnum::Cnn(model) => model.forward(x),
             ModelEnum::Kan_cnn_256(model) => model.forward(x),
-            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-                model,
-            ) => model.forward(x),
-            ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-                model,
-            ) => model.forward(x),
-            ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-                model,
-            ) => model.forward(x),
+            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model) => model.forward(x),
+            ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model) => model.forward(x),
+            ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model) => model.forward(x),
         }
     }
 }
@@ -125,36 +104,28 @@ where
             let model = kan_cnn_256.load_record(record);
             ModelEnum::Kan_cnn_256(model)
         }
-        ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2,
-        ) => {
+        ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn) => {
             let record = CompactRecorder::new()
                 .load(format!("{artifact_dir}/model").into(), &device)
                 .expect("Trained model should exist");
-            let model = kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2
-                .load_record(record);
+            let model = kan_cnn.load_record(record);
             ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
-        ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2,
-        ) => {
+        ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn) => {
             let record = CompactRecorder::new()
                 .load(format!("{artifact_dir}/model").into(), &device)
                 .expect("Trained model should exist");
-            let model = kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2
-                .load_record(record);
+            let model = kan_cnn.load_record(record);
             ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
-        ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2,
-        ) => {
+        ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn) => {
             let record = CompactRecorder::new()
                 .load(format!("{artifact_dir}/model").into(), &device)
                 .expect("Trained model should exist");
-            let model = kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2
-                .load_record(record);
+            let model = kan_cnn.load_record(record);
             ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
+        
     };
 
     return inner_model;
@@ -171,16 +142,9 @@ where
     match id {
         1 => ModelEnum::Cnn(Cnn::new(13, device)),
         13 => ModelEnum::Kan_cnn_256(kan_cnn_256::new(13, device)),
-        21 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2::new(13, device),
-        ),
-        22 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2::new(13, device),
-        ),
-        23 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2::new(13, device),
-        ),
-
+        21 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn::new(13 , device)),
+        22 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn::new(13 , device)),
+        23 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn::new(13 , device)),
         _ => panic!("not valid model Id"),
     }
 }
