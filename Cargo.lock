@@ -2113,7 +2113,6 @@ name = "hook_lens"
 version = "0.1.0"
 dependencies = [
  "burn",
- "burn-cuda",
  "burn-efficient-kan",
  "image",
  "ndarray 0.14.0",

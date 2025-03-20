@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests{
-    use burn_cuda::{CudaDevice, Cuda};
     use imageops::FilterType;
+    use burn::backend::libtorch::{LibTorch, LibTorchDevice};
     use image::imageops;
     use rusty_brain::board::Board;
     use crate::data_and_model::inference::{self, load_model_paramter , ModelEnum};
@@ -43,7 +43,7 @@ mod tests{
         
         let mut flag = false;
         for (model_name , model_path , id) in repository.test_models{
-            let model :ModelEnum<Cuda<f32, i32>> = load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
+            let model :ModelEnum<LibTorch> = load_model_paramter::<LibTorch>(id, &model_path, LibTorchDevice::Cuda(0));
            
             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
             let start = Instant::now();
@@ -114,7 +114,7 @@ mod tests{
        
              
         for (model_name , model_path , id) in repository.test_models{
-            let model :ModelEnum<Cuda<f32, i32>> = load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
+            let model :ModelEnum<LibTorch> = load_model_paramter::<LibTorch>(id, &model_path, LibTorchDevice::Cuda(0));
             if model_name.len() == 0 || model_path.len() == 0 {
                 continue;
             }
@@ -129,7 +129,7 @@ mod tests{
         }
         print_results_table(models_results);
     }
-    fn test_model(model : ModelEnum<Cuda<f32, i32>>)->(i16 ,i16){
+    fn test_model(model : ModelEnum<LibTorch>)->(i16 ,i16){
 
         let test_dir_path = "/home/sasa630/Graduation_Project/data/augmented_val";
         let mut map = HashMap::new();
@@ -173,7 +173,7 @@ mod tests{
                                     let rgb_image = img.to_rgb8();
                                     let image = rgb_image.into_raw(); // Convert to Vec<u8>
 
-                                    let prediction = map[&inference::infer_model::<Cuda<f32, i32>>(&model, CudaDevice::default(), image.to_vec())];
+                                    let prediction = map[&inference::infer_model::<LibTorch>(&model, LibTorchDevice::Cuda(0), image.to_vec())];
 
                                     total_num_of_that_piece +=1;
                                     if prediction == label{
