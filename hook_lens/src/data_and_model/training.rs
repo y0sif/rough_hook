@@ -10,8 +10,7 @@ use burn::{
     record::CompactRecorder,
     tensor::backend::AutodiffBackend,
     train::{
-        metric::{AccuracyMetric, LossMetric},
-        ClassificationOutput, LearnerBuilder, TrainOutput, TrainStep, ValidStep,
+        metric::{store::{Aggregate, Direction, Split}, AccuracyMetric, LossMetric}, ClassificationOutput, LearnerBuilder, MetricEarlyStoppingStrategy, StoppingCondition, TrainOutput, TrainStep, ValidStep
     },
 };
 
@@ -61,7 +60,7 @@ pub struct TrainingConfig {
     pub optimizer: AdamConfig,
     #[config(default = 400)]
     pub num_epochs: usize,
-    #[config(default = 16)]
+    #[config(default = 256)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
@@ -113,6 +112,12 @@ pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device) {
         .metric_train_numeric(LossMetric::new())
         .metric_valid_numeric(LossMetric::new())
         .with_file_checkpointer(CompactRecorder::new())
+        .early_stopping(MetricEarlyStoppingStrategy::new::<LossMetric<B>>(
+            Aggregate::Mean,
+            Direction::Lowest,
+            Split::Valid,
+            StoppingCondition::NoImprovementSince { n_epochs: 20 },
+        ))
         .devices(vec![device.clone()])
         .num_epochs(config.num_epochs)
         .summary()
