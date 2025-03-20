@@ -1,11 +1,10 @@
 use std::collections::HashMap;
 
-use burn::backend::wgpu::WgpuDevice;
-use burn::backend::Wgpu;
+use burn_cuda::{CudaDevice, Cuda};
 
 use crate::input_data_handling::board_square_extracting::*;
 use crate::data_and_model::inference::{self, ModelEnum};
-pub fn get_fen_string_from(board_image_path : &str , model : ModelEnum<Wgpu>)->String{
+pub fn get_fen_string_from(board_image_path : &str , model : ModelEnum<Cuda<f32, i32>>)->String{
 
     let mut map = HashMap::new();
     map.insert(0 as u8 , "b");
@@ -35,7 +34,7 @@ pub fn get_fen_string_from(board_image_path : &str , model : ModelEnum<Wgpu>)->S
         let mut index = pos;
         for _ in 0..8{
             let (image , _) = &pieces_images_and_position[index];
-            let piece = map[&inference::infer_model::<Wgpu>(&model, WgpuDevice::default(), image.to_vec())];
+            let piece = map[&inference::infer_model::<Cuda<f32, i32>>(&model, CudaDevice::default(), image.to_vec())];
             if piece == "e" {
                 empty_squares += 1;
             }else{

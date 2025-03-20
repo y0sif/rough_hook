@@ -21,6 +21,7 @@ intel-mkl-system = ["ndarray-linalg/intel-mkl-system"]
 
 [dependencies]
 burn = { version = "0.14.0", features = ["train", "wgpu", "vision"] }
+burn-cuda = "0.14.0"
 serde = "*"
 image = "*"
 opencv="*"
