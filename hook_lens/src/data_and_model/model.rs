@@ -8,7 +8,7 @@ use burn::{
     prelude::*,
 };
 
-use burn_efficient_kan::*;
+use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
 
 #[derive(Module, Debug)]
 pub struct Cnn<B: Backend> {
@@ -169,7 +169,10 @@ impl<B: Backend> CustomCnn<B> {
         batch5: BatchNorm<B, 2>,
         batch6: BatchNorm<B, 2>,
         num_classes: usize,
-        device: &Device<B>) -> Self {
+        device: &Device<B>) -> Self 
+    where
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+        {
         let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
 
         let kan_layer = EfficientKan::new(&KanOptions::new([
