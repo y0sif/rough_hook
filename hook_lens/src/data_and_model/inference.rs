@@ -13,26 +13,28 @@ pub enum ModelEnum<B: Backend> {
     // any new model should be added here first
     Cnn(Cnn<B>),
     // in the kan models and kan_cnn models has  addational parametre --> grid_size, spline_order, scale_base, scale_noise : if you put 0 it will be ignored
-    Kan_256(kan<B, 256, 0, 0, 0, 0>),
-    Kan_512(kan<B, 512, 0, 0, 0, 0>),
+    Kan_256(kan<B>),
+    Kan_512(kan<B>),
 
-    Kan_cnn_256(kan_cnn<B, 256, 0, 0, 0, 0>),
-    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-        kan_cnn<B, 256, 15, 12, 4, 2>,
-    ),
-    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-        kan_cnn<B, 512, 15, 12, 4, 2>,
-    ),
-    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-        kan_cnn<B, 1024, 15, 12, 4, 2>,
-    ),
+    Kan_cnn_256(kan_cnn<B>),
+    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B>),
+    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B>),
+    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B>),
 }
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
+    fn new(
+        num_classes: usize,
+        device: &Device<B>,
+        hidden_layer_size: usize,
+        grid_size: u16,
+        spline_order: u32,
+        scale_base: i32,
+        scale_noise: i32,
+    ) -> Self {
         panic!("Must use the model function it self");
     }
 
@@ -135,36 +137,29 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     match id {
-        1 => ModelEnum::Cnn(Cnn::new(13, device)),
+        1 => ModelEnum::Cnn(Cnn::new(13, device, 0, 0, 0, 0, 0)),
 
-        10 => ModelEnum::Kan_256(kan::new(13, device)),
-        11 => ModelEnum::Kan_512(kan::new(13, device)),
+        10 => ModelEnum::Kan_256(kan::new(13, device, 256, 0, 0, 0, 0)),
+        11 => ModelEnum::Kan_512(kan::new(13, device, 512, 0, 0, 0, 0)),
 
         20 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn::new(13, device),
+            kan_cnn::new(13, device, 256, 15, 12, 4, 2),
         ),
         21 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn::new(13, device),
+            kan_cnn::new(13, device, 512, 15, 12, 4, 2),
         ),
         22 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn::new(13, device),
+            kan_cnn::new(13, device, 1024, 15, 12, 4, 2),
         ),
         _ => panic!("not valid model Id"),
     }
 }
 
-fn get_kan_cnn_model_from_record<
-    B: Backend,
-    const hidden_layer_size: usize,
-    const grid_size: u16,
-    const spline_order: u32,
-    const scale_base: i32,
-    const scale_noise: i32,
->(
-    kan_cnn_model: kan_cnn<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>,
+fn get_kan_cnn_model_from_record<B: Backend>(
+    kan_cnn_model: kan_cnn<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> kan_cnn<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
+) -> kan_cnn<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -174,18 +169,11 @@ where
     kan_cnn_model.load_record(record)
 }
 
-fn get_kan_model_from_record<
-    B: Backend,
-    const hidden_layer_size: usize,
-    const grid_size: u16,
-    const spline_order: u32,
-    const scale_base: i32,
-    const scale_noise: i32,
->(
-    kan_model: kan<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>,
+fn get_kan_model_from_record<B: Backend>(
+    kan_model: kan<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> kan<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
+) -> kan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {

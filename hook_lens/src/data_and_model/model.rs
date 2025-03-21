@@ -16,7 +16,15 @@ pub trait DeepLearningModel<B: Backend>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(nput: usize, device: &Device<B>) -> Self;
+    fn new(
+        input: usize,
+        device: &Device<B>,
+        hidden_layer_size: usize,
+        grid_size: u16,
+        spline_order: u32,
+        scale_base: i32,
+        scale_noise: i32,
+    ) -> Self;
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2>;
 }
 
@@ -47,7 +55,15 @@ impl<B: Backend> DeepLearningModel<B> for Cnn<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
+    fn new(
+        num_classes: usize,
+        device: &Device<B>,
+        _: usize,
+        _: u16,
+        _: u32,
+        _: i32,
+        _: i32,
+    ) -> Self {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
             .init(device);
@@ -150,30 +166,23 @@ where
 
 //kan Template
 #[derive(Module, Debug)]
-pub struct kan<
-    B: Backend,
-    const hidden_layer_size: usize,
-    const grid_size: u16,
-    const spline_order: u32,
-    const scale_base: i32,
-    const scale_noise: i32,
-> {
+pub struct kan<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<
-        B: Backend,
-        const hidden_layer_size: usize,
-        const grid_size: u16,
-        const spline_order: u32,
-        const scale_base: i32,
-        const scale_noise: i32,
-    > DeepLearningModel<B>
-    for kan<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
+impl<B: Backend> DeepLearningModel<B> for kan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
+    fn new(
+        num_classes: usize,
+        device: &Device<B>,
+        hidden_layer_size: usize,
+        grid_size: u16,
+        spline_order: u32,
+        scale_base: i32,
+        scale_noise: i32,
+    ) -> Self {
         let kan_layer = construct_kan_layer(
             hidden_layer_size,
             num_classes,
@@ -196,14 +205,7 @@ where
 
 // Kan_Cnn_Template
 #[derive(Module, Debug)]
-pub struct kan_cnn<
-    B: Backend,
-    const hidden_layer_size: usize,
-    const grid_size: u16,
-    const spline_order: u32,
-    const scale_base: i32,
-    const scale_noise: i32,
-> {
+pub struct kan_cnn<B: Backend> {
     activation: Relu,
     dropout: Dropout,
     pool: MaxPool2d,
@@ -222,20 +224,20 @@ pub struct kan_cnn<
     kan_layer: EfficientKan<B>,
 }
 
-impl<
-        B: Backend,
-        const hidden_layer_size: usize,
-        const grid_size: u16,
-        const spline_order: u32,
-        const scale_base: i32,
-        const scale_noise: i32,
-    > DeepLearningModel<B>
-    for kan_cnn<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
+impl<B: Backend> DeepLearningModel<B> for kan_cnn<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let conv1 = Conv2dConfig::new([3, 32], [3, 3])
+    fn new(
+        num_classes: usize,
+        device: &Device<B>,
+        hidden_layer_size: usize,
+        grid_size: u16,
+        spline_order: u32,
+        scale_base: i32,
+        scale_noise: i32,
+    ) -> Self {
+        let conv1: Conv2d<B> = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
             .init(device);
         let conv2 = Conv2dConfig::new([32, 32], [3, 3])
