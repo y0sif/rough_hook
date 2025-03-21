@@ -148,91 +148,39 @@ where
     }
 }
 
-//============================================   Kan Models ===================================//
-
-// Kan Model (256)
+//kan Template
 #[derive(Module, Debug)]
-pub struct Kan<B: Backend> {
+pub struct kan<
+    B: Backend,
+    const hidden_layer_size: usize,
+    const grid_size: u16,
+    const spline_order: u32,
+    const scale_base: i32,
+    const scale_noise: i32,
+> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> DeepLearningModel<B> for Kan<B>
+impl<
+        B: Backend,
+        const hidden_layer_size: usize,
+        const grid_size: u16,
+        const spline_order: u32,
+        const scale_base: i32,
+        const scale_noise: i32,
+    > DeepLearningModel<B>
+    for kan<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer =
-            EfficientKan::new(&KanOptions::new([3072, 256, num_classes as u32]), device);
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-// kAN model (512)
-#[derive(Module, Debug)]
-pub struct Kan512<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for Kan512<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer =
-            EfficientKan::new(&KanOptions::new([3072, 512, num_classes as u32]), device);
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-// kAN model (1024)
-#[derive(Module, Debug)]
-pub struct Kan1024<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for Kan1024<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer =
-            EfficientKan::new(&KanOptions::new([3072, 1024, num_classes as u32]), device);
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-//kan_256_spline_order_12
-#[derive(Module, Debug)]
-pub struct kan_256_spline_order_12<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_spline_order_12<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32]).with_spline_order(12),
+        let kan_layer = construct_kan_layer(
+            hidden_layer_size,
+            num_classes,
+            grid_size,
+            spline_order,
+            scale_base,
+            scale_noise,
             device,
         );
 
@@ -245,543 +193,17 @@ where
         self.kan_layer.forward(x)
     }
 }
-//kan_256_spline_order_6
-#[derive(Module, Debug)]
-pub struct kan_256_spline_order_6<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_spline_order_6<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32]).with_spline_order(6),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-//kan_256_scale_base_2_scale_noise_2
-#[derive(Module, Debug)]
-pub struct kan_256_scale_base_2_scale_noise_2<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_scale_base_2_scale_noise_2<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32])
-                .with_scale_base(2.0)
-                .with_scale_noise(2.0),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-//kan_256_scale_base_4_scale_noise_4
-#[derive(Module, Debug)]
-pub struct kan_256_scale_base_4_scale_noise_4<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_scale_base_4_scale_noise_4<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32])
-                .with_scale_base(4.0)
-                .with_scale_noise(4.0),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-//kan_256_scale_base_6_scale_noise_6
-#[derive(Module, Debug)]
-pub struct kan_256_scale_base_6_scale_noise_6<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_scale_base_6_scale_noise_6<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32])
-                .with_scale_base(6.0)
-                .with_scale_noise(6.0),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-//kan_256_grid_size_10
-#[derive(Module, Debug)]
-pub struct kan_256_grid_size_10<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_grid_size_10<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32]).with_grid_size(10),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-//kan_256_grid_size_20
-#[derive(Module, Debug)]
-pub struct kan_256_grid_size_20<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_grid_size_20<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32]).with_grid_size(20),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-//kan_256_grid_size_30
-#[derive(Module, Debug)]
-pub struct kan_256_grid_size_30<B: Backend> {
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_256_grid_size_30<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([3072, 256, num_classes as u32]).with_grid_size(30),
-            device,
-        );
-
-        Self { kan_layer }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-//======================================= Kan_Cnn =======================================//
-// Kan_Cnn_256
-#[derive(Module, Debug)]
-pub struct kan_cnn_256<B: Backend> {
-    activation: Relu,
-    dropout: Dropout,
-    pool: MaxPool2d,
-    conv1: Conv2d<B>,
-    conv2: Conv2d<B>,
-    conv3: Conv2d<B>,
-    conv4: Conv2d<B>,
-    conv5: Conv2d<B>,
-    conv6: Conv2d<B>,
-    batch1: BatchNorm<B, 2>,
-    batch2: BatchNorm<B, 2>,
-    batch3: BatchNorm<B, 2>,
-    batch4: BatchNorm<B, 2>,
-    batch5: BatchNorm<B, 2>,
-    batch6: BatchNorm<B, 2>,
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_cnn_256<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let conv1 = Conv2dConfig::new([3, 32], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv2 = Conv2dConfig::new([32, 32], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let conv3 = Conv2dConfig::new([32, 64], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv4 = Conv2dConfig::new([64, 64], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let conv5 = Conv2dConfig::new([64, 128], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv6 = Conv2dConfig::new([128, 128], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
-
-        let dropout = DropoutConfig::new(0.25).init();
-
-        let batch1 = BatchNormConfig::new(32).init(device);
-        let batch2 = BatchNormConfig::new(32).init(device);
-        let batch3 = BatchNormConfig::new(64).init(device);
-        let batch4 = BatchNormConfig::new(64).init(device);
-        let batch5 = BatchNormConfig::new(128).init(device);
-        let batch6 = BatchNormConfig::new(128).init(device);
-
-        let kan_layer =
-            EfficientKan::new(&KanOptions::new([2048, 256, num_classes as u32]), device);
-
-        Self {
-            activation: Relu::new(),
-            dropout,
-            pool,
-            conv1,
-            conv2,
-            conv3,
-            conv4,
-            conv5,
-            conv6,
-            batch1,
-            batch2,
-            batch3,
-            batch4,
-            batch5,
-            batch6,
-            kan_layer,
-        }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = self.conv1.forward(x);
-        let x = self.batch1.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv2.forward(x);
-        let x = self.batch2.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.conv3.forward(x);
-        let x = self.batch3.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv4.forward(x);
-        let x = self.batch4.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.conv5.forward(x);
-        let x = self.batch5.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv6.forward(x);
-        let x = self.batch6.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-// Kan_Cnn_512
-#[derive(Module, Debug)]
-pub struct kan_cnn_512<B: Backend> {
-    activation: Relu,
-    dropout: Dropout,
-    pool: MaxPool2d,
-    conv1: Conv2d<B>,
-    conv2: Conv2d<B>,
-    conv3: Conv2d<B>,
-    conv4: Conv2d<B>,
-    conv5: Conv2d<B>,
-    conv6: Conv2d<B>,
-    batch1: BatchNorm<B, 2>,
-    batch2: BatchNorm<B, 2>,
-    batch3: BatchNorm<B, 2>,
-    batch4: BatchNorm<B, 2>,
-    batch5: BatchNorm<B, 2>,
-    batch6: BatchNorm<B, 2>,
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_cnn_512<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let conv1 = Conv2dConfig::new([3, 32], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv2 = Conv2dConfig::new([32, 32], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let conv3 = Conv2dConfig::new([32, 64], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv4 = Conv2dConfig::new([64, 64], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let conv5 = Conv2dConfig::new([64, 128], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv6 = Conv2dConfig::new([128, 128], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
-
-        let dropout = DropoutConfig::new(0.25).init();
-
-        let batch1 = BatchNormConfig::new(32).init(device);
-        let batch2 = BatchNormConfig::new(32).init(device);
-        let batch3 = BatchNormConfig::new(64).init(device);
-        let batch4 = BatchNormConfig::new(64).init(device);
-        let batch5 = BatchNormConfig::new(128).init(device);
-        let batch6 = BatchNormConfig::new(128).init(device);
-
-        let kan_layer =
-            EfficientKan::new(&KanOptions::new([2048, 512, num_classes as u32]), device);
-
-        Self {
-            activation: Relu::new(),
-            dropout,
-            pool,
-            conv1,
-            conv2,
-            conv3,
-            conv4,
-            conv5,
-            conv6,
-            batch1,
-            batch2,
-            batch3,
-            batch4,
-            batch5,
-            batch6,
-            kan_layer,
-        }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = self.conv1.forward(x);
-        let x = self.batch1.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv2.forward(x);
-        let x = self.batch2.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.conv3.forward(x);
-        let x = self.batch3.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv4.forward(x);
-        let x = self.batch4.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.conv5.forward(x);
-        let x = self.batch5.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv6.forward(x);
-        let x = self.batch6.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
-// Kan_Cnn_1024
-#[derive(Module, Debug)]
-pub struct kan_cnn_1024<B: Backend> {
-    activation: Relu,
-    dropout: Dropout,
-    pool: MaxPool2d,
-    conv1: Conv2d<B>,
-    conv2: Conv2d<B>,
-    conv3: Conv2d<B>,
-    conv4: Conv2d<B>,
-    conv5: Conv2d<B>,
-    conv6: Conv2d<B>,
-    batch1: BatchNorm<B, 2>,
-    batch2: BatchNorm<B, 2>,
-    batch3: BatchNorm<B, 2>,
-    batch4: BatchNorm<B, 2>,
-    batch5: BatchNorm<B, 2>,
-    batch6: BatchNorm<B, 2>,
-    kan_layer: EfficientKan<B>,
-}
-
-impl<B: Backend> DeepLearningModel<B> for kan_cnn_1024<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(num_classes: usize, device: &Device<B>) -> Self {
-        let conv1 = Conv2dConfig::new([3, 32], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv2 = Conv2dConfig::new([32, 32], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let conv3 = Conv2dConfig::new([32, 64], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv4 = Conv2dConfig::new([64, 64], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let conv5 = Conv2dConfig::new([64, 128], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-        let conv6 = Conv2dConfig::new([128, 128], [3, 3])
-            .with_padding(PaddingConfig2d::Same)
-            .init(device);
-
-        let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
-
-        let dropout = DropoutConfig::new(0.25).init();
-
-        let batch1 = BatchNormConfig::new(32).init(device);
-        let batch2 = BatchNormConfig::new(32).init(device);
-        let batch3 = BatchNormConfig::new(64).init(device);
-        let batch4 = BatchNormConfig::new(64).init(device);
-        let batch5 = BatchNormConfig::new(128).init(device);
-        let batch6 = BatchNormConfig::new(128).init(device);
-
-        let kan_layer =
-            EfficientKan::new(&KanOptions::new([2048, 1024, num_classes as u32]), device);
-
-        Self {
-            activation: Relu::new(),
-            dropout,
-            pool,
-            conv1,
-            conv2,
-            conv3,
-            conv4,
-            conv5,
-            conv6,
-            batch1,
-            batch2,
-            batch3,
-            batch4,
-            batch5,
-            batch6,
-            kan_layer,
-        }
-    }
-
-    fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
-        let x = self.conv1.forward(x);
-        let x = self.batch1.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv2.forward(x);
-        let x = self.batch2.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.conv3.forward(x);
-        let x = self.batch3.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv4.forward(x);
-        let x = self.batch4.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = self.conv5.forward(x);
-        let x = self.batch5.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.conv6.forward(x);
-        let x = self.batch6.forward(x);
-        let x = self.activation.forward(x);
-        let x = self.pool.forward(x);
-        let x = self.dropout.forward(x);
-
-        let x = x.flatten(1, 3);
-
-        self.kan_layer.forward(x)
-    }
-}
-
 
 // Kan_Cnn_Template
 #[derive(Module, Debug)]
-pub struct kan_cnn<B: Backend , const HIDDEN_SIZE: usize , const grid_size : u16 , const spline_order : u32 , const scale_base : i32 , const scale_noise : i32> {
+pub struct kan_cnn<
+    B: Backend,
+    const hidden_layer_size: usize,
+    const grid_size: u16,
+    const spline_order: u32,
+    const scale_base: i32,
+    const scale_noise: i32,
+> {
     activation: Relu,
     dropout: Dropout,
     pool: MaxPool2d,
@@ -800,8 +222,15 @@ pub struct kan_cnn<B: Backend , const HIDDEN_SIZE: usize , const grid_size : u16
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend , const HIDDEN_SIZE : usize ,  const grid_size : u16 , const spline_order : u32 , const scale_base : i32 , const scale_noise : i32> DeepLearningModel<B> 
-for kan_cnn<B , HIDDEN_SIZE , grid_size , spline_order , scale_base , scale_noise>
+impl<
+        B: Backend,
+        const hidden_layer_size: usize,
+        const grid_size: u16,
+        const spline_order: u32,
+        const scale_base: i32,
+        const scale_noise: i32,
+    > DeepLearningModel<B>
+    for kan_cnn<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -838,12 +267,13 @@ where
         let batch5 = BatchNormConfig::new(128).init(device);
         let batch6 = BatchNormConfig::new(128).init(device);
 
-        let kan_layer = EfficientKan::new(
-            &KanOptions::new([2048, HIDDEN_SIZE as u32, num_classes as u32])
-                .with_grid_size(grid_size)
-                .with_spline_order(spline_order)
-                .with_scale_base(scale_base as f32)
-                .with_scale_noise(scale_noise as f32),
+        let kan_layer = construct_kan_layer(
+            hidden_layer_size,
+            num_classes,
+            grid_size,
+            spline_order,
+            scale_base,
+            scale_noise,
             device,
         );
 
@@ -899,4 +329,41 @@ where
 
         self.kan_layer.forward(x)
     }
+}
+
+fn construct_kan_layer<B: Backend>(
+    mut hidden_layer_size: usize,
+    num_classes: usize,
+    grid_size: u16,
+    spline_order: u32,
+    scale_base: i32,
+    scale_noise: i32,
+    device: &Device<B>,
+) -> EfficientKan<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    // ensure that hidden_layer_size has a default value = 256
+    if hidden_layer_size <= 0 {
+        hidden_layer_size = 256;
+    }
+    let mut kan_options = KanOptions::new([2048, hidden_layer_size as u32, num_classes as u32]);
+
+    if grid_size != 0 {
+        kan_options = kan_options.with_grid_size(grid_size);
+    }
+
+    if spline_order != 0 {
+        kan_options = kan_options.with_spline_order(spline_order);
+    }
+
+    if scale_base != 0 {
+        kan_options = kan_options.with_scale_base(scale_base as f32);
+    }
+
+    if scale_noise != 0 {
+        kan_options = kan_options.with_scale_noise(scale_noise as f32);
+    }
+
+    EfficientKan::new(&kan_options, device)
 }

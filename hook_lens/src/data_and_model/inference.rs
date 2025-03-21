@@ -5,38 +5,27 @@ use burn::{
     record::{CompactRecorder, Recorder},
     tensor::{Device, Shape, Tensor, TensorData},
 };
-// use cnn models
-use super::model::{Cnn, CnnRecord};
-// use kan models
-use super::model::{kan_256_grid_size_10, kan_256_grid_size_10Record};
-use super::model::{kan_256_grid_size_20, kan_256_grid_size_20Record};
-use super::model::{kan_256_grid_size_30, kan_256_grid_size_30Record};
-use super::model::{kan_256_scale_base_2_scale_noise_2, kan_256_scale_base_2_scale_noise_2Record};
-use super::model::{kan_256_scale_base_4_scale_noise_4, kan_256_scale_base_4_scale_noise_4Record};
-use super::model::{kan_256_scale_base_6_scale_noise_6, kan_256_scale_base_6_scale_noise_6Record};
-use super::model::{kan_256_spline_order_12, kan_256_spline_order_12Record};
-use super::model::{kan_256_spline_order_6, kan_256_spline_order_6Record};
-use super::model::{Kan, KanRecord};
-use super::model::{Kan1024, Kan1024Record};
-use super::model::{Kan512, Kan512Record};
-//use cnn_kan models
-use super::model::{kan_cnn_1024, kan_cnn_1024Record};
-use super::model::{kan_cnn_256, kan_cnn_256Record};
 
-use super::model::{
-    kan_cnn , 
-    kan_cnnRecord
-    
-};
-use super::model::{kan_cnn_512, kan_cnn_512Record};
+use super::model::{kan, kanRecord, kan_cnn, kan_cnnRecord, Cnn, CnnRecord};
 
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
+    // any new model should be added here first
     Cnn(Cnn<B>),
-    Kan_cnn_256(kan_cnn_256<B>),
-    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B , 256 , 15 , 12 , 4 , 2>),
-    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B , 512 , 15 , 12 , 4 , 2>),
-    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B , 1024 , 15 , 12 , 4 , 2>),
+    // in the kan models and kan_cnn models has  addational parametre --> grid_size, spline_order, scale_base, scale_noise : if you put 0 it will be ignored
+    Kan_256(kan<B, 256, 0, 0, 0, 0>),
+    Kan_512(kan<B, 512, 0, 0, 0, 0>),
+
+    Kan_cnn_256(kan_cnn<B, 256, 0, 0, 0, 0>),
+    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+        kan_cnn<B, 256, 15, 12, 4, 2>,
+    ),
+    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+        kan_cnn<B, 512, 15, 12, 4, 2>,
+    ),
+    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+        kan_cnn<B, 1024, 15, 12, 4, 2>,
+    ),
 }
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
@@ -50,10 +39,20 @@ where
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         match self {
             ModelEnum::Cnn(model) => model.forward(x),
+
+            ModelEnum::Kan_256(model) => model.forward(x),
+            ModelEnum::Kan_512(model) => model.forward(x),
+
             ModelEnum::Kan_cnn_256(model) => model.forward(x),
-            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model) => model.forward(x),
-            ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model) => model.forward(x),
-            ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model) => model.forward(x),
+            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+                model,
+            ) => model.forward(x),
+            ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+                model,
+            ) => model.forward(x),
+            ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+                model,
+            ) => model.forward(x),
         }
     }
 }
@@ -97,54 +96,101 @@ where
             let model = cnn_model.load_record(record);
             ModelEnum::Cnn(model)
         }
-        ModelEnum::Kan_cnn_256(kan_cnn_256) => {
-            let record = CompactRecorder::new()
-                .load(format!("{artifact_dir}/model").into(), &device)
-                .expect("Trained model should exist");
-            let model = kan_cnn_256.load_record(record);
+        ModelEnum::Kan_256(kan_model) => {
+            let model = get_kan_model_from_record(kan_model, artifact_dir, device);
+            ModelEnum::Kan_256(model)
+        }
+        ModelEnum::Kan_512(kan_model) => {
+            let model = get_kan_model_from_record(kan_model, artifact_dir, device);
+            ModelEnum::Kan_512(model)
+        }
+        ModelEnum::Kan_cnn_256(kan_cnn) => {
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
             ModelEnum::Kan_cnn_256(model)
         }
         ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn) => {
-            let record = CompactRecorder::new()
-                .load(format!("{artifact_dir}/model").into(), &device)
-                .expect("Trained model should exist");
-            let model = kan_cnn.load_record(record);
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
             ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
         ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn) => {
-            let record = CompactRecorder::new()
-                .load(format!("{artifact_dir}/model").into(), &device)
-                .expect("Trained model should exist");
-            let model = kan_cnn.load_record(record);
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
             ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
-        ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn) => {
-            let record = CompactRecorder::new()
-                .load(format!("{artifact_dir}/model").into(), &device)
-                .expect("Trained model should exist");
-            let model = kan_cnn.load_record(record);
+        ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+            kan_cnn,
+        ) => {
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
             ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
-        
     };
 
     return inner_model;
 }
 
-
-//from : 1---> 10 cnn models
-//from : 11---> 20 kan models
-//from : 21---> 30 cnn_kan models
+//from : 1---> 9 cnn models
+//from : 10---> 19 kan models
+//from : 20---> 29 cnn_kan models
 fn get_model_object<B: Backend>(id: i8, device: &B::Device) -> ModelEnum<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     match id {
         1 => ModelEnum::Cnn(Cnn::new(13, device)),
-        13 => ModelEnum::Kan_cnn_256(kan_cnn_256::new(13, device)),
-        21 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn::new(13 , device)),
-        22 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn::new(13 , device)),
-        23 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn::new(13 , device)),
+
+        10 => ModelEnum::Kan_256(kan::new(13, device)),
+        11 => ModelEnum::Kan_512(kan::new(13, device)),
+
+        20 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+            kan_cnn::new(13, device),
+        ),
+        21 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+            kan_cnn::new(13, device),
+        ),
+        22 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
+            kan_cnn::new(13, device),
+        ),
         _ => panic!("not valid model Id"),
     }
+}
+
+fn get_kan_cnn_model_from_record<
+    B: Backend,
+    const hidden_layer_size: usize,
+    const grid_size: u16,
+    const spline_order: u32,
+    const scale_base: i32,
+    const scale_noise: i32,
+>(
+    kan_cnn_model: kan_cnn<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>,
+    artifact_dir: &str,
+    device: B::Device,
+) -> kan_cnn<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    let record = CompactRecorder::new()
+        .load(format!("{artifact_dir}/model").into(), &device)
+        .expect("Trained model should exist");
+    kan_cnn_model.load_record(record)
+}
+
+fn get_kan_model_from_record<
+    B: Backend,
+    const hidden_layer_size: usize,
+    const grid_size: u16,
+    const spline_order: u32,
+    const scale_base: i32,
+    const scale_noise: i32,
+>(
+    kan_model: kan<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>,
+    artifact_dir: &str,
+    device: B::Device,
+) -> kan<B, hidden_layer_size, grid_size, spline_order, scale_base, scale_noise>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    let record = CompactRecorder::new()
+        .load(format!("{artifact_dir}/model").into(), &device)
+        .expect("Trained model should exist");
+    kan_model.load_record(record)
 }

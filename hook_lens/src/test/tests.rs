@@ -9,11 +9,11 @@ mod tests {
     use rusty_brain::board::Board;
     //use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     use crate::test::test_models_repository::Repository;
+    use burn_cuda::{Cuda, CudaDevice};
     use prettytable::{row, Table};
     use std::collections::HashMap;
     use std::fs;
     use std::time::Instant;
-    use burn_cuda::{CudaDevice, Cuda};
 
     #[test]
     fn test_all() {
@@ -43,9 +43,10 @@ mod tests {
 
         let mut flag = false;
 
-        for (model_name , model_path , id) in repository.test_models{
-            let model :ModelEnum<Cuda<f32, i32>> = load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
-           
+        for (model_name, model_path, id) in repository.test_models {
+            let model: ModelEnum<Cuda<f32, i32>> =
+                load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
+
             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
             let start = Instant::now();
             let predicted_fen_string = get_fen_string_from(board_image_path, model);
@@ -107,12 +108,13 @@ mod tests {
         // get the models to be tested from the repository of test models
         let mut repository = Repository::new();
 
-        //repository.load_all_models();    
+        //repository.load_all_models();
         //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
-        repository.load_models_by_ids(vec![21 ,22]); // uncomment it to provide the models you want to test
-             
-        for (model_name , model_path , id) in repository.test_models{
-            let model :ModelEnum<Cuda<f32, i32>> = load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
+        repository.load_models_by_ids(vec![20]); // uncomment it to provide the models you want to test
+
+        for (model_name, model_path, id) in repository.test_models {
+            let model: ModelEnum<Cuda<f32, i32>> =
+                load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
 
             if model_name.len() == 0 || model_path.len() == 0 {
                 continue;
@@ -135,8 +137,7 @@ mod tests {
         print_results_table(models_results);
     }
 
-    fn test_model(model : ModelEnum<Cuda<f32, i32>>)->(i16 ,i16){
-
+    fn test_model(model: ModelEnum<Cuda<f32, i32>>) -> (i16, i16) {
         let test_dir_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_data/big_test";
 
         let mut map = HashMap::new();
@@ -180,8 +181,11 @@ mod tests {
                                 let rgb_image = img.to_rgb8();
                                 let image = rgb_image.into_raw(); // Convert to Vec<u8>
 
-                                let prediction = map[&inference::infer_model::<Cuda<f32, i32>>(&model, CudaDevice::default(), image.to_vec())];
-
+                                let prediction = map[&inference::infer_model::<Cuda<f32, i32>>(
+                                    &model,
+                                    CudaDevice::default(),
+                                    image.to_vec(),
+                                )];
 
                                 total_num_of_that_piece += 1;
                                 if prediction == label {
