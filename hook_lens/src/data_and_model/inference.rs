@@ -6,38 +6,32 @@ use burn::{
     tensor::{Device, Shape, Tensor, TensorData},
 };
 
-use super::model::{kan, kanRecord, kan_cnn, kan_cnnRecord, Cnn, CnnRecord};
+use super::model::{Cnn, CnnRecord, Kan, KanCnn, KanCnnRecord, KanRecord};
 
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
     // any new model should be added here first
     Cnn(Cnn<B>),
     // in the kan models and kan_cnn models has  addational parametre --> grid_size, spline_order, scale_base, scale_noise : if you put 0 it will be ignored
-    Kan_256(kan<B>),
-    Kan_512(kan<B>),
+    Kan_256(Kan<B>),
+    Kan_512(Kan<B>),
 
-    Kan_cnn_256(kan_cnn<B>),
-    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B>),
-    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B>),
-    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(kan_cnn<B>),
+    Kan_cnn_256(KanCnn<B>),
+    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(KanCnn<B>),
+    kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(KanCnn<B>),
+    kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(KanCnn<B>),
+    kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch(KanCnn<B>),
+    kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2(KanCnn<B>),
+    kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch(
+        KanCnn<B>,
+    ),
+    kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(KanCnn<B>),
 }
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(
-        num_classes: usize,
-        device: &Device<B>,
-        hidden_layer_size: usize,
-        grid_size: u16,
-        spline_order: u32,
-        scale_base: i32,
-        scale_noise: i32,
-    ) -> Self {
-        panic!("Must use the model function it self");
-    }
-
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         match self {
             ModelEnum::Cnn(model) => model.forward(x),
@@ -55,6 +49,19 @@ where
             ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
                 model,
             ) => model.forward(x),
+            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch(
+                model,
+            ) => model.forward(x),
+            ModelEnum::kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2(
+                model,
+            ) => model.forward(x),
+            ModelEnum::kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch(
+                model
+            )=>model.forward(x),
+            ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(
+                model
+            )=>model.forward(x)
+
         }
     }
 }
@@ -124,6 +131,30 @@ where
             let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
             ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(model)
         }
+
+        ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch(
+            kan_cnn,
+        ) => {
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
+            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch(
+                model,
+            )
+        }
+
+        ModelEnum::kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2(kan_cnn) => {
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
+            ModelEnum::kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2(model)
+        }
+
+        ModelEnum::kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch(kan_cnn) => {
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
+            ModelEnum::kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch(model)
+        }
+
+        ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(kan_cnn) => {
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
+            ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(model)
+        }
     };
 
     return inner_model;
@@ -137,29 +168,44 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     match id {
-        1 => ModelEnum::Cnn(Cnn::new(13, device, 0, 0, 0, 0, 0)),
+        1 => ModelEnum::Cnn(Cnn::new(13, device, 256)),
 
-        10 => ModelEnum::Kan_256(kan::new(13, device, 256, 0, 0, 0, 0)),
-        11 => ModelEnum::Kan_512(kan::new(13, device, 512, 0, 0, 0, 0)),
+        10 => ModelEnum::Kan_256(Kan::new(13, device, 256, 0, 0, 0, 0)),
+        11 => ModelEnum::Kan_512(Kan::new(13, device, 512, 0, 0, 0, 0)),
 
         20 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn::new(13, device, 256, 15, 12, 4, 2),
+            KanCnn::new(13, device, 256, 15, 12, 4, 2),
         ),
         21 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn::new(13, device, 512, 15, 12, 4, 2),
+            KanCnn::new(13, device, 512, 15, 12, 4, 2),
         ),
         22 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            kan_cnn::new(13, device, 1024, 15, 12, 4, 2),
+            KanCnn::new(13, device, 1024, 15, 12, 4, 2),
         ),
+        23 => {
+            ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch(
+                KanCnn::new(13, device, 256, 15, 12, 4, 2),
+            )
+        }
+        24 => ModelEnum::kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2(
+            KanCnn::new(13, device, 256, 15, 16, 3, 2),
+        ),
+        25 => ModelEnum::kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch(
+            KanCnn::new(13, device, 1024, 15, 12, 4, 2),
+        ),
+        26 => ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(
+            KanCnn::new(13, device, 256, 20, 12, 4, 2),
+        ),
+
         _ => panic!("not valid model Id"),
     }
 }
 
 fn get_kan_cnn_model_from_record<B: Backend>(
-    kan_cnn_model: kan_cnn<B>,
+    kan_cnn_model: KanCnn<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> kan_cnn<B>
+) -> KanCnn<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -170,10 +216,10 @@ where
 }
 
 fn get_kan_model_from_record<B: Backend>(
-    kan_model: kan<B>,
+    kan_model: Kan<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> kan<B>
+) -> Kan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {

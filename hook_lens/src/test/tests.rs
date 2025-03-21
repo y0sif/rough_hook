@@ -2,8 +2,6 @@
 mod tests {
     use crate::data_and_model::inference::{self, load_model_paramter, ModelEnum};
     use crate::input_data_handling::fen_string_generation::get_fen_string_from;
-    use burn::backend::wgpu::WgpuDevice;
-    use burn::backend::Wgpu;
     use image::imageops;
     use imageops::FilterType;
     use rusty_brain::board::Board;
@@ -110,8 +108,9 @@ mod tests {
 
         //repository.load_all_models();
         //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
-        repository.load_models_by_ids(vec![20]); // uncomment it to provide the models you want to test
+        repository.load_models_by_ids(vec![20, 21, 22, 23, 24, 25, 26]); // uncomment it to provide the models you want to test
 
+        println!("num of models = {}", repository.test_models.len());
         for (model_name, model_path, id) in repository.test_models {
             let model: ModelEnum<Cuda<f32, i32>> =
                 load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());

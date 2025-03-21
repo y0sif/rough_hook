@@ -16,19 +16,10 @@ pub trait DeepLearningModel<B: Backend>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(
-        input: usize,
-        device: &Device<B>,
-        hidden_layer_size: usize,
-        grid_size: u16,
-        spline_order: u32,
-        scale_base: i32,
-        scale_noise: i32,
-    ) -> Self;
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2>;
 }
 
-// CNN Model
+//################################################  CNN Template ####################################################//
 #[derive(Module, Debug)]
 pub struct Cnn<B: Backend> {
     activation: Relu,
@@ -51,19 +42,8 @@ pub struct Cnn<B: Backend> {
     fc3: Linear<B>,
 }
 
-impl<B: Backend> DeepLearningModel<B> for Cnn<B>
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
-{
-    fn new(
-        num_classes: usize,
-        device: &Device<B>,
-        _: usize,
-        _: u16,
-        _: u32,
-        _: i32,
-        _: i32,
-    ) -> Self {
+impl<B: Backend> Cnn<B> {
+    pub fn new(num_classes: usize, device: &Device<B>, layer_size: usize) -> Self {
         let conv1 = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
             .init(device);
@@ -87,9 +67,9 @@ where
 
         let pool = MaxPool2dConfig::new([2, 2]).with_strides([2, 2]).init();
 
-        let fc1 = LinearConfig::new(2048, 512).init(device);
-        let fc2 = LinearConfig::new(512, 64).init(device);
-        let fc3 = LinearConfig::new(64, num_classes).init(device);
+        let fc1 = LinearConfig::new(2048, layer_size).init(device);
+        let fc2 = LinearConfig::new(layer_size, layer_size / 4).init(device);
+        let fc3 = LinearConfig::new(layer_size / 4, num_classes).init(device);
 
         let dropout = DropoutConfig::new(0.25).init();
 
@@ -121,7 +101,11 @@ where
             fc3,
         }
     }
-
+}
+impl<B: Backend> DeepLearningModel<B> for Cnn<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);
@@ -164,17 +148,17 @@ where
     }
 }
 
-//kan Template
+//################################################  KAN Template ####################################################//
+
 #[derive(Module, Debug)]
-pub struct kan<B: Backend> {
+pub struct Kan<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
-
-impl<B: Backend> DeepLearningModel<B> for kan<B>
+impl<B: Backend> Kan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(
+    pub fn new(
         num_classes: usize,
         device: &Device<B>,
         hidden_layer_size: usize,
@@ -195,7 +179,12 @@ where
 
         Self { kan_layer }
     }
+}
 
+impl<B: Backend> DeepLearningModel<B> for Kan<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
 
@@ -203,9 +192,10 @@ where
     }
 }
 
-// Kan_Cnn_Template
+//################################################  KAN_CNN Template ####################################################//
+
 #[derive(Module, Debug)]
-pub struct kan_cnn<B: Backend> {
+pub struct KanCnn<B: Backend> {
     activation: Relu,
     dropout: Dropout,
     pool: MaxPool2d,
@@ -224,11 +214,11 @@ pub struct kan_cnn<B: Backend> {
     kan_layer: EfficientKan<B>,
 }
 
-impl<B: Backend> DeepLearningModel<B> for kan_cnn<B>
+impl<B: Backend> KanCnn<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    fn new(
+    pub fn new(
         num_classes: usize,
         device: &Device<B>,
         hidden_layer_size: usize,
@@ -298,7 +288,12 @@ where
             kan_layer,
         }
     }
+}
 
+impl<B: Backend> DeepLearningModel<B> for KanCnn<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
         let x = self.batch1.forward(x);

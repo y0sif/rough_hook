@@ -17,6 +17,11 @@ impl<'a> Repository<'a> {
             ("kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_256_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2", 20),
             ("kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_512_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2", 21),
             ("kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2", 22),
+            ("kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_256_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epochs" , 23),
+            ("kan_cnn_256_grid_size_15_spline_order_16_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2",24),
+            ("kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch" ,"/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch" , 25),
+            ("kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4","/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4",26)
+
         ]
     }
 

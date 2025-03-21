@@ -113,7 +113,7 @@ where
         .num_epochs(config.num_epochs)
         .summary()
         .build(
-            Cnn::new(NUM_CLASSES.into(), &device, 0, 0, 0, 0, 0),
+            Cnn::new(NUM_CLASSES.into(), &device, 256),
             config.optimizer.init(),
             config.learning_rate,
         );
