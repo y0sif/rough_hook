@@ -703,9 +703,18 @@ impl Board {
         0
     }
 
-    fn bishop_xray_pawns(&self) -> i32 {
-
-        0
+    fn bishop_xray_pawns(&self) -> i32 { //untested
+        let mut sum: i32 = 0;
+        let mut bishop_bitboard = self.bitboards.white_bishops;
+        let enemy_pawns = self.bitboards.black_pawns;
+        while bishop_bitboard != 0{
+            let bishop_square = bishop_bitboard.trailing_zeros() as u8;
+            let bishop_mask = Bitboards::bishop_mask(bishop_square);
+            let bishop_xray_pawns = bishop_mask & enemy_pawns;
+            sum += bishop_xray_pawns.count_ones() as i32;
+            bishop_bitboard *= bishop_bitboard-1;
+        }
+        sum
     }
 
     fn rook_on_queen_file(&self) -> i32 {
@@ -734,9 +743,48 @@ impl Board {
         0
     }
 
-    fn king_ring(&self) -> i32 {
+    fn king_ring(&self) -> u64 { //untested, should probably be called at the very start and stored as a struct fields because it's used multiple times
+        let a_file_mask : u64 = 0x0101010101010101;
+        let h_file_mask : u64 = 0x8080808080808080;
+        let rank_1_mask : u64 = 0x00000000000000ff;
+        let rank_8_mask : u64 = 0xff00000000000000;
+        
+        let mut king_ring_bitboard = 0;
+        let mut king_bitboard = self.bitboards.white_king;
 
-        0
+        // king's rings on these files and ranks behave the same as if they were on ther neighbours, so moving them helps with implementing logic. 
+        if (king_bitboard & rank_1_mask == 1) {king_bitboard = king_bitboard << 8;}
+        if (king_bitboard & rank_8_mask == 1) {king_bitboard = king_bitboard >> 8;}
+        if (king_bitboard & a_file_mask == 1) {king_bitboard = king_bitboard << 1;}
+        if (king_bitboard & h_file_mask == 1) {king_bitboard = king_bitboard >> 1;}
+
+        king_ring_bitboard |= king_bitboard; //assuming there's only one king
+        king_ring_bitboard |= Bitboards::move_east(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_west(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_north(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_south(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_north_east(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_north_west(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_south_east(king_bitboard);
+        king_ring_bitboard |= Bitboards::move_south_west(king_bitboard);
+        
+        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+
+        let mut pawn_bitboard = self.bitboards.white_pawns;
+        let mut protected_by_2_pawns_bitboard = 0 as u64;
+        while pawn_bitboard != 0 {
+            let pawn = pawn_bitboard.trailing_zeros() as u64;
+            while pawn & not_h_file != 1 {
+                let neighbour_pawn = pawn << 2; // check if there's a pawn to the right of the pawn by 2
+                if pawn_bitboard & neighbour_pawn !=0 {
+                    protected_by_2_pawns_bitboard |= pawn << 9; // if two pawns on the same rank apart by two squares, the square to their shared diagonal is protected
+                }
+            }
+            pawn_bitboard &= pawn_bitboard -1;
+        }
+        king_ring_bitboard = !(king_bitboard ^ protected_by_2_pawns_bitboard); // removes positions protected by 2 pawns , xand operation -> !^
+
+        king_ring_bitboard // still haven't decided how i'll use the bitboard
     }
 
     fn knight_attack(&self) -> i32 { //WILL be able to replace
@@ -744,10 +792,10 @@ impl Board {
         0
     }
 
-    fn bishop_xray_attack(&self) -> i32 {
+    // fn bishop_xray_attack(&self) -> i32 {
 
-        0
-    }
+    //     0
+    // }
 
     fn pinned_direction(&self) -> i32 { //WILL be able to replace
 
@@ -808,9 +856,12 @@ impl Board {
         0
     }
 
-    fn long_diagonal_bishop(&self) -> i32 {
-
-        0
+    fn long_diagonal_bishop(&self) -> i32 { //untested
+        let mut sum = 0;
+        let center_squares_diagonal_mask = 8142240000244281 as u64;
+        let long_diagonal_bishops = center_squares_diagonal_mask & self.bitboards.white_bishops;
+        sum = long_diagonal_bishops.count_ones();
+        sum as i32
     }
 
     // MOBILITY MIDDLE GAME
@@ -1000,6 +1051,7 @@ impl Board {
 
     // this function calculate how much space a side has
     fn space(&self) -> i32 {
+        
 
         0
     }
