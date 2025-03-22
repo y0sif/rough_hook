@@ -112,7 +112,7 @@ impl <B: Backend> Batcher<ChessPositionItem, ChessPositionBatch<B>> for ChessPos
     }
 }
 
-pub fn map(fen: String) -> Vec<Vec<i8>> {
+pub fn map(fen: String) -> Vec<i8> {
     /*
     White
     king
@@ -161,5 +161,5 @@ pub fn map(fen: String) -> Vec<Vec<i8>> {
     }
 
 
-    position
+    position.into_iter().flat_map(|x| x).collect::<Vec<i8>>()
 }

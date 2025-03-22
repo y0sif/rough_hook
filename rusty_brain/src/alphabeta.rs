@@ -197,7 +197,7 @@ impl<B: Backend> Board<B>{
         }
 
         if depth_left == 0 {
-            let tensor = Tensor::<B, 1>::from_data(&*self.features.clone().into_iter().flat_map(|x| x).collect::<Vec<i8>>(), &self.device);
+            let tensor = Tensor::<B, 1>::from_data(&*self.features, &self.device);
             return (self.model.infer(tensor.unsqueeze()) * 400.0).flatten::<1>(0, 1).into_data().iter::<f32>().next().unwrap().clone() as i32;
         }
 
@@ -268,7 +268,7 @@ impl<B: Backend> Board<B>{
         }
         
         if depth_left == 0 {
-            let tensor = Tensor::<B, 1>::from_data(&*self.features.clone().into_iter().flat_map(|x| x).collect::<Vec<i8>>(), &self.device);
+            let tensor = Tensor::<B, 1>::from_data(&*self.features, &self.device);
             return (self.model.infer(tensor.unsqueeze()) * 400.0).flatten::<1>(0, 1).into_data().iter::<f32>().next().unwrap().clone() as i32;
         }
 

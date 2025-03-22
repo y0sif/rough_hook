@@ -33,7 +33,7 @@ pub struct Board<B: Backend>{
     pub castling_rights_log: Vec<CastlingRights>,
     pub en_passant_square: Option<Square>,
     pub best_move: Option<Move>,
-    pub features: Vec<Vec<i8>>,
+    pub features: Vec<i8>,
     pub model: Model<B>,
     pub device: B::Device
 }
@@ -164,44 +164,44 @@ impl<B:Backend> Board<B> {
         match self.turn {
             Turn::White => {
                 if start_position & self.bitboards.white_pawns != 0 {
-                    self.features[WP as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WP as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
                     match flag {
                         Move::EP_CAPTURE => {
                             self.make_en_passant(end_position);
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
-                            self.features[WP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_queens |= end_position;
-                            self.features[WQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WQ as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_knights |= end_position;
-                            self.features[WN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WN as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_rooks |= end_position;
-                            self.features[WR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WR as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
                             self.bitboards.white_pawns &= not_starting_position;
                             self.bitboards.white_bishops |= end_position;
-                            self.features[WB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WB as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::DOUBLE_PAWN_PUSH => {
                             self.en_passant_square = Some(Square::from(move_to_make.get_to() - 8));   
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
-                            self.features[WP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         _ => {
                             self.bitboards.white_pawns &= not_starting_position;      
                             self.bitboards.white_pawns |= end_position;
-                            self.features[WP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[WP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                     }
                     self.board_hashes = HashMap::new();
@@ -209,27 +209,27 @@ impl<B:Backend> Board<B> {
                 }else if start_position & self.bitboards.white_knights != 0 {
                     self.bitboards.white_knights &= not_starting_position;
                     self.bitboards.white_knights |= end_position;
-                    self.features[WN as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[WN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[WN as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WN as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_bishops != 0 {
                     self.bitboards.white_bishops &= not_starting_position;
                     self.bitboards.white_bishops |= end_position;
-                    self.features[WB as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[WB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[WB as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WB as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_rooks != 0 {
                     self.check_rook(&move_to_make);
                     self.bitboards.white_rooks &= not_starting_position;
                     self.bitboards.white_rooks |= end_position;
-                    self.features[WR as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[WR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[WR as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WR as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_queens != 0 {
                     self.bitboards.white_queens &= not_starting_position;
                     self.bitboards.white_queens |= end_position;
-                    self.features[WQ as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[WQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[WQ as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WQ as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.white_king != 0 {
                     match flag {
@@ -240,52 +240,52 @@ impl<B:Backend> Board<B> {
                     self.castling_rights.reset_rights(self.turn);
                     self.bitboards.white_king &= not_starting_position;
                     self.bitboards.white_king |= end_position;
-                    self.features[WK as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[WK as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[WK as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[WK as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }
                 self.turn = Turn::Black;
             },
             Turn::Black => {
                 if start_position & self.bitboards.black_pawns != 0 {
-                    self.features[BP as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BP as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
                     match flag {
                         Move::EP_CAPTURE => {
                             self.make_en_passant(end_position);
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
-                            self.features[BP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_queens |= end_position;
-                            self.features[BQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BQ as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_knights |= end_position;
-                            self.features[BN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BN as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_rooks |= end_position;
-                            self.features[BR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BR as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
                             self.bitboards.black_pawns &= not_starting_position;
                             self.bitboards.black_bishops |= end_position;
-                            self.features[BB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BB as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         Move::DOUBLE_PAWN_PUSH => {
                             self.en_passant_square = Some(Square::from(move_to_make.get_to() + 8));   
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
-                            self.features[BP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                         _ => {
                             self.bitboards.black_pawns &= not_starting_position;      
                             self.bitboards.black_pawns |= end_position;
-                            self.features[BP as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                            self.features[BP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
                         },
                     }
                     self.board_hashes = HashMap::new();
@@ -293,27 +293,27 @@ impl<B:Backend> Board<B> {
                 }else if start_position & self.bitboards.black_knights != 0 {
                     self.bitboards.black_knights &= not_starting_position;
                     self.bitboards.black_knights |= end_position;
-                    self.features[BN as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[BN as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[BN as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BN as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_bishops != 0 {
                     self.bitboards.black_bishops &= not_starting_position;
                     self.bitboards.black_bishops |= end_position;
-                    self.features[BB as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[BB as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[BB as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BB as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_rooks != 0 {
                     self.check_rook(&move_to_make);
                     self.bitboards.black_rooks &= not_starting_position;
                     self.bitboards.black_rooks |= end_position;
-                    self.features[BR as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[BR as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[BR as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BR as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_queens != 0 {
                     self.bitboards.black_queens &= not_starting_position;
                     self.bitboards.black_queens |= end_position;
-                    self.features[BQ as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[BQ as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[BQ as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BQ as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }else if start_position & self.bitboards.black_king != 0 {
                     match flag {
@@ -324,8 +324,8 @@ impl<B:Backend> Board<B> {
                     self.castling_rights.reset_rights(self.turn);
                     self.bitboards.black_king &= not_starting_position;
                     self.bitboards.black_king |= end_position;
-                    self.features[BK as usize][Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
-                    self.features[BK as usize][Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
+                    self.features[BK as usize * 64 + Move::flip_vertical(move_to_make.get_from()) as usize] = 0;
+                    self.features[BK as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 1;
 
                 }
                 self.half_move_clock +=1;
@@ -345,12 +345,12 @@ impl<B:Backend> Board<B> {
             Turn::White => {
                 let black_pawn = end_position >> 8;
                 self.bitboards.black_pawns &= !black_pawn;
-                self.features[BP as usize][Move::flip_vertical(black_pawn.trailing_zeros() as u8) as usize] = 0;
+                self.features[BP as usize * 64 + Move::flip_vertical(black_pawn.trailing_zeros() as u8) as usize] = 0;
             },
             Turn::Black => {
                 let white_pawn = end_position << 8;
                 self.bitboards.white_pawns &= !white_pawn;
-                self.features[WP as usize][Move::flip_vertical(white_pawn.trailing_zeros() as u8) as usize] = 0;
+                self.features[WP as usize * 64 + Move::flip_vertical(white_pawn.trailing_zeros() as u8) as usize] = 0;
             }
         }
     }
@@ -528,18 +528,23 @@ impl<B:Backend> Board<B> {
             Turn::White => {
                 if self.bitboards.black_pawns & square_captured != 0 {
                     self.bitboards.black_pawns &= !square_captured;
+                    self.features[BP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Pawn);
                 }else if self.bitboards.black_knights & square_captured != 0 {
                     self.bitboards.black_knights &= !square_captured;
+                    self.features[BN as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Knight);
                 }else if self.bitboards.black_bishops & square_captured != 0 {
                     self.bitboards.black_bishops &= !square_captured;
+                    self.features[BB as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Bishop);
                 }else if self.bitboards.black_queens & square_captured != 0 {
                     self.bitboards.black_queens &= !square_captured;
+                    self.features[BQ as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Queen);
                 }else if self.bitboards.black_rooks & square_captured != 0 {
                     self.bitboards.black_rooks &= !square_captured;
+                    self.features[BR as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Rook);
                     self.check_captured_rook(move_to_make, self.bitboards.black_rooks);
                 }
@@ -547,18 +552,23 @@ impl<B:Backend> Board<B> {
             Turn::Black => {
                 if self.bitboards.white_pawns & square_captured != 0 {
                     self.bitboards.white_pawns &= !square_captured;
+                    self.features[WP as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Pawn);
                 }else if self.bitboards.white_knights & square_captured != 0 {
                     self.bitboards.white_knights &= !square_captured;
+                    self.features[WN as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Knight);
                 }else if self.bitboards.white_bishops & square_captured != 0 {
                     self.bitboards.white_bishops &= !square_captured;
+                    self.features[WB as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Bishop);
                 }else if self.bitboards.white_queens & square_captured != 0 {
                     self.bitboards.white_queens &= !square_captured;
+                    self.features[WQ as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Queen);
                 }else if self.bitboards.white_rooks & square_captured != 0 {
                     self.bitboards.white_rooks &= !square_captured;
+                    self.features[WR as usize * 64 + Move::flip_vertical(move_to_make.get_to()) as usize] = 0;
                     self.capture_log.push(Piece::Rook);
                     self.check_captured_rook(move_to_make, self.bitboards.white_rooks);
                 }
@@ -607,14 +617,14 @@ impl<B:Backend> Board<B> {
             Turn::White => {
                 self.bitboards.white_rooks &= !(1 << Square::H1 as u8);
                 self.bitboards.white_rooks |= 1 << Square::F1 as u8;
-                self.features[WR as usize][Move::flip_vertical(Square::H1 as u8) as usize] = 0;
-                self.features[WR as usize][Move::flip_vertical(Square::F1 as u8) as usize] = 0;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::H1 as u8) as usize] = 0;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::F1 as u8) as usize] = 1;
             },
             Turn::Black => {
                 self.bitboards.black_rooks &= !(1 << Square::H8 as u8);
                 self.bitboards.black_rooks |= 1 << Square::F8 as u8;
-                self.features[BR as usize][Move::flip_vertical(Square::H8 as u8) as usize] = 0;
-                self.features[BR as usize][Move::flip_vertical(Square::F8 as u8) as usize] = 0;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::H8 as u8) as usize] = 0;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::F8 as u8) as usize] = 1;
             }
         }
     }
@@ -624,14 +634,14 @@ impl<B:Backend> Board<B> {
             Turn::White => {
                 self.bitboards.white_rooks &= !(1 << Square::A1 as u8);
                 self.bitboards.white_rooks |= 1 << Square::D1 as u8;
-                self.features[WR as usize][Move::flip_vertical(Square::A1 as u8) as usize] = 0;
-                self.features[WR as usize][Move::flip_vertical(Square::D1 as u8) as usize] = 0;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::A1 as u8) as usize] = 0;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::D1 as u8) as usize] = 1;
             },
             Turn::Black => {
                 self.bitboards.black_rooks &= !(1 << Square::A8 as u8);
                 self.bitboards.black_rooks |= 1 << Square::D8 as u8;
-                self.features[BR as usize][Move::flip_vertical(Square::A8 as u8) as usize] = 0;
-                self.features[BR as usize][Move::flip_vertical(Square::D8 as u8) as usize] = 0;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::A8 as u8) as usize] = 0;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::D8 as u8) as usize] = 1;
             }
         }
     }
@@ -662,38 +672,38 @@ impl<B:Backend> Board<B> {
                 if end_position & self.bitboards.white_pawns != 0 {
                     self.bitboards.white_pawns &= !end_position;
                     self.bitboards.white_pawns |= start_position;
-                    self.features[WP as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[WP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[WP as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[WP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.white_knights != 0 {
                     self.bitboards.white_knights &= !end_position;
                     self.bitboards.white_knights |= start_position;
-                    self.features[WN as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[WN as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[WN as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[WN as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.white_bishops != 0 {
                     self.bitboards.white_bishops &= !end_position;
                     self.bitboards.white_bishops |= start_position;
-                    self.features[WB as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[WB as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[WB as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[WB as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.white_rooks != 0 {
                     self.bitboards.white_rooks &= !end_position;
                     self.bitboards.white_rooks |= start_position;
-                    self.features[WR as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[WR as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[WR as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[WR as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.white_queens != 0 {
                     self.bitboards.white_queens &= !end_position;
                     self.bitboards.white_queens |= start_position;
-                    self.features[WQ as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[WQ as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[WQ as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[WQ as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.white_king != 0 {
                     self.bitboards.white_king &= !end_position;
                     self.bitboards.white_king |= start_position;
-                    self.features[WK as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[WK as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[WK as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[WK as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }
                 self.turn = Turn::White;
@@ -702,38 +712,38 @@ impl<B:Backend> Board<B> {
                 if end_position & self.bitboards.black_pawns != 0 {
                     self.bitboards.black_pawns &= !end_position;
                     self.bitboards.black_pawns |= start_position;
-                    self.features[BP as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[BP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[BP as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[BP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.black_knights != 0 {
                     self.bitboards.black_knights &= !end_position;
                     self.bitboards.black_knights |= start_position;
-                    self.features[BN as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[BN as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[BN as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[BN as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.black_bishops != 0 {
                     self.bitboards.black_bishops &= !end_position;
                     self.bitboards.black_bishops |= start_position;
-                    self.features[BB as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[BB as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[BB as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[BB as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.black_rooks != 0 {
                     self.bitboards.black_rooks &= !end_position;
                     self.bitboards.black_rooks |= start_position;
-                    self.features[BR as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[BR as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[BR as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[BR as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.black_queens != 0 {
                     self.bitboards.black_queens &= !end_position;
                     self.bitboards.black_queens |= start_position;
-                    self.features[BQ as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[BQ as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[BQ as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[BQ as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }else if end_position & self.bitboards.black_king != 0 {
                     self.bitboards.black_king &= !end_position;
                     self.bitboards.black_king |= start_position;
-                    self.features[BK as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                    self.features[BK as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                    self.features[BK as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                    self.features[BK as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
 
                 }
                 self.turn = Turn::Black;
@@ -762,26 +772,26 @@ impl<B:Backend> Board<B> {
                     Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
                         self.bitboards.white_queens &= !end_position;
                         self.bitboards.white_pawns |= start_position;
-                        self.features[WQ as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[WP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[WQ as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[WP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
                         self.bitboards.white_rooks &= !end_position;
                         self.bitboards.white_pawns |= start_position;
-                        self.features[WR as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[WP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[WR as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[WP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
                         self.bitboards.white_knights &= !end_position;
                         self.bitboards.white_pawns |= start_position;
-                        self.features[WN as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[WP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[WN as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[WP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
                         self.bitboards.white_bishops &= !end_position;
                         self.bitboards.white_pawns |= start_position;
-                        self.features[WB as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[WP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[WB as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[WP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     _ => ()
                 }
@@ -792,26 +802,26 @@ impl<B:Backend> Board<B> {
                     Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => {
                         self.bitboards.black_queens &= !end_position;
                         self.bitboards.black_pawns |= start_position;
-                        self.features[BQ as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[BP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[BQ as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[BP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => {
                         self.bitboards.black_rooks &= !end_position;
                         self.bitboards.black_pawns |= start_position;
-                        self.features[BR as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[BP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[BR as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[BP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => {
                         self.bitboards.black_knights &= !end_position;
                         self.bitboards.black_pawns |= start_position;
-                        self.features[BN as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[BP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[BN as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[BP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => {
                         self.bitboards.black_bishops &= !end_position;
                         self.bitboards.black_pawns |= start_position;
-                        self.features[BB as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                        self.features[BP as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                        self.features[BB as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                        self.features[BP as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                     },
                     _ => ()
                 }
@@ -829,23 +839,23 @@ impl<B:Backend> Board<B> {
                 match self.capture_log.pop().unwrap() {
                     Piece::Pawn => {
                         self.bitboards.white_pawns |= end_position;
-                        self.features[WP as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[WP as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Knight => {
                         self.bitboards.white_knights |= end_position;
-                        self.features[WN as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[WN as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Bishop => {
                         self.bitboards.white_bishops |= end_position;
-                        self.features[WB as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[WB as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Rook => {
                         self.bitboards.white_rooks |= end_position;
-                        self.features[WR as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[WR as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Queen => {
                         self.bitboards.white_queens |= end_position;
-                        self.features[WQ as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[WQ as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     _ => ()
                 }
@@ -854,21 +864,21 @@ impl<B:Backend> Board<B> {
                 match self.capture_log.pop().unwrap() {
                     Piece::Pawn => {
                         self.bitboards.black_pawns |= end_position;
-                        self.features[BP as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[BP as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Knight => {
                         self.bitboards.black_knights |= end_position;
-                        self.features[BN as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[BN as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Bishop => {self.bitboards.black_bishops |= end_position;
-                        self.features[BB as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[BB as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },  
                     Piece::Rook => {
                         self.bitboards.black_rooks |= end_position;
-                        self.features[BR as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[BR as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     Piece::Queen => {self.bitboards.black_queens |= end_position;
-                        self.features[BQ as usize][Move::flip_vertical(square) as usize] = 1;
+                        self.features[BQ as usize * 64 + Move::flip_vertical(square) as usize] = 1;
                     },
                     _ => ()
                 }
@@ -881,11 +891,11 @@ impl<B:Backend> Board<B> {
         match self.turn {
             Turn::White => {
                 self.bitboards.white_pawns |= end_position << 8;
-                self.features[WP as usize][Move::flip_vertical((end_position << 8).trailing_zeros() as u8) as usize] = 1;
+                self.features[WP as usize * 64 + Move::flip_vertical((end_position << 8).trailing_zeros() as u8) as usize] = 1;
             },
             Turn::Black => {
                 self.bitboards.black_pawns |= end_position >> 8;
-                self.features[BP as usize][Move::flip_vertical((end_position >> 8).trailing_zeros() as u8) as usize] = 1;
+                self.features[WP as usize * 64 + Move::flip_vertical((end_position >> 8).trailing_zeros() as u8) as usize] = 1;
             },
         }
     }
@@ -895,22 +905,22 @@ impl<B:Backend> Board<B> {
             Turn::White => {
                 self.bitboards.black_king &= !end_position;
                 self.bitboards.black_king |= start_position;
-                self.features[BK as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                self.features[BK as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                self.features[BK as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                self.features[BK as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                 self.bitboards.black_rooks &= !(1 << Square::F8 as u8);
                 self.bitboards.black_rooks |= 1 << Square::H8 as u8;
-                self.features[BR as usize][Move::flip_vertical(Square::F8 as u8) as usize] = 0;
-                self.features[BR as usize][Move::flip_vertical(Square::H8 as u8) as usize] = 1;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::F8 as u8) as usize] = 0;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::H8 as u8) as usize] = 1;
             },
             Turn::Black => {
                 self.bitboards.white_king &= !end_position;
                 self.bitboards.white_king |= start_position;
-                self.features[WK as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                self.features[WK as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                self.features[WK as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                self.features[WK as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                 self.bitboards.white_rooks &= !(1 << Square::F1 as u8);
                 self.bitboards.white_rooks |= 1 << Square::H1 as u8;
-                self.features[WR as usize][Move::flip_vertical(Square::F1 as u8) as usize] = 0;
-                self.features[WR as usize][Move::flip_vertical(Square::H1 as u8) as usize] = 1;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::F1 as u8) as usize] = 0;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::H1 as u8) as usize] = 1;
             },
         }
     }
@@ -920,22 +930,22 @@ impl<B:Backend> Board<B> {
             Turn::White => {
                 self.bitboards.black_king &= !end_position;
                 self.bitboards.black_king |= start_position;
-                self.features[BK as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                self.features[BK as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                self.features[BK as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                self.features[BK as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                 self.bitboards.black_rooks &= !(1 << Square::D8 as u8);
                 self.bitboards.black_rooks |= 1 << Square::A8 as u8;
-                self.features[BR as usize][Move::flip_vertical(Square::D8 as u8) as usize] = 0;
-                self.features[BR as usize][Move::flip_vertical(Square::A8 as u8) as usize] = 1;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::D8 as u8) as usize] = 0;
+                self.features[BR as usize * 64 + Move::flip_vertical(Square::A8 as u8) as usize] = 1;
             },
             Turn::Black => {
                 self.bitboards.white_king &= !end_position;
                 self.bitboards.white_king |= start_position;
-                self.features[WK as usize][Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
-                self.features[WK as usize][Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
+                self.features[WK as usize * 64 + Move::flip_vertical(end_position.trailing_zeros() as u8) as usize] = 0;
+                self.features[WK as usize * 64 + Move::flip_vertical(start_position.trailing_zeros() as u8) as usize] = 1;
                 self.bitboards.white_rooks &= !(1 << Square::D1 as u8);
                 self.bitboards.white_rooks |= 1 << Square::A1 as u8;
-                self.features[WR as usize][Move::flip_vertical(Square::D1 as u8) as usize] = 0;
-                self.features[WR as usize][Move::flip_vertical(Square::A1 as u8) as usize] = 1;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::D1 as u8) as usize] = 0;
+                self.features[WR as usize * 64 + Move::flip_vertical(Square::A1 as u8) as usize] = 1;
             },
         }
     }
