@@ -63,7 +63,7 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     pub fn new(
-        layers_info: Vec<(Vec<i32>, Vec<i32>)>,
+        layers_info: Vec<(Vec<i32>, Vec<Option<i32>>)>,
         class_weights: Tensor<B, 1>,
         device: &Device<B>,
     ) -> Self {
@@ -97,7 +97,7 @@ where
 
 fn construct_kan_layer<B: Backend>(
     options_values: &Vec<i32>,
-    hyper_parameters: &Vec<i32>,
+    hyper_parameters: &Vec<Option<i32>>,
     device: &Device<B>,
 ) -> EfficientKan<B>
 where
@@ -108,21 +108,21 @@ where
         options_values[1] as u32,
         options_values[2] as u32,
     ]);
-    //hyper_parameters[0] --> grid size
-    if hyper_parameters[0] != 0 {
-        kan_options = kan_options.with_grid_size(hyper_parameters[0] as u16);
+
+    if let Some(grid_size) = hyper_parameters[0] {
+        kan_options = kan_options.with_grid_size(grid_size as u16);
     }
-    //hyper_parameters[1] ---> spline order
-    if hyper_parameters[1] != 0 {
-        kan_options = kan_options.with_spline_order(hyper_parameters[1] as u32);
+
+    if let Some(spline_order) = hyper_parameters[1] {
+        kan_options = kan_options.with_spline_order(spline_order as u32);
     }
-    //hyper_parameters[2] ---> scale_base
-    if hyper_parameters[2] != 0 {
-        kan_options = kan_options.with_scale_base(hyper_parameters[2] as f32);
+
+    if let Some(scale_base) = hyper_parameters[2] {
+        kan_options = kan_options.with_scale_base(scale_base as f32);
     }
-    //hyper_parameters[3] --> scale noise
-    if hyper_parameters[3] != 0 {
-        kan_options = kan_options.with_scale_noise(hyper_parameters[3] as f32);
+
+    if let Some(scale_noise) = hyper_parameters[3] {
+        kan_options = kan_options.with_scale_noise(scale_noise as f32);
     }
 
     EfficientKan::new(&kan_options, device)

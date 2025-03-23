@@ -129,8 +129,8 @@ where
         // kan model with 2 kan layers
         2 => ModelEnum::Kan(Kan::new(
             vec![
-                (vec![241, 256, 128], vec![6, 6, 0, 0]),
-                (vec![128, 64, 4], vec![6, 6, 0, 0]),
+                (vec![241, 256, 128], vec![Some(6), Some(6), None, None]),
+                (vec![128, 64, 4], vec![Some(6), Some(6), None, None]),
             ],
             class_weights,
             device,
