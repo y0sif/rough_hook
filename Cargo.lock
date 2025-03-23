@@ -3886,7 +3886,10 @@ version = "0.1.0"
 dependencies = [
  "burn",
  "burn-cuda",
+ "burn-efficient-kan",
  "kanue",
+ "ndarray 0.15.6",
+ "ndarray-linalg",
  "rand",
  "rough_guard",
 ]

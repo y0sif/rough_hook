@@ -5,7 +5,7 @@ use burn::backend::Wgpu;
 use burn_cuda::{CudaDevice, Cuda};
 fn main() {
     let device = CudaDevice::new(0);
-    let artifact_dir = "/home/y0sif/kanue_models/kanue_16";
+    let artifact_dir = "/home/y0sif/kanue_models/kanue_1024";
     let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
         .expect("Config should exist for the model");
     let record = CompactRecorder::new()
