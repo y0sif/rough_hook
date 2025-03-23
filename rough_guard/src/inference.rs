@@ -1,6 +1,7 @@
 use super::model::DeepLearningModel;
-use super::model::{Kan, KanRecord};
+use super::model::{Kan, KanRecord, Mlp, MlpRecord};
 use crate::data::{ChessGameBatcher, ChessGameItem};
+use crate::model;
 use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
@@ -10,6 +11,7 @@ use burn::{
 
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
+    Mlp(Mlp<B>),
     Kan(Kan<B>),
 }
 
@@ -19,12 +21,13 @@ where
 {
     fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
         match self {
+            ModelEnum::Mlp(model) => model.forward(games),
             ModelEnum::Kan(model) => model.forward(games),
         }
     }
 }
 
-pub fn infer<B: Backend>(model: &ModelEnum<B>, device: B::Device, game: ChessGameItem)
+pub fn infer<B: Backend>(model: &ModelEnum<B>, device: B::Device, game: &ChessGameItem)
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -80,18 +83,12 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
-    let model_object = get_model_object(id, dummy_weights, &device);
-    let inner_model = match model_object {
-        ModelEnum::Kan(kan_model) => {
-            let model = get_kan_model_from_record(kan_model, artifact_dir, device);
-            ModelEnum::Kan(model)
-        }
-    };
-
-    return inner_model;
+    let model_archi = get_model_archi(id, dummy_weights, &device);
+    let model = load_model_weights(model_archi, artifact_dir, device);
+    return model;
 }
 
-fn get_model_object<B: Backend>(
+fn get_model_archi<B: Backend>(
     id: i8,
     class_weights: Tensor<B, 1>,
     device: &B::Device,
@@ -100,7 +97,25 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     match id {
-        1 => ModelEnum::Kan(Kan::new(
+        1 => ModelEnum::Mlp(Mlp::new(
+            vec![
+                (241, 64),
+                (64, 128),
+                (128, 256),
+                (256, 512),
+                (512, 1024),
+                (1024, 2048),
+                (2048, 1024),
+                (1024, 512),
+                (512, 256),
+                (256, 128),
+                (128, 64),
+                (64, 4),
+            ],
+            class_weights,
+            device,
+        )),
+        2 => ModelEnum::Kan(Kan::new(
             vec![
                 (vec![241, 256, 128], vec![6, 6, 0, 0]),
                 (vec![128, 64, 4], vec![6, 6, 0, 0]),
@@ -112,28 +127,17 @@ where
     }
 }
 
-fn get_kan_model_from_record<B: Backend>(
-    kan_model: Kan<B>,
+fn load_model_weights<B: Backend>(
+    model_archi: ModelEnum<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> Kan<B>
+) -> ModelEnum<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
         .expect("Trained model should exist");
-    kan_model.load_record(record)
+    let model = model_archi.load_record(record);
+    return model;
 }
-
-/* loadin model
-let config = TrainingConfig::load(format!("{artifact_dir}/config.json"))
-        .expect("Config should exist for the model; run train first");
-
-    let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
-    let model: Model<B> = config
-        .model
-        .init(&device, dummy_weights)
-        .load_record(record);
-
- */

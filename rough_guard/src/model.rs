@@ -1,15 +1,57 @@
 use burn::{
     nn::{Linear, LinearConfig},
     prelude::*,
-    tensor::activation::relu,
-    tensor::Tensor,
+    tensor::{activation::relu, Tensor, T},
 };
 use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
 
-pub trait DeepLearningModel<B: Backend> {
+pub trait DeepLearningModel<B: Backend>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
     fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2>;
 }
+//////////////////////////////////////////////// MLP template ///////////////////////////////////////////////////////
+#[derive(Module, Debug)]
+pub struct Mlp<B: Backend> {
+    pub linear_layers: Vec<Linear<B>>,
+    pub class_weights: Tensor<B, 1>,
+}
 
+impl<B: Backend> Mlp<B> {
+    pub fn new(
+        layers_info: Vec<(usize, usize)>,
+        class_weights: Tensor<B, 1>,
+        device: &Device<B>,
+    ) -> Self {
+        let mut linear_layers: Vec<Linear<B>> = Vec::new();
+
+        for layer_info in layers_info.iter() {
+            let layer = LinearConfig::new(layer_info.0, layer_info.1).init(device);
+            linear_layers.push(layer);
+        }
+
+        Self {
+            linear_layers,
+            class_weights,
+        }
+    }
+}
+
+impl<B: Backend> DeepLearningModel<B> for Mlp<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
+        let mut x = games;
+        for layer in &self.linear_layers {
+            x = layer.forward(x);
+        }
+        return x;
+    }
+}
+
+//////////////////////////////////////////////// Kan Template ///////////////////////////////////////////////////////
 #[derive(Module, Debug)]
 pub struct Kan<B: Backend> {
     pub kan_layers: Vec<EfficientKan<B>>,
@@ -52,17 +94,6 @@ where
         return x;
     }
 }
-
-// impl<B: Backend> Model<B> {
-//     pub fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
-//         let x = self.kan_layer1.forward(games);
-//         self.kan_layer2.forward(x)
-//     }
-
-//     pub fn infer(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
-//         self.forward(games.detach())
-//     }
-// }
 
 fn construct_kan_layer<B: Backend>(
     options_values: &Vec<i32>,
