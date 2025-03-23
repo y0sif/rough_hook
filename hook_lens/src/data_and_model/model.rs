@@ -162,20 +162,10 @@ where
         num_classes: usize,
         device: &Device<B>,
         hidden_layer_size: usize,
-        grid_size: u16,
-        spline_order: u32,
-        scale_base: i32,
-        scale_noise: i32,
+        hyper_parameters: Vec<Option<i32>>,
     ) -> Self {
-        let kan_layer = construct_kan_layer(
-            hidden_layer_size,
-            num_classes,
-            grid_size,
-            spline_order,
-            scale_base,
-            scale_noise,
-            device,
-        );
+        let kan_layer =
+            construct_kan_layer(hidden_layer_size, num_classes, &hyper_parameters, device);
 
         Self { kan_layer }
     }
@@ -222,10 +212,7 @@ where
         num_classes: usize,
         device: &Device<B>,
         hidden_layer_size: usize,
-        grid_size: u16,
-        spline_order: u32,
-        scale_base: i32,
-        scale_noise: i32,
+        hyper_parameters: Vec<Option<i32>>,
     ) -> Self {
         let conv1: Conv2d<B> = Conv2dConfig::new([3, 32], [3, 3])
             .with_padding(PaddingConfig2d::Same)
@@ -259,15 +246,8 @@ where
         let batch5 = BatchNormConfig::new(128).init(device);
         let batch6 = BatchNormConfig::new(128).init(device);
 
-        let kan_layer = construct_kan_layer(
-            hidden_layer_size,
-            num_classes,
-            grid_size,
-            spline_order,
-            scale_base,
-            scale_noise,
-            device,
-        );
+        let kan_layer =
+            construct_kan_layer(hidden_layer_size, num_classes, &hyper_parameters, device);
 
         Self {
             activation: Relu::new(),
@@ -329,36 +309,29 @@ where
 }
 
 fn construct_kan_layer<B: Backend>(
-    mut hidden_layer_size: usize,
+    hidden_layer_size: usize,
     num_classes: usize,
-    grid_size: u16,
-    spline_order: u32,
-    scale_base: i32,
-    scale_noise: i32,
+    hyper_parameters: &Vec<Option<i32>>,
     device: &Device<B>,
 ) -> EfficientKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
-    // ensure that hidden_layer_size has a default value = 256
-    if hidden_layer_size <= 0 {
-        hidden_layer_size = 256;
-    }
     let mut kan_options = KanOptions::new([2048, hidden_layer_size as u32, num_classes as u32]);
 
-    if grid_size != 0 {
-        kan_options = kan_options.with_grid_size(grid_size);
+    if let Some(grid_size) = hyper_parameters[0] {
+        kan_options = kan_options.with_grid_size(grid_size as u16);
     }
 
-    if spline_order != 0 {
-        kan_options = kan_options.with_spline_order(spline_order);
+    if let Some(spline_order) = hyper_parameters[1] {
+        kan_options = kan_options.with_spline_order(spline_order as u32);
     }
 
-    if scale_base != 0 {
+    if let Some(scale_base) = hyper_parameters[2] {
         kan_options = kan_options.with_scale_base(scale_base as f32);
     }
 
-    if scale_noise != 0 {
+    if let Some(scale_noise) = hyper_parameters[3] {
         kan_options = kan_options.with_scale_noise(scale_noise as f32);
     }
 

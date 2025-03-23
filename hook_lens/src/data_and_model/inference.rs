@@ -170,31 +170,31 @@ where
     match id {
         1 => ModelEnum::Cnn(Cnn::new(13, device, 256)),
 
-        10 => ModelEnum::Kan_256(Kan::new(13, device, 256, 0, 0, 0, 0)),
-        11 => ModelEnum::Kan_512(Kan::new(13, device, 512, 0, 0, 0, 0)),
+        10 => ModelEnum::Kan_256(Kan::new(13, device, 256, vec![None , None ,None ,None])),
+        11 => ModelEnum::Kan_512(Kan::new(13, device, 512, vec![None , None ,None ,None])),
 
         20 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            KanCnn::new(13, device, 256, 15, 12, 4, 2),
+            KanCnn::new(13, device, 256, vec![Some(15) ,Some(12) ,Some(4),Some(2)]), 
         ),
         21 => ModelEnum::kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            KanCnn::new(13, device, 512, 15, 12, 4, 2),
+            KanCnn::new(13, device, 512, vec![Some(15) ,Some(12) ,Some(4),Some(2)]),
         ),
         22 => ModelEnum::kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
-            KanCnn::new(13, device, 1024, 15, 12, 4, 2),
+            KanCnn::new(13, device, 1024, vec![Some(15) ,Some(12) ,Some(4),Some(2)]),
         ),
         23 => {
             ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_44epoch(
-                KanCnn::new(13, device, 256, 15, 12, 4, 2),
+                KanCnn::new(13, device, 256, vec![Some(15) ,Some(12) ,Some(4),Some(2)]),
             )
         }
         24 => ModelEnum::kan_cnn_256_hook_lens_grid_size_15_spline_order_16_scale_base_3_scale_noise_2(
-            KanCnn::new(13, device, 256, 15, 16, 3, 2),
+            KanCnn::new(13, device, 256, vec![Some(15) ,Some(16) ,Some(3),Some(2)]),
         ),
         25 => ModelEnum::kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2_112epoch(
-            KanCnn::new(13, device, 1024, 15, 12, 4, 2),
+            KanCnn::new(13, device, 1024, vec![Some(15) ,Some(12) ,Some(4),Some(2)]),
         ),
         26 => ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(
-            KanCnn::new(13, device, 256, 20, 12, 4, 2),
+            KanCnn::new(13, device, 256, vec![Some(20) ,Some(12) ,Some(4),Some(2)]),
         ),
 
         _ => panic!("not valid model Id"),
