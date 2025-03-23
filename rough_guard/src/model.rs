@@ -1,48 +1,98 @@
 use burn::{
     nn::{Linear, LinearConfig},
-    prelude::*, tensor::activation::relu,
+    prelude::*,
+    tensor::activation::relu,
     tensor::Tensor,
 };
 use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
 
-#[derive(Module, Debug)]
-pub struct Model<B: Backend> {
-    pub kan_layer1: EfficientKan<B>,
-    pub kan_layer2: EfficientKan<B>,
-    pub class_weights: Tensor<B, 1>
+pub trait DeepLearningModel<B: Backend> {
+    fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2>;
 }
 
-#[derive(Config, Debug)]
-pub struct ModelConfig;
+#[derive(Module, Debug)]
+pub struct Kan<B: Backend> {
+    pub kan_layers: Vec<EfficientKan<B>>,
+    pub class_weights: Tensor<B, 1>,
+}
 
-impl ModelConfig {
-    pub fn init<B: Backend>(&self, device: &B::Device, class_weights: Tensor<B, 1>) -> Model<B> 
-    where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
-    {
-        Model{
-            kan_layer1: EfficientKan::new(&KanOptions::new([
-                241,
-                256,
-                128
-            ]).with_grid_size(6).with_spline_order(6), device),
-            kan_layer2: EfficientKan::new(&KanOptions::new([
-                128,
-                64,
-                4
-            ]).with_grid_size(6).with_spline_order(6), device),
-            class_weights
+impl<B: Backend> Kan<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    pub fn new(
+        layers_info: Vec<(Vec<i32>, Vec<i32>)>,
+        class_weights: Tensor<B, 1>,
+        device: &Device<B>,
+    ) -> Self {
+        // layers info : each vector in it represent one Kan layer
+
+        let mut kan_layers: Vec<EfficientKan<B>> = Vec::new();
+
+        for layer_info in layers_info.iter() {
+            let kan_layer = construct_kan_layer(&layer_info.0, &layer_info.1, device);
+            kan_layers.push(kan_layer);
+        }
+        Self {
+            kan_layers,
+            class_weights,
         }
     }
 }
 
-impl<B: Backend> Model<B> {
-    pub fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
-        let x = self.kan_layer1.forward(games);
-        self.kan_layer2.forward(x)
+impl<B: Backend> DeepLearningModel<B> for Kan<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
+        let mut x = games;
+        for kan_layer in &self.kan_layers {
+            x = kan_layer.forward(x)
+        }
+        return x;
+    }
+}
+
+// impl<B: Backend> Model<B> {
+//     pub fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
+//         let x = self.kan_layer1.forward(games);
+//         self.kan_layer2.forward(x)
+//     }
+
+//     pub fn infer(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
+//         self.forward(games.detach())
+//     }
+// }
+
+fn construct_kan_layer<B: Backend>(
+    options_values: &Vec<i32>,
+    hyper_parameters: &Vec<i32>,
+    device: &Device<B>,
+) -> EfficientKan<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    let mut kan_options = KanOptions::new([
+        options_values[0] as u32,
+        options_values[1] as u32,
+        options_values[2] as u32,
+    ]);
+    //hyper_parameters[0] --> grid size
+    if hyper_parameters[0] != 0 {
+        kan_options = kan_options.with_grid_size(hyper_parameters[0] as u16);
+    }
+    //hyper_parameters[1] ---> spline order
+    if hyper_parameters[1] != 0 {
+        kan_options = kan_options.with_spline_order(hyper_parameters[1] as u32);
+    }
+    //hyper_parameters[2] ---> scale_base
+    if hyper_parameters[2] != 0 {
+        kan_options = kan_options.with_scale_base(hyper_parameters[2] as f32);
+    }
+    //hyper_parameters[3] --> scale noise
+    if hyper_parameters[3] != 0 {
+        kan_options = kan_options.with_scale_noise(hyper_parameters[3] as f32);
     }
 
-    pub fn infer(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
-        self.forward(games.detach())
-    }
+    EfficientKan::new(&kan_options, device)
 }
