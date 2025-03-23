@@ -84,8 +84,18 @@ where
 {
     let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
     let model_archi = get_model_archi(id, dummy_weights, &device);
-    let model = load_model_weights(model_archi, artifact_dir, device);
-    return model;
+
+    let trained_model = match model_archi {
+        ModelEnum::Mlp(mlp_model_archi) => {
+            let model = load_mlp_model_weigths(mlp_model_archi, artifact_dir, device);
+            ModelEnum::Mlp(model)
+        }
+        ModelEnum::Kan(kan_model_archi) => {
+            let model = load_kan_model_weigths(kan_model_archi, artifact_dir, device);
+            ModelEnum::Kan(model)
+        }
+    };
+    trained_model
 }
 
 fn get_model_archi<B: Backend>(
@@ -97,6 +107,7 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     match id {
+        // mlp model with 12 linerar layer
         1 => ModelEnum::Mlp(Mlp::new(
             vec![
                 (241, 64),
@@ -115,6 +126,7 @@ where
             class_weights,
             device,
         )),
+        // kan model with 2 kan layers
         2 => ModelEnum::Kan(Kan::new(
             vec![
                 (vec![241, 256, 128], vec![6, 6, 0, 0]),
@@ -127,17 +139,30 @@ where
     }
 }
 
-fn load_model_weights<B: Backend>(
-    model_archi: ModelEnum<B>,
+fn load_kan_model_weigths<B: Backend>(
+    kan_model: Kan<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> ModelEnum<B>
+) -> Kan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
         .expect("Trained model should exist");
-    let model = model_archi.load_record(record);
-    return model;
+    kan_model.load_record(record)
+}
+
+fn load_mlp_model_weigths<B: Backend>(
+    mlp_model: Mlp<B>,
+    artifact_dir: &str,
+    device: B::Device,
+) -> Mlp<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    let record = CompactRecorder::new()
+        .load(format!("{artifact_dir}/model").into(), &device)
+        .expect("Trained model should exist");
+    mlp_model.load_record(record)
 }
