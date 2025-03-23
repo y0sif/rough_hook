@@ -3,6 +3,7 @@ use burn::prelude::Backend;
 use nnue::model::Model;
 
 use crate::board::Board;
+use crate::movement::Move;
 use crate::square::Square;
 use crate::transposition::TranspositionTable;
 pub struct Uci<B: Backend> {
@@ -97,9 +98,41 @@ impl<B: Backend> Uci<B> {
                     let moves = value.split_whitespace();
                     for one_move in moves {
                         let (from, to) = one_move.split_at(2);
+                        let (to, promotion) = if to.len() == 3 {
+                            to.split_at(2)
+                        }else {
+                            (to, "")
+                        };
                         let generated_moves = self.current_board.generate_legal_moves();
                         for gen_move in generated_moves {
                             if Square::from(gen_move.get_from()) == Square::from(from) && (Square::from(gen_move.get_to()) == Square::from(to)) {
+                                match promotion {
+                                    "n" => {
+                                        match gen_move.get_flags() {
+                                            Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => (),
+                                            _ => continue 
+                                        }
+                                    },
+                                    "b" => {
+                                        match gen_move.get_flags() {
+                                            Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => (),
+                                            _ => continue 
+                                        }
+                                    },
+                                    "r" => {
+                                        match gen_move.get_flags() {
+                                            Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => (),
+                                            _ => continue 
+                                        }
+                                    },
+                                    "q" => {
+                                        match gen_move.get_flags() {
+                                            Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => (),
+                                            _ => continue 
+                                        }
+                                    },
+                                    _ => ()
+                                }
                                 self.current_board.make_move(gen_move);
                             } 
                         }
