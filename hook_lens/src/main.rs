@@ -1,5 +1,5 @@
 use burn::{backend::Autodiff, module::Module, optim::AdamConfig, record::{CompactRecorder, Recorder}};
-use hook_lens::data_and_model::{model::{Cnn, CnnRecord, CustomCnn}, training::{train, TrainingConfig}};
+use hook_lens::data_and_model::{model::{Cnn, CnnRecord, CustomKanCnn}, training::{train, TrainingConfig}};
 use burn_cuda::{CudaDevice, Cuda};
 
 fn main() {
@@ -14,7 +14,7 @@ fn main() {
     
     let model = model.load_record(record);
     
-    let custom_model = CustomCnn::new(
+    let custom_model = CustomKanCnn::new(
         model.conv1.no_grad().clone(), 
         model.conv2.no_grad().clone(), 
         model.conv3.no_grad().clone(), 

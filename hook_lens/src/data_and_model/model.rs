@@ -33,7 +33,7 @@ pub struct Cnn<B: Backend> {
 }
 
 #[derive(Module, Debug)]
-pub struct CustomCnn<B: Backend> {
+pub struct CustomKanCnn<B: Backend> {
     activation: Relu,
     dropout: Dropout,
     pool: MaxPool2d,
@@ -154,7 +154,7 @@ impl<B: Backend> Cnn<B> {
     }
 }
 
-impl<B: Backend> CustomCnn<B> {
+impl<B: Backend> CustomKanCnn<B> {
     pub fn new(
         conv1: Conv2d<B>,
         conv2: Conv2d<B>,
