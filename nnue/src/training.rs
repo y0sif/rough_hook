@@ -30,11 +30,11 @@ impl <B: Backend> ValidStep<ChessPositionBatch<B>, RegressionOutput<B>> for Mode
 pub struct TrainingConfig{
     pub model: ModelConfig,
     pub optimizer: AdamConfig,
-    #[config(default = 10)]
+    #[config(default = 50)]
     pub num_epochs: usize,
-    #[config(default = 64)]
+    #[config(default = 256)]
     pub batch_size: usize,
-    #[config(default = 4)]
+    #[config(default = 12)]
     pub num_workers: usize,
     #[config(default = 42)]
     pub seed: u64,
@@ -73,12 +73,6 @@ pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, dev
         .metric_train_numeric(LossMetric::new())
         .metric_valid_numeric(LossMetric::new())
         .with_file_checkpointer(CompactRecorder::new())
-        .early_stopping(MetricEarlyStoppingStrategy::new::<LossMetric<B>>(
-            Aggregate::Mean,
-            Direction::Lowest,
-            Split::Valid,
-            StoppingCondition::NoImprovementSince { n_epochs: 1 },
-        ))
         .devices(vec![device.clone()])
         .num_epochs(config.num_epochs)
         .summary()
