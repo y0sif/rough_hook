@@ -1,10 +1,11 @@
-use super::model::DeepLearningModel;
+use super::model::{self, DeepLearningModel};
 use burn::{
     module::Module,
     prelude::Backend,
     record::{CompactRecorder, Recorder},
     tensor::{Device, Shape, Tensor, TensorData},
 };
+use opencv::barcode::NONE;
 
 use super::model::{Cnn, CnnRecord, Kan, KanCnn, KanCnnRecord, KanRecord};
 
@@ -26,6 +27,7 @@ pub enum ModelEnum<B: Backend> {
         KanCnn<B>,
     ),
     kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(KanCnn<B>),
+    preTrained_cnn_added_to_kan32(KanCnn<B>)
 }
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
@@ -60,7 +62,8 @@ where
             )=>model.forward(x),
             ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(
                 model
-            )=>model.forward(x)
+            )=>model.forward(x),
+            ModelEnum::preTrained_cnn_added_to_kan32(model)=>model.forward(x)
 
         }
     }
@@ -155,6 +158,10 @@ where
             let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
             ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(model)
         }
+        ModelEnum::preTrained_cnn_added_to_kan32(kan_cnn)=>{
+            let model = get_kan_cnn_model_from_record(kan_cnn, artifact_dir, device);
+            ModelEnum::preTrained_cnn_added_to_kan32(model)
+        }
     };
 
     return inner_model;
@@ -196,6 +203,10 @@ where
         26 => ModelEnum::kna_cnn_256_hook_lens_grid_size_20_spline_order_12_scale_base_4_scale_noise_4(
             KanCnn::new(13, device, 256, vec![Some(20) ,Some(12) ,Some(4),Some(2)]),
         ),
+        27 => ModelEnum::preTrained_cnn_added_to_kan32(
+            KanCnn::new(13, device, 32, vec![None , None , None , None]),
+        ),
+        
 
         _ => panic!("not valid model Id"),
     }
