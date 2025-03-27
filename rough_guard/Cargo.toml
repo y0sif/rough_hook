@@ -29,6 +29,7 @@ ndarray = "0.14"
 ndarray-linalg = "0.16"  
 serde = "*"
 rand = "0.8"
+prettytable-rs = "0.10"
 
 [dev-dependencies.ndarray-linalg]
 version = "0.16"

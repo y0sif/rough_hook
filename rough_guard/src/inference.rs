@@ -27,8 +27,13 @@ where
     }
 }
 
-pub fn infer<B: Backend>(model: &ModelEnum<B>, device: B::Device, game: &ChessGameItem)
+pub fn infer<B: Backend>(
+    model: &ModelEnum<B>,
+    device: B::Device,
+    game: &ChessGameItem,
+) -> (u8, Vec<f32>)
 where
+    B::IntElem: TryInto<u8> + std::fmt::Debug,
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     let label = game.label;
@@ -46,18 +51,12 @@ where
         .flatten::<1>(0, 1)
         .into_scalar();
 
-    println!(
-        "Predicted: {} ({}), Actual: {}",
-        predicted,
-        match predicted.to_i32() {
-            0 => "Clean Game",
-            1 => "White Cheating",
-            2 => "Black Cheating",
-            3 => "Both Cheating",
-            _ => unreachable!(),
-        },
-        label
-    );
+    let result: Result<u8, _> = predicted.try_into();
+
+    let predicted_res = match result {
+        Ok(value) => value,
+        Err(_) => panic!("Failed to convert prediction to u8"),
+    };
 
     // Print confidence distribution
     let probs: Vec<f32> = probabilities
@@ -67,11 +66,7 @@ where
         .to_vec()
         .unwrap();
 
-    println!("Confidence:");
-    println!("- None:    {:.2}%", probs[0] * 100.0);
-    println!("- White:   {:.2}%", probs[1] * 100.0);
-    println!("- Black:   {:.2}%", probs[2] * 100.0);
-    println!("- Both: {:.2}%", probs[3] * 100.0);
+    (predicted_res, probs)
 }
 
 pub fn load_model_paramter<B: Backend>(
