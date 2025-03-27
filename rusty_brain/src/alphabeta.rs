@@ -1,6 +1,7 @@
 use std::i32;
 use crate::board::{Board, Turn};
 use crate::movement::Move;
+use crate::nnue::NNUE;
 use crate::transposition::{TranspositionTable, Node};
 
 
@@ -196,7 +197,10 @@ impl Board {
         }
 
         if depth_left == 0 {
-            return self.evaluate();
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            };
         }
 
         let mut best_value = i32::MIN;
@@ -266,7 +270,10 @@ impl Board {
         }
         
         if depth_left == 0 {
-            return self.evaluate();
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            };
         }
 
         let mut best_value = i32::MAX;

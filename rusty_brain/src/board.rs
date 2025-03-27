@@ -6,6 +6,7 @@ use crate::magic::Magic;
 use crate::movement::Move;
 use crate::piece::Piece;
 use crate::square::Square;
+use crate::nnue::{Accumulator, Network, NNUE};
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Turn {
@@ -30,11 +31,14 @@ pub struct Board{
     pub castling_rights_log: Vec<CastlingRights>,
     pub en_passant_square: Option<Square>,
     pub best_move: Option<Move>,
+    pub white_accumulator: Accumulator,
+    pub black_accumulator: Accumulator,
+    pub accumulator_log: Vec<(Accumulator, Accumulator)>,
 }
 
 impl Board {
     pub fn new() -> Self {
-        Board{
+        let mut board = Board{
             bitboards: Bitboards::new(),
             turn: Turn::White,
             rook_attacks: Magic::piece_attacks(true),
@@ -50,11 +54,16 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
-        }
+            white_accumulator: Accumulator::new(&NNUE),
+            black_accumulator: Accumulator::new(&NNUE),
+            accumulator_log: Vec::new(),
+        };
+        board.init_feature_indices();
+        board
     }
     
     pub fn empty() -> Self{
-        Board {
+        let mut board = Board {
             bitboards: Bitboards::empty(),
             turn: Turn::White,
             rook_attacks: Magic::piece_attacks(true),
@@ -70,7 +79,12 @@ impl Board {
             castling_rights_log: Vec::new(),
             en_passant_square: None,
             best_move: None,
-        }
+            white_accumulator: Accumulator::new(&NNUE),
+            black_accumulator: Accumulator::new(&NNUE),
+            accumulator_log: Vec::new(),
+        };
+        board.init_feature_indices();
+        board
     }
     
     pub fn from_fen(fen: String) -> Self {
@@ -101,7 +115,7 @@ impl Board {
             }
         };
         
-        Board {
+        let mut board = Board {
             bitboards: Bitboards::from_fen(fen_vec[0]),
             turn,
             rook_attacks: Magic::piece_attacks(true),
@@ -116,11 +130,94 @@ impl Board {
             capture_log: Vec::new(),
             castling_rights_log: Vec::new(),
             en_passant_square,
-            best_move: None
+            best_move: None,
+            white_accumulator: Accumulator::new(&NNUE),
+            black_accumulator: Accumulator::new(&NNUE),
+            accumulator_log: Vec::new(),
+        };
+        board.init_feature_indices();
+        board
+    }
+
+    // Initialize feature indices for all pieces on the board
+    fn init_feature_indices(&mut self) {
+        // White pieces
+        self.add_piece_features(self.bitboards.white_pawns, Piece::Pawn, Turn::White);
+        self.add_piece_features(self.bitboards.white_knights, Piece::Knight, Turn::White);
+        self.add_piece_features(self.bitboards.white_bishops, Piece::Bishop, Turn::White);
+        self.add_piece_features(self.bitboards.white_rooks, Piece::Rook, Turn::White);
+        self.add_piece_features(self.bitboards.white_queens, Piece::Queen, Turn::White);
+        self.add_piece_features(self.bitboards.white_king, Piece::King, Turn::White);
+        
+        // Black pieces
+        self.add_piece_features(self.bitboards.black_pawns, Piece::Pawn, Turn::Black);
+        self.add_piece_features(self.bitboards.black_knights, Piece::Knight, Turn::Black);
+        self.add_piece_features(self.bitboards.black_bishops, Piece::Bishop, Turn::Black);
+        self.add_piece_features(self.bitboards.black_rooks, Piece::Rook, Turn::Black);
+        self.add_piece_features(self.bitboards.black_queens, Piece::Queen, Turn::Black);
+        self.add_piece_features(self.bitboards.black_king, Piece::King, Turn::Black);
+    }
+
+    // Compute feature index for a piece at a square
+    fn get_feature_index(&self, piece: Piece, turn: Turn, square: u8) -> usize {
+        // Each piece type has 64 indices per color (one for each square)
+        // This gives a total of 12*64 = 768 indices
+        let piece_offset = match piece {
+            Piece::Pawn => 0,
+            Piece::Knight => 1,
+            Piece::Bishop => 2,
+            Piece::Rook => 3,
+            Piece::Queen => 4,
+            Piece::King => 5,
+        } * 128;
+        
+        let color_offset = match turn {
+            Turn::White => 0,
+            Turn::Black => 64,
+        };
+        
+        piece_offset + color_offset + square as usize
+    }
+
+    // Add features for all pieces of a certain type on a bitboard
+    fn add_piece_features(&mut self, bitboard: u64, piece: Piece, color: Turn) {
+        let mut pieces = bitboard;
+        while pieces != 0 {
+            let square = pieces.trailing_zeros() as u8;
+            let feature_idx = self.get_feature_index(piece, color, square);
+            self.white_accumulator.add_feature(feature_idx, &NNUE);
+            self.black_accumulator.add_feature(feature_idx, &NNUE);
+            pieces &= pieces - 1; // Clear the least significant bit
         }
     }
-    
+
+    // Update accumulators when a piece moves
+    fn update_piece_feature(&mut self, from: u8, to: u8, piece: Piece, color: Turn) {
+        let old_feature = self.get_feature_index(piece, color, from);
+        let new_feature = self.get_feature_index(piece, color, to);
+        
+        self.white_accumulator.remove_feature(old_feature, &NNUE);
+        self.black_accumulator.remove_feature(old_feature, &NNUE);
+        
+        self.white_accumulator.add_feature(new_feature, &NNUE);
+        self.black_accumulator.add_feature(new_feature, &NNUE);
+    }
+
+    // Remove a piece's feature (for captures)
+    fn remove_piece_feature(&mut self, square: u8, piece: Piece, color: Turn) {
+        let feature_idx = self.get_feature_index(piece, color, square);
+        self.white_accumulator.remove_feature(feature_idx, &NNUE);
+        self.black_accumulator.remove_feature(feature_idx, &NNUE);
+    }
+        
     pub fn make_move(&mut self, move_to_make: Move) {
+        // Store previous state for potential undo
+        let prev_white_acc = self.white_accumulator;
+        let prev_black_acc = self.black_accumulator;
+
+        // Store accumulators in history
+        self.accumulator_log.push((prev_white_acc, prev_black_acc));
+
         self.checkmate = false;
         let start_position = 1 << move_to_make.get_from();
         let end_position = 1 << move_to_make.get_to();
@@ -130,6 +227,64 @@ impl Board {
         self.move_log.push(move_to_make);
         self.castling_rights_log.push(self.castling_rights);
         self.en_passant_square = None;
+
+        // Get source and destination squares
+        let from = move_to_make.get_from();
+        let to = move_to_make.get_to();
+        let flag = move_to_make.get_flags();
+        
+        // Determine piece being moved
+        let piece = self.get_piece_at_square(from);
+        let color = self.turn;
+        
+        // Handle captures separately to update accumulator
+        if flag == Move::CAPTURE || flag == Move::EP_CAPTURE || 
+        (flag >= Move::QUEEN_PROMO_CAPTURE && flag <= Move::BISHOP_PROMO_CAPTURE) {
+            // Remove captured piece from accumulator
+            let captured_piece = self.get_captured_piece(to, flag);
+            let captured_color = if self.turn == Turn::White { Turn::Black } else { Turn::White };
+            self.remove_piece_feature(to, captured_piece, captured_color);
+        }
+        
+        // Handle regular piece movement
+        if flag == Move::EP_CAPTURE {
+            // Special handling for en passant capture
+            let ep_square = if self.turn == Turn::White { to - 8 } else { to + 8 };
+            self.remove_piece_feature(ep_square, Piece::Pawn, if self.turn == Turn::White { Turn::Black } else { Turn::White });
+        }
+        
+        // Handle promotions
+        if flag >= Move::QUEEN_PROMOTION && flag <= Move::BISHOP_PROMO_CAPTURE {
+            // Remove pawn being promoted
+            self.remove_piece_feature(from, Piece::Pawn, color);
+            
+            // Add new promoted piece
+            let promoted_piece = match flag {
+                Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => Piece::Queen,
+                Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => Piece::Knight,
+                Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => Piece::Rook,
+                Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => Piece::Bishop,
+                _ => panic!("Invalid promotion flag"),
+            };
+            
+            let feature_idx = self.get_feature_index(promoted_piece, color, to);
+            self.white_accumulator.add_feature(feature_idx, &NNUE);
+            self.black_accumulator.add_feature(feature_idx, &NNUE);
+        } else {
+            // Normal piece movement
+            self.update_piece_feature(from, to, piece, color);
+        }
+        
+        // Handle castling (rook movement)
+        if flag == Move::KING_CASTLE {
+            let rook_from = if color == Turn::White { 7 } else { 63 };
+            let rook_to = if color == Turn::White { 5 } else { 61 };
+            self.update_piece_feature(rook_from, rook_to, Piece::Rook, color);
+        } else if flag == Move::QUEEN_CASTLE {
+            let rook_from = if color == Turn::White { 0 } else { 56 };
+            let rook_to = if color == Turn::White { 3 } else { 59 };
+            self.update_piece_feature(rook_from, rook_to, Piece::Rook, color);
+        }
         
 
         match flag {
@@ -284,6 +439,60 @@ impl Board {
         if *count == 3 {
             self.draw = true; // should probably be turned into a function to stop game
         }        
+    }
+
+    // Helper to get piece type at a square
+    fn get_piece_at_square(&self, square: u8) -> Piece {
+        let square_bit = 1u64 << square;
+        
+        if self.turn == Turn::White {
+            if self.bitboards.white_pawns & square_bit != 0 { return Piece::Pawn; }
+            if self.bitboards.white_knights & square_bit != 0 { return Piece::Knight; }
+            if self.bitboards.white_bishops & square_bit != 0 { return Piece::Bishop; }
+            if self.bitboards.white_rooks & square_bit != 0 { return Piece::Rook; }
+            if self.bitboards.white_queens & square_bit != 0 { return Piece::Queen; }
+            if self.bitboards.white_king & square_bit != 0 { return Piece::King; }
+        } else {
+            if self.bitboards.black_pawns & square_bit != 0 { return Piece::Pawn; }
+            if self.bitboards.black_knights & square_bit != 0 { return Piece::Knight; }
+            if self.bitboards.black_bishops & square_bit != 0 { return Piece::Bishop; }
+            if self.bitboards.black_rooks & square_bit != 0 { return Piece::Rook; }
+            if self.bitboards.black_queens & square_bit != 0 { return Piece::Queen; }
+            if self.bitboards.black_king & square_bit != 0 { return Piece::King; }
+        }
+        
+        panic!("No piece found at square {}", square);
+    }
+
+    // Helper to determine captured piece
+    fn get_captured_piece(&self, square: u8, flag: u8) -> Piece {
+        if flag == Move::EP_CAPTURE {
+            return Piece::Pawn;
+        }
+        
+        let square_bit = 1u64 << square;
+        let enemy_color = if self.turn == Turn::White { Turn::Black } else { Turn::White };
+        
+        match enemy_color {
+            Turn::White => {
+                if self.bitboards.white_pawns & square_bit != 0 { return Piece::Pawn; }
+                if self.bitboards.white_knights & square_bit != 0 { return Piece::Knight; }
+                if self.bitboards.white_bishops & square_bit != 0 { return Piece::Bishop; }
+                if self.bitboards.white_rooks & square_bit != 0 { return Piece::Rook; }
+                if self.bitboards.white_queens & square_bit != 0 { return Piece::Queen; }
+                // King can't be captured
+            },
+            Turn::Black => {
+                if self.bitboards.black_pawns & square_bit != 0 { return Piece::Pawn; }
+                if self.bitboards.black_knights & square_bit != 0 { return Piece::Knight; }
+                if self.bitboards.black_bishops & square_bit != 0 { return Piece::Bishop; }
+                if self.bitboards.black_rooks & square_bit != 0 { return Piece::Rook; }
+                if self.bitboards.black_queens & square_bit != 0 { return Piece::Queen; }
+                // King can't be captured
+            }
+        }
+        
+        panic!("No piece found at capture square {}", square);
     }
     
     fn make_en_passant(&mut self, end_position: u64) {
@@ -577,6 +786,12 @@ impl Board {
         let end_position = 1 << last_move.get_to();
         let start_position = 1 << last_move.get_from();
         let flag = last_move.get_flags();
+
+        // Restore previous accumulator state
+        if let Some((prev_white_acc, prev_black_acc)) = self.accumulator_log.pop() {
+            self.white_accumulator = prev_white_acc;
+            self.black_accumulator = prev_black_acc;
+        }
         
         match flag {
             Move::CAPTURE => self.undo_capture(end_position), 

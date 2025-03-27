@@ -12,3 +12,4 @@ pub mod evaluation;
 pub mod zobrist;
 pub mod transposition;
 pub mod uci;
+pub mod nnue;
