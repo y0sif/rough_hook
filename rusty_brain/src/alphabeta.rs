@@ -1,3 +1,4 @@
+use std::cmp::max;
 use std::i32;
 use crate::board::{Board, Turn};
 use crate::movement::Move;
@@ -26,22 +27,22 @@ impl Board {
         */
         
         //using alphabeta with transposition table
+        /*
         let eval = match self.turn {
             Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
             Turn::Black => self.alpha_beta_min_tt(transposition_table,true, i32::MIN, i32::MAX, depth),
         };
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-        
+        */
         
         //Iterative deepening, needs move ordering to show its strength
-        // let eval = match self.turn {
-        //     Turn::White => self.iterative_deepening(transposition_table, true, depth),
-        //     Turn::Black => self.iterative_deepening(transposition_table, false, depth),
-        // }; 
-        // (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-        
+        let eval = match self.turn {
+            Turn::White => self.iterative_deepening(transposition_table, true, depth),
+            Turn::Black => self.iterative_deepening(transposition_table, false, depth),
+        }; 
+        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
 
-        //(self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
+
 
     }
 
@@ -307,4 +308,35 @@ impl Board {
         
         return best_value;
     }
+
+    fn iterative_deepening(&mut self, transposition_table: &mut TranspositionTable, maximizing: bool, max_depth: i32) -> i32 {
+        
+        let mut best_score = 0;
+        let mut guess = 0;
+        let mut delta = 100;
+        
+        for depth in 1..=max_depth{
+            let mut alpha = guess - delta;
+            let mut beta = guess + delta;
+
+            loop{
+                best_score = if maximizing{
+                    self.alpha_beta_max_tt(transposition_table, true, alpha, beta, depth)
+                }else{
+                    self.alpha_beta_min_tt(transposition_table, true, alpha, beta, depth)
+                };
+                if best_score <= alpha{
+                    alpha = alpha -delta; //fail low, widen window low side
+                } else if best_score >= beta{
+                    beta = beta + delta; // fail high, widen window high side
+                }else{ // success!
+                    guess = best_score; //want to figure out if it should be zeroed out every new depth or not
+                    break;
+                }
+            delta = delta *2;}
+        }
+        
+        best_score
+    }
+
 }
