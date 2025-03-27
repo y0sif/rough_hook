@@ -1103,11 +1103,7 @@ impl Board {
             }
             flipped
         }
-        if self.draw || self.stalemate {
-            score = 0;
-        }
 
-<<<<<<< HEAD
         // Flip the bitboards correctly
         clone_board.bitboards.white_pawns = flip_vertical(self.bitboards.black_pawns);
         clone_board.bitboards.white_bishops = flip_vertical(self.bitboards.black_bishops);
@@ -1125,9 +1121,6 @@ impl Board {
 
         // Return the modified cloned board
         clone_board
-=======
-        score
->>>>>>> origin/alpha_beta
     }
 
     /*
