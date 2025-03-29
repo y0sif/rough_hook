@@ -24,7 +24,7 @@ mod test {
         let mut models_results: Vec<(&str, i64, i64, f32, f32)> = Vec::new();
         // get the models to be tested from the repository of test models
         let mut repository = Repository::new();
-        repository.load_models_by_ids(vec![1]);
+        repository.load_models_by_ids(vec![1, 2]);
 
         for (model_name, model_path, id) in repository.test_models {
             println!("######## model name = {} ##########", model_name);
@@ -57,7 +57,7 @@ mod test {
     }
 
     fn test_model(model: ModelEnum<Cuda<f32, i32>>) -> (i64, i64) {
-        let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_without_norm_feb.db");
+        let db_file = Path::new("rough_guard/data_in_sql_lite/test_unnorm.db");
         let dataset: SqliteDataset<ChessGameItem> =
             SqliteDataset::from_db_file(db_file, "train").unwrap();
         let game_items = dataset.iter().collect::<Vec<_>>();

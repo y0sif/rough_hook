@@ -110,6 +110,22 @@ where
                 (128, 256),
                 (256, 512),
                 (512, 1024),
+                (1024, 512),
+                (512, 256),
+                (256, 128),
+                (128, 64),
+                (64, 4),
+            ],
+            class_weights,
+            device,
+        )),
+        2 => ModelEnum::Mlp(Mlp::new(
+            vec![
+                (241, 64),
+                (64, 128),
+                (128, 256),
+                (256, 512),
+                (512, 1024),
                 (1024, 2048),
                 (2048, 1024),
                 (1024, 512),
@@ -122,7 +138,7 @@ where
             device,
         )),
         // kan model with 2 kan layers
-        2 => ModelEnum::Kan(Kan::new(
+        _ => ModelEnum::Kan(Kan::new(
             vec![
                 (vec![241, 256, 128], vec![Some(6), Some(6), None, None]),
                 (vec![128, 64, 4], vec![Some(6), Some(6), None, None]),
