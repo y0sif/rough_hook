@@ -7,3 +7,6 @@
 /hook_lens/test_images
 /rough_guard/data_in_sql_lite
 /kanue
+/.vscode
+/hook_lens/hook_lens_data
+/hook_lens/hook_lens_models

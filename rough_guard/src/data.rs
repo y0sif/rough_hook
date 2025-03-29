@@ -1,3 +1,4 @@
+use burn::data;
 use burn::data::dataloader::batcher::Batcher;
 use burn::prelude::*;
 use burn_dataset::transform::ShuffledDataset;
@@ -43,9 +44,9 @@ where
     D: serde::Deserializer<'de>,
 {
     use serde::de::Error;
-    
+
     let bytes: Vec<u8> = Vec::deserialize(deserializer)?;
-    
+
     // Validate length for exactly 20 f32 elements (80 bytes)
     if bytes.len() != 80 {
         return Err(Error::custom(format!(
@@ -54,9 +55,11 @@ where
         )));
     }
 
-    bytes.chunks_exact(4)
+    bytes
+        .chunks_exact(4)
         .map(|chunk| {
-            chunk.try_into()
+            chunk
+                .try_into()
                 .map_err(|_| Error::custom("Failed to convert 4-byte chunk to array"))
                 .map(f32::from_le_bytes)
         })
@@ -66,11 +69,12 @@ where
 pub fn test_deserialization() {
     let dataset = ChessGameDataSet::train();
     let item = dataset.get(0).unwrap();
-    
-    //println!("First element: {}", item.bucket_index);
-    item.white_response_time.iter().for_each(|item| println!("{}", item));
-}
 
+    //println!("First element: {}", item.bucket_index);
+    item.white_response_time
+        .iter()
+        .for_each(|item| println!("{}", item));
+}
 
 type MappedDataset = Box<dyn Dataset<ChessGameItem>>;
 pub struct ChessGameDataSet {
@@ -95,37 +99,38 @@ impl ChessGameDataSet {
     pub fn test() -> Self {
         Self::new("test")
     }
-    
+
     fn new(split: &str) -> Self {
         let db_file = Path::new("rough_guard/data_in_sql_lite/pgn_features_with_norm.db");
         let dataset = SqliteDataset::from_db_file(db_file, "train").unwrap();
-        
+
         // Create stratified train/test splits
         let (train_indices, test_indices) = Self::create_stratified_split(&dataset);
-        
+
         // Create a filtered dataset using the appropriate indices
         let indices = match split {
             "train" => train_indices,
             "test" => test_indices,
             _ => panic!("Invalid split type"),
         };
-        
+
         // Create a filtered dataset and shuffle it
         let dataset = FilteredDataset {
             source: dataset,
             indices,
         };
-        
+
         let dataset = ShuffledDataset::with_seed(Box::new(dataset), 42);
         let dataset = Box::new(dataset);
 
         ChessGameDataSet { dataset }
     }
-    
+
     fn create_stratified_split(dataset: &SqliteDataset<ChessGameItem>) -> (Vec<usize>, Vec<usize>) {
         // Group indices by class
-        let mut class_indices: Vec<Vec<usize>> = vec![Vec::new(), Vec::new(), Vec::new(), Vec::new()];
-        
+        let mut class_indices: Vec<Vec<usize>> =
+            vec![Vec::new(), Vec::new(), Vec::new(), Vec::new()];
+
         for i in 0..dataset.len() {
             if let Some(item) = dataset.get(i) {
                 let label = item.label as usize;
@@ -134,19 +139,19 @@ impl ChessGameDataSet {
                 }
             }
         }
-        
+
         // Create train and test indices with stratified split
         let mut train_indices = Vec::new();
         let mut test_indices = Vec::new();
-        
+
         for indices in class_indices.iter() {
             let train_count = indices.len() * 8 / 10; // 80% for training
-            
+
             // Add indices to respective splits
             train_indices.extend(indices.iter().take(train_count).cloned());
             test_indices.extend(indices.iter().skip(train_count).cloned());
         }
-        
+
         (train_indices, test_indices)
     }
 }
@@ -165,7 +170,7 @@ impl<D: Dataset<ChessGameItem>> Dataset<ChessGameItem> for FilteredDataset<D> {
             None
         }
     }
-    
+
     fn len(&self) -> usize {
         self.indices.len()
     }
@@ -211,17 +216,17 @@ pub struct ChessGameBatch<B: Backend> {
 impl<B: Backend> ChessGameBatch<B> {
     pub fn flatten(&self) -> Tensor<B, 2> {
         let tensors = vec![
-            self.white_response_time.clone(), 
-            self.white_remaining_time.clone(), 
+            self.white_response_time.clone(),
+            self.white_remaining_time.clone(),
             self.white_win_chance.clone(),
-            self.white_move_accuracy.clone(), 
-            self.white_board_material.clone(), 
+            self.white_move_accuracy.clone(),
+            self.white_board_material.clone(),
             self.white_legal_moves.clone(),
-            self.black_response_time.clone(), 
-            self.black_remaining_time.clone(), 
+            self.black_response_time.clone(),
+            self.black_remaining_time.clone(),
             self.black_win_chance.clone(),
-            self.black_move_accuracy.clone(), 
-            self.black_board_material.clone(), 
+            self.black_move_accuracy.clone(),
+            self.black_board_material.clone(),
             self.black_legal_moves.clone(),
             self.bucket_index.clone(),
         ];
@@ -230,32 +235,37 @@ impl<B: Backend> ChessGameBatch<B> {
     }
 }
 
-impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B> {
-    fn batch(&self, items: Vec<ChessGameItem>) -> FeaturesBatch<B> {
-
+impl<B: Backend> Batcher<&ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B> {
+    fn batch(&self, items: Vec<&ChessGameItem>) -> FeaturesBatch<B> {
         let label = Tensor::cat(
-            items.iter()
+            items
+                .iter()
                 .map(|item| Tensor::<B, 1, Int>::from_data([item.label], &self.device))
                 .collect::<Vec<_>>(),
             0,
         );
-        
+
         let feature_tensors = |f: fn(&ChessGameItem) -> &Vec<f32>| -> Tensor<B, 2> {
             Tensor::cat(
-                items.iter()
-                    .map(|item| Tensor::<B, 1>::from_data(f(item).as_slice(), &self.device).unsqueeze())
+                items
+                    .iter()
+                    .map(|item| {
+                        Tensor::<B, 1>::from_data(f(item).as_slice(), &self.device).unsqueeze()
+                    })
                     .collect::<Vec<_>>(),
                 0,
             )
         };
 
         let bucket_index = Tensor::cat(
-            items.iter()
+            items
+                .iter()
                 .map(|item| Tensor::<B, 1>::from_data([item.bucket_index], &self.device))
                 .collect::<Vec<_>>(),
             0,
-        ).unsqueeze_dim(1);
-        
+        )
+        .unsqueeze_dim(1);
+
         let batch = ChessGameBatch {
             white_response_time: feature_tensors(|item| &item.white_response_time),
             white_remaining_time: feature_tensors(|item| &item.white_remaining_time),
@@ -270,13 +280,13 @@ impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B
             black_move_accuracy: feature_tensors(|item| &item.black_move_accuracy),
             black_board_material: feature_tensors(|item| &item.black_board_material),
             black_legal_moves: feature_tensors(|item| &item.black_legal_moves),
-            
+
             bucket_index,
             label,
         };
-        FeaturesBatch{
+        FeaturesBatch {
             features: batch.flatten(),
-            label: batch.label
+            label: batch.label,
         }
     }
 }

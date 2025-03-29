@@ -1,13 +1,12 @@
 use burn::{
     backend::{Autodiff, Wgpu},
-    optim::AdamConfig, 
+    optim::AdamConfig,
 };
-use rough_guard::{data, model::ModelConfig, training::TrainingConfig};
+use rough_guard::data;
 
-use burn_cuda::{CudaDevice, Cuda};
+use burn_cuda::{Cuda, CudaDevice};
 
 fn main() {
-    
     let artifact_dir = "/tmp/rough_guard";
 
     //Wgpu Code
@@ -19,18 +18,15 @@ fn main() {
     //    TrainingConfig::new(ModelConfig::new(), AdamConfig::new()),
     //    device.clone()
     //);
-    
 
     // CUDA CODE
-    let device = CudaDevice::default();
-      rough_guard::training::train::<Autodiff<Cuda<f32, i32>>>(
-          artifact_dir,
-          TrainingConfig::new(ModelConfig::new(), AdamConfig::new()),
-          device.clone(),
-      );
+    // let device = CudaDevice::default();
+    // rough_guard::training::train::<Autodiff<Cuda<f32, i32>>>(
+    //     artifact_dir,
+    //     TrainingConfig::new(ModelConfig::new(), AdamConfig::new()),
+    //     device.clone(),
+    // );
 
     // TEST DB
     //data::test_deserialization();
-
-    
 }
