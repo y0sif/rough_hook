@@ -1,9 +1,7 @@
-use std::cmp::max;
 use std::i32;
 use crate::board::{Board, Turn};
 use crate::movement::Move;
 use crate::transposition::{TranspositionTable, Node};
-use crate::square::Square;
 
 
 impl Board {
@@ -116,7 +114,6 @@ impl Board {
         let moves: Vec<Move> = self.generate_legal_moves();
 
         for current_move in moves {
-            //println!("[MAX] Now in move {} {}", Square::from(current_move.get_from()), Square::from(current_move.get_to()));
             self.make_move(current_move);
             let score: i32 = self.alpha_beta_min(false, alpha, beta, depth_left - 1);
             if self.checkmate || self.draw || self.stalemate {
@@ -156,7 +153,6 @@ impl Board {
         let moves: Vec<Move> = self.generate_legal_moves();
 
         for current_move in moves {
-            //println!("[MIN] Now in move {} {}", Square::from(current_move.get_from()), Square::from(current_move.get_to()));
             self.make_move(current_move);
             let score = self.alpha_beta_max(false, alpha, beta, depth_left-1);
             if self.checkmate || self.draw || self.stalemate {
