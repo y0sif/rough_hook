@@ -2,12 +2,16 @@
 mod tests {
     use crate::data_and_model::inference::{self, load_model_paramter, ModelEnum};
     use crate::input_data_handling::fen_string_generation::get_fen_string_from;
+    use burn::backend::libtorch::LibTorchDevice;
+    use burn::backend::wgpu::WgpuDevice;
+    use burn::prelude::Backend;
     use image::imageops;
     use imageops::FilterType;
     use rusty_brain::board::Board;
     //use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     use crate::test::test_models_repository::Repository;
     use burn_cuda::{Cuda, CudaDevice};
+    use burn::backend::{LibTorch, Wgpu};
     use prettytable::{row, Table};
     use std::collections::HashMap;
     use std::fs;
@@ -22,11 +26,21 @@ mod tests {
         // assert_eq!(flag, true);
 
         // generalization test
-        test_models_on_un_seen_data();
+        #[cfg(feature = "tch-gpu")]
+        test_models_on_un_seen_data::<LibTorch>(&LibTorchDevice::Cuda(0));
+        #[cfg(feature = "cuda")]
+        test_models_on_un_seen_data::<Cuda<f32, i32>>(&CudaDevice::new(0));
+        #[cfg(feature = "wgpu")]
+        test_models_on_un_seen_data::<Wgpu>(&WgpuDevice::new());
+
         assert_eq!(1, 0);
     }
 
-    fn test_fen_string_of_image_1() -> bool {
+    fn test_fen_string_of_image_1<B: Backend>(device: &B::Device) -> bool 
+    where
+        B::IntElem: TryInto<u8> + std::fmt::Debug,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    {
         let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
         // Name - Path - Id
         let mut repository = Repository::new();
@@ -42,12 +56,12 @@ mod tests {
         let mut flag = false;
 
         for (model_name, model_path, id) in repository.test_models {
-            let model: ModelEnum<Cuda<f32, i32>> =
-                load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
+            let model: ModelEnum<B> =
+                load_model_paramter::<B>(id, &model_path, device);
 
             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
             let start = Instant::now();
-            let predicted_fen_string = get_fen_string_from(board_image_path, model);
+            let predicted_fen_string = get_fen_string_from(board_image_path, model, device);
             let duration = start.elapsed().as_secs_f32();
             println!("====================== actual board =======================");
 
@@ -100,7 +114,11 @@ mod tests {
         Ok(differences)
     }
 
-    fn test_models_on_un_seen_data() {
+    fn test_models_on_un_seen_data<B: Backend>(device: &B::Device) 
+    where
+        B::IntElem: TryInto<u8> + std::fmt::Debug,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    {
         // to store the results of the models on it then use it to create a table that contain info all tested models
         let mut models_results: Vec<(&str, i16, i16, f32, f32)> = Vec::new();
         // get the models to be tested from the repository of test models
@@ -108,18 +126,18 @@ mod tests {
 
         //repository.load_all_models();
         //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
-        repository.load_models_by_ids(vec![1]); // uncomment it to provide the models you want to test
+        repository.load_models_by_ids(vec![30]); // uncomment it to provide the models you want to test
 
         for (model_name, model_path, id) in repository.test_models {
             println!("model name : {}", model_name);
-            let model: ModelEnum<Cuda<f32, i32>> =
-                load_model_paramter::<Cuda<f32, i32>>(id, &model_path, CudaDevice::default());
+            let model: ModelEnum<B> =
+                load_model_paramter::<B>(id, &model_path, device);
 
             if model_name.len() == 0 || model_path.len() == 0 {
                 continue;
             }
             let start = Instant::now();
-            let (total_num_of_images, correct_predictions) = test_model(model);
+            let (total_num_of_images, correct_predictions) = test_model(model, device);
             let duration = start.elapsed().as_secs_f32();
             let accuracy = (correct_predictions as f32 / total_num_of_images as f32) * 100 as f32;
             let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
@@ -136,8 +154,12 @@ mod tests {
         print_results_table(models_results);
     }
 
-    fn test_model(model: ModelEnum<Cuda<f32, i32>>) -> (i16, i16) {
-        let test_dir_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_data/big_test";
+    fn test_model<B: Backend>(model: ModelEnum<B>, device: &B::Device) -> (i16, i16) 
+    where
+        B::IntElem: TryInto<u8> + std::fmt::Debug,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    {
+        let test_dir_path =  "/home/y0sif/Downloads/hook_lens_data/augmented_val" ;
 
         let mut map = HashMap::new();
         map.insert(0 as u8, "bb");
@@ -180,9 +202,9 @@ mod tests {
                                 let rgb_image = img.to_rgb8();
                                 let image = rgb_image.into_raw(); // Convert to Vec<u8>
 
-                                let prediction = map[&inference::infer_model::<Cuda<f32, i32>>(
+                                let prediction = map[&inference::infer_model::<B>(
                                     &model,
-                                    CudaDevice::default(),
+                                    &device,
                                     image.to_vec(),
                                 )];
 
