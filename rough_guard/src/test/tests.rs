@@ -111,11 +111,24 @@ mod test {
         // Print the table to the console
         table.printstd();
     }
+
     fn generate_report(
         actual_labels: &[i32],
         predicted_labels: &[i32],
         correct_prediction_labels: &[i32],
     ) {
+
+        let mut table = Table::new();
+
+        // Add a header row
+        table.add_row(row![
+            "Label",
+            "#Actaul",
+            "#Predicited",
+            "#Correct Predictied",
+            "Accuracy",
+        ]);
+
         for i in 0..4 {
             let label = match i {
                 0 => "Clean Game",
@@ -128,16 +141,6 @@ mod test {
                 (correct_prediction_labels[i] as f32 / actual_labels[i] as f32) * 100 as f32;
             let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
 
-            let mut table = Table::new();
-
-            // Add a header row
-            table.add_row(row![
-                "Label",
-                "#Actaul",
-                "#Predicited",
-                "#Correct Predictied",
-                "Accuracy",
-            ]);
             table.add_row(row![
                 label,
                 actual_labels[i],
@@ -146,6 +149,8 @@ mod test {
                 accuracy
             ]);
         }
+        
+        table.printstd();
     }
 }
 
