@@ -24,7 +24,7 @@ mod test {
         let mut models_results: Vec<(&str, i64, i64, f32, f32)> = Vec::new();
         // get the models to be tested from the repository of test models
         let mut repository = Repository::new();
-        repository.load_models_by_ids(vec![1, 2]);
+        repository.load_models_by_ids(vec![1]);
 
         for (model_name, model_path, id) in repository.test_models {
             println!("######## model name = {} ##########", model_name);

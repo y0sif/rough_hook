@@ -3,21 +3,11 @@ use burn::{
     prelude::*, tensor::activation::relu,
     tensor::Tensor,
 };
+use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
 
 #[derive(Module, Debug)]
 pub struct Model<B: Backend> {
-    linear1: Linear<B>,
-    linear2: Linear<B>,
-    linear3: Linear<B>,
-    linear4: Linear<B>,
-    linear5: Linear<B>,
-    linear6: Linear<B>,
-    linear7: Linear<B>,
-    linear8: Linear<B>,
-    linear9: Linear<B>,
-    linear10: Linear<B>,
-    linear11: Linear<B>,
-    linear12: Linear<B>,
+    pub kan_layer: EfficientKan<B>,
     pub class_weights: Tensor<B, 1>
 }
 
@@ -25,20 +15,16 @@ pub struct Model<B: Backend> {
 pub struct ModelConfig;
 
 impl ModelConfig {
-    pub fn init<B: Backend>(&self, device: &B::Device, class_weights: Tensor<B, 1>) -> Model<B> {
+    pub fn init<B: Backend>(&self, device: &B::Device, class_weights: Tensor<B, 1>) -> Model<B> 
+    where
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack, 
+    {
         Model{
-            linear1: LinearConfig::new(241, 64).init(device),
-            linear2: LinearConfig::new(64, 128).init(device),
-            linear3: LinearConfig::new(128, 256).init(device),
-            linear4: LinearConfig::new(256, 512).init(device),
-            linear5: LinearConfig::new(512, 1024).init(device),
-            linear6: LinearConfig::new(1024, 2048).init(device),
-            linear7: LinearConfig::new(2048, 1024).init(device),
-            linear8: LinearConfig::new(1024, 512).init(device),
-            linear9: LinearConfig::new(512, 256).init(device),
-            linear10: LinearConfig::new(256, 128).init(device),
-            linear11: LinearConfig::new(128, 64).init(device),
-            linear12: LinearConfig::new(64, 4).init(device),
+            kan_layer: EfficientKan::new(&KanOptions::new([
+                241,
+                1024,
+                4
+            ]).with_grid_size(2).with_spline_order(2), device),
             class_weights
         }
     }
@@ -46,29 +32,7 @@ impl ModelConfig {
 
 impl<B: Backend> Model<B> {
     pub fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
-        let x = self.linear1.forward(games);
-        let x = relu(x);
-        let x = self.linear2.forward(x);
-        let x = relu(x);
-        let x = self.linear3.forward(x);
-        let x = relu(x);
-        let x = self.linear4.forward(x);
-        let x = relu(x);
-        let x = self.linear5.forward(x);
-        let x = relu(x);
-        let x = self.linear6.forward(x);
-        let x = relu(x);
-        let x = self.linear7.forward(x);
-        let x = relu(x);
-        let x = self.linear8.forward(x);
-        let x = relu(x);
-        let x = self.linear9.forward(x);
-        let x = relu(x);
-        let x = self.linear10.forward(x);
-        let x = relu(x);
-        let x = self.linear11.forward(x);
-        let x = relu(x);
-        self.linear12.forward(x)
+        self.kan_layer.forward(games)
     }
 
     pub fn infer(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {

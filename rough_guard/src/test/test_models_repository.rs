@@ -11,8 +11,17 @@ impl<'a> Repository<'a> {
 
     pub fn load_all_models(&mut self) {
         self.test_models = vec![
-            //  ("unnorm_mlp_64_128_256_512_1024_512_256_128_64", "/home/y0sif/rough_guard_models/stratified/rough_guard_64_128_256_512_1024_512_256_128_64", 1),
-             ("unnorm_mlp_64_128_256_512_1024_2048_1024_512_256_128_64", "/home/y0sif/rough_guard_models/stratified/rough_guard_64_128_256_512_1024_2048_1024_512_256_128_64", 2),
+            // ("unnorm_kan_128_grid_size_2_spline_order_2", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_128_grid_size_2_spline_order_2", 1),
+            // ("unnorm_kan_256_grid_size_2_spline_order_2", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_256_grid_size_2_spline_order_2", 1),
+            // ("unnorm_kan_256_grid_size_2_spline_order_6", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_256_grid_size_2_spline_order_6", 1),
+            // ("unnorm_kan_256_grid_size_6_spline_order_2", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_256_grid_size_6_spline_order_2", 1),
+            // ("unnorm_kan_512_grid_size_2_spline_order_2", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_512_grid_size_2_spline_order_2", 1),
+            ("unnorm_kan_1024_grid_size_2_spline_order_2", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_1024_grid_size_2_spline_order_2", 1),
+            // ("unnorm_kan_128_grid_size_2_spline_order_6", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_128_grid_size_2_spline_order_6", 2),
+            // ("unnorm_kan_128_grid_size_6_spline_order_2", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_128_grid_size_6_spline_order_2", 3),
+            // ("unnorm_kan_256_128_64_grid_size_6_spline_order_6", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_256_128_64_grid_size_6_spline_order_6", 4),
+            // ("unnorm_kan_256_128_64_grid_size_8_spline_order_8", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_256_128_64_grid_size_8_spline_order_8", 5),
+            // ("unnorm_kan_256_128_64_grid_size_10_spline_order_10", "/home/y0sif/rough_guard_models/kan/unnorm/rough_guard_256_128_64_grid_size_10_spline_order_10", 6),
         ]
     }
 
