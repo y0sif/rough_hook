@@ -235,8 +235,8 @@ impl<B: Backend> ChessGameBatch<B> {
     }
 }
 
-impl<B: Backend> Batcher<&ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B> {
-    fn batch(&self, items: Vec<&ChessGameItem>) -> FeaturesBatch<B> {
+impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B> {
+    fn batch(&self, items: Vec<ChessGameItem>) -> FeaturesBatch<B> {
         let label = Tensor::cat(
             items
                 .iter()

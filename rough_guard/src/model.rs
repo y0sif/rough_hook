@@ -53,12 +53,12 @@ where
 
 //////////////////////////////////////////////// Kan Template ///////////////////////////////////////////////////////
 #[derive(Module, Debug)]
-pub struct Kan<B: Backend> {
+pub struct ModifiedKan<B: Backend> {
     pub kan_layers: Vec<EfficientKan<B>>,
     pub class_weights: Tensor<B, 1>,
 }
 
-impl<B: Backend> Kan<B>
+impl<B: Backend> ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -82,7 +82,7 @@ where
     }
 }
 
-impl<B: Backend> DeepLearningModel<B> for Kan<B>
+impl<B: Backend> DeepLearningModel<B> for ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {

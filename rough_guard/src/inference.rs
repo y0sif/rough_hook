@@ -1,7 +1,6 @@
 use super::model::DeepLearningModel;
-use super::model::{Kan, KanRecord, Mlp, MlpRecord};
+use super::model::{ModifiedKan, ModifiedKanRecord, Mlp, MlpRecord};
 use crate::data::{ChessGameBatcher, ChessGameItem};
-use crate::model;
 use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
@@ -12,7 +11,7 @@ use burn::{
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
     Mlp(Mlp<B>),
-    Kan(Kan<B>),
+    ModifiedKan(ModifiedKan<B>),
 }
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
@@ -22,7 +21,7 @@ where
     fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
         match self {
             ModelEnum::Mlp(model) => model.forward(games),
-            ModelEnum::Kan(model) => model.forward(games),
+            ModelEnum::ModifiedKan(model) => model.forward(games),
         }
     }
 }
@@ -38,7 +37,7 @@ where
 {
     let label = game.label;
     let batcher = ChessGameBatcher::new(device);
-    let batch = batcher.batch(vec![game]);
+    let batch = batcher.batch(vec![game.clone()]);
 
     // Forward pass
     let output = model.forward(batch.features);
@@ -85,9 +84,9 @@ where
             let model = load_mlp_model_weigths(mlp_model_archi, artifact_dir, device);
             ModelEnum::Mlp(model)
         }
-        ModelEnum::Kan(kan_model_archi) => {
+        ModelEnum::ModifiedKan(kan_model_archi) => {
             let model = load_kan_model_weigths(kan_model_archi, artifact_dir, device);
-            ModelEnum::Kan(model)
+            ModelEnum::ModifiedKan(model)
         }
     };
     trained_model
@@ -138,7 +137,7 @@ where
             device,
         )),
         // kan model with 2 kan layers
-        _ => ModelEnum::Kan(Kan::new(
+        _ => ModelEnum::ModifiedKan(ModifiedKan::new(
             vec![
                 (vec![241, 256, 128], vec![Some(6), Some(6), None, None]),
                 (vec![128, 64, 4], vec![Some(6), Some(6), None, None]),
@@ -151,10 +150,10 @@ where
 }
 
 fn load_kan_model_weigths<B: Backend>(
-    kan_model: Kan<B>,
+    kan_model: ModifiedKan<B>,
     artifact_dir: &str,
     device: B::Device,
-) -> Kan<B>
+) -> ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
