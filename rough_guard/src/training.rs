@@ -27,7 +27,7 @@ pub fn compute_class_weights<B: Backend>(
     dataset: &crate::data::ChessGameDataSet,
     device: &B::Device,
 ) -> Tensor<B, 1> {
-    let num_classes = 4;
+    let num_classes = 2;
     let mut counts = vec![0f32; num_classes];
     let total = dataset.len() as f32;
 

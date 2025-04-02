@@ -7,22 +7,33 @@ use burn_dataset::SqliteDataset;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
-//Norm Data
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct ChessGameItem {
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub response_time: Vec<f32>,
+    pub white_response_time: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub remaining_time: Vec<f32>,
+    pub white_remaining_time: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub win_chance: Vec<f32>,
+    pub white_win_chance: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub move_accuracy: Vec<f32>,
+    pub white_move_accuracy: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub board_material: Vec<f32>,
+    pub white_board_material: Vec<f32>,
     #[serde(deserialize_with = "deserialize_chess_blob")]
-    pub legal_moves: Vec<f32>,
+    pub white_legal_moves: Vec<f32>,
+
+    #[serde(deserialize_with = "deserialize_chess_blob")]
+    pub black_response_time: Vec<f32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
+    pub black_remaining_time: Vec<f32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
+    pub black_win_chance: Vec<f32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
+    pub black_move_accuracy: Vec<f32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
+    pub black_board_material: Vec<f32>,
+    #[serde(deserialize_with = "deserialize_chess_blob")]
+    pub black_legal_moves: Vec<f32>,
 
     pub bucket_index: i32,
     pub label: i32,
@@ -60,7 +71,7 @@ pub fn test_deserialization() {
     let item = dataset.get(0).unwrap();
 
     //println!("First element: {}", item.bucket_index);
-    item.response_time
+    item.white_response_time
         .iter()
         .for_each(|item| println!("{}", item));
 }
@@ -184,12 +195,19 @@ pub struct FeaturesBatch<B: Backend> {
 
 #[derive(Debug, Clone)]
 pub struct ChessGameBatch<B: Backend> {
-    pub response_time: Tensor<B, 2>,
-    pub remaining_time: Tensor<B, 2>,
-    pub win_chance: Tensor<B, 2>,
-    pub move_accuracy: Tensor<B, 2>,
-    pub board_material: Tensor<B, 2>,
-    pub legal_moves: Tensor<B, 2>,
+    pub white_response_time: Tensor<B, 2>,
+    pub white_remaining_time: Tensor<B, 2>,
+    pub white_win_chance: Tensor<B, 2>,
+    pub white_move_accuracy: Tensor<B, 2>,
+    pub white_board_material: Tensor<B, 2>,
+    pub white_legal_moves: Tensor<B, 2>,
+
+    pub black_response_time: Tensor<B, 2>,
+    pub black_remaining_time: Tensor<B, 2>,
+    pub black_win_chance: Tensor<B, 2>,
+    pub black_move_accuracy: Tensor<B, 2>,
+    pub black_board_material: Tensor<B, 2>,
+    pub black_legal_moves: Tensor<B, 2>,
 
     pub bucket_index: Tensor<B, 2>,
     pub label: Tensor<B, 1, Int>,
@@ -198,13 +216,18 @@ pub struct ChessGameBatch<B: Backend> {
 impl<B: Backend> ChessGameBatch<B> {
     pub fn flatten(&self) -> Tensor<B, 2> {
         let tensors = vec![
-            self.response_time.clone(),
-            self.remaining_time.clone(),
-            self.win_chance.clone(),
-            self.move_accuracy.clone(),
-            self.board_material.clone(),
-            self.legal_moves.clone(),
-            
+            self.white_response_time.clone(),
+            self.white_remaining_time.clone(),
+            self.white_win_chance.clone(),
+            self.white_move_accuracy.clone(),
+            self.white_board_material.clone(),
+            self.white_legal_moves.clone(),
+            self.black_response_time.clone(),
+            self.black_remaining_time.clone(),
+            self.black_win_chance.clone(),
+            self.black_move_accuracy.clone(),
+            self.black_board_material.clone(),
+            self.black_legal_moves.clone(),
             self.bucket_index.clone(),
         ];
 
@@ -244,12 +267,19 @@ impl<B: Backend> Batcher<ChessGameItem, FeaturesBatch<B>> for ChessGameBatcher<B
         .unsqueeze_dim(1);
 
         let batch = ChessGameBatch {
-            response_time: feature_tensors(|item| &item.response_time),
-            remaining_time: feature_tensors(|item| &item.remaining_time),
-            win_chance: feature_tensors(|item| &item.win_chance),
-            move_accuracy: feature_tensors(|item| &item.move_accuracy),
-            board_material: feature_tensors(|item| &item.board_material),
-            legal_moves: feature_tensors(|item| &item.legal_moves),
+            white_response_time: feature_tensors(|item| &item.white_response_time),
+            white_remaining_time: feature_tensors(|item| &item.white_remaining_time),
+            white_win_chance: feature_tensors(|item| &item.white_win_chance),
+            white_move_accuracy: feature_tensors(|item| &item.white_move_accuracy),
+            white_board_material: feature_tensors(|item| &item.white_board_material),
+            white_legal_moves: feature_tensors(|item| &item.white_legal_moves),
+
+            black_response_time: feature_tensors(|item| &item.black_response_time),
+            black_remaining_time: feature_tensors(|item| &item.black_remaining_time),
+            black_win_chance: feature_tensors(|item| &item.black_win_chance),
+            black_move_accuracy: feature_tensors(|item| &item.black_move_accuracy),
+            black_board_material: feature_tensors(|item| &item.black_board_material),
+            black_legal_moves: feature_tensors(|item| &item.black_legal_moves),
 
             bucket_index,
             label,
