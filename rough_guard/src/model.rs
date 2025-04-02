@@ -63,7 +63,7 @@ where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     pub fn new(
-        layers_info: Vec<(Vec<i32>, Vec<Option<i32>>)>,
+        layers_info: Vec<([i32; 3], [Option<i32>; 4])>,
         class_weights: Tensor<B, 1>,
         device: &Device<B>,
     ) -> Self {
@@ -96,8 +96,8 @@ where
 }
 
 fn construct_kan_layer<B: Backend>(
-    options_values: &Vec<i32>,
-    hyper_parameters: &Vec<Option<i32>>,
+    options_values: &[i32; 3],
+    hyper_parameters: &[Option<i32>; 4],
     device: &Device<B>,
 ) -> EfficientKan<B>
 where

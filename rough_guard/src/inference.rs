@@ -1,5 +1,5 @@
 use super::model::DeepLearningModel;
-use super::model::{ModifiedKan, ModifiedKanRecord, Mlp, MlpRecord};
+use super::model::{Mlp, MlpRecord, ModifiedKan, ModifiedKanRecord};
 use crate::data::{ChessGameBatcher, ChessGameItem};
 use burn::{
     data::dataloader::batcher::Batcher,
@@ -137,10 +137,10 @@ where
             device,
         )),
         // kan model with 2 kan layers
-        _ => ModelEnum::ModifiedKan(ModifiedKan::new(
+        5 => ModelEnum::ModifiedKan(ModifiedKan::new(
             vec![
-                (vec![241, 256, 128], vec![Some(6), Some(6), None, None]),
-                (vec![128, 64, 4], vec![Some(6), Some(6), None, None]),
+                ([241, 256, 128], [Some(10), Some(10), None, None]),
+                ([128, 64, 4], [Some(10), Some(10), None, None]),
             ],
             class_weights,
             device,

@@ -1,5 +1,7 @@
 use crate::{
-    data::{ChessGameBatcher, ChessGameDataSet, FeaturesBatch}, inference::ModelEnum, model::{DeepLearningModel, Mlp, ModifiedKan}
+    data::{ChessGameBatcher, ChessGameDataSet, FeaturesBatch},
+    inference::ModelEnum,
+    model::{DeepLearningModel, Mlp, ModifiedKan},
 };
 use burn::{
     config::Config,
@@ -50,7 +52,7 @@ impl<B: Backend> Mlp<B> {
         features: Tensor<B, 2>,
         label: Tensor<B, 1, Int>,
         class_weights: Tensor<B, 1>,
-    ) -> ClassificationOutput<B> 
+    ) -> ClassificationOutput<B>
     where
         B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
     {
@@ -71,7 +73,7 @@ impl<B: Backend> Mlp<B> {
     }
 }
 
-impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B> 
+impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -82,7 +84,7 @@ where
     }
 }
 
-impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B> 
+impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -98,7 +100,7 @@ impl<B: Backend> ModifiedKan<B> {
         features: Tensor<B, 2>,
         label: Tensor<B, 1, Int>,
         class_weights: Tensor<B, 1>,
-    ) -> ClassificationOutput<B> 
+    ) -> ClassificationOutput<B>
     where
         B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
     {
@@ -119,7 +121,7 @@ impl<B: Backend> ModifiedKan<B> {
     }
 }
 
-impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B> 
+impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -130,7 +132,7 @@ where
     }
 }
 
-impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B> 
+impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -161,8 +163,12 @@ fn create_artifact_dir(artifact_dir: &str) {
     std::fs::create_dir_all(artifact_dir).ok();
 }
 
-pub fn train<B: AutodiffBackend>(artifact_dir: &str, config: TrainingConfig, device: B::Device, model: ModelEnum<B>)
-where
+pub fn train<B: AutodiffBackend>(
+    artifact_dir: &str,
+    config: TrainingConfig,
+    device: B::Device,
+    model: ModelEnum<B>,
+) where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     create_artifact_dir(artifact_dir);
@@ -194,7 +200,6 @@ where
 
     match model {
         ModelEnum::ModifiedKan(kan_model) => {
-
             let learner = LearnerBuilder::new(artifact_dir)
                 .metric_train_numeric(AccuracyMetric::new())
                 .metric_valid_numeric(AccuracyMetric::new())
@@ -210,18 +215,13 @@ where
                 .devices(vec![device.clone()])
                 .num_epochs(config.num_epochs)
                 .summary()
-                .build(
-                    kan_model,
-                    config.optimizer.init(),
-                    config.learning_rate,
-                );
+                .build(kan_model, config.optimizer.init(), config.learning_rate);
 
             let model_trained = learner.fit(dataloader_train, dataloader_test);
 
             model_trained
                 .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
                 .expect("Trained model should be saved successfully");
-
         }
         ModelEnum::Mlp(mlp_model) => {
             let learner = LearnerBuilder::new(artifact_dir)
@@ -239,19 +239,13 @@ where
                 .devices(vec![device.clone()])
                 .num_epochs(config.num_epochs)
                 .summary()
-                .build(
-                    mlp_model,
-                    config.optimizer.init(),
-                    config.learning_rate,
-                );
+                .build(mlp_model, config.optimizer.init(), config.learning_rate);
 
             let model_trained = learner.fit(dataloader_train, dataloader_test);
 
             model_trained
                 .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
                 .expect("Trained model should be saved successfully");
-
         }
     }
-
 }

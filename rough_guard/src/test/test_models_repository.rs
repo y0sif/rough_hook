@@ -11,8 +11,9 @@ impl<'a> Repository<'a> {
 
     pub fn load_all_models(&mut self) {
         self.test_models = vec![
-             ("unnorm_mlp_64_128_256_512_1024_512_256_128_64", "/home/y0sif/rough_guard_models/stratified/rough_guard_64_128_256_512_1024_512_256_128_64", 1),
-             ("unnorm_mlp_64_128_256_512_1024_2048_1024_512_256_128_64", "/home/y0sif/rough_guard_models/stratified/rough_guard_64_128_256_512_1024_2048_1024_512_256_128_64", 2),
+            //      ("unnorm_mlp_64_128_256_512_1024_512_256_128_64", "/home/y0sif/rough_guard_models/stratified/rough_guard_64_128_256_512_1024_512_256_128_64", 1),
+            //      ("unnorm_mlp_64_128_256_512_1024_2048_1024_512_256_128_64", "/home/y0sif/rough_guard_models/stratified/rough_guard_64_128_256_512_1024_2048_1024_512_256_128_64", 2),
+            ("temp test", "/tmp/rough_guard", 5),
         ]
     }
 
