@@ -232,7 +232,10 @@ impl Board {
             let score: i32 = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
             if self.checkmate || self.draw || self.stalemate {
                 self.undo_move();
-                return self.evaluate();
+                return match self.turn {
+                    Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                    Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                };
             }
             self.undo_move();
             
@@ -309,7 +312,10 @@ impl Board {
             let score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
             if self.checkmate || self.draw || self.stalemate {
                 self.undo_move();
-                return self.evaluate();
+                return match self.turn {
+                    Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                    Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                };
             }
             self.undo_move();
 
