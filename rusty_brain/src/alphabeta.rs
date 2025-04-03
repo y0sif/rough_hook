@@ -1,4 +1,3 @@
-use std::cmp::max;
 use std::i32;
 use crate::board::{Board, Turn};
 use crate::movement::Move;
@@ -10,38 +9,44 @@ impl Board {
 
     pub fn find_best_move(&mut self, transposition_table: &mut TranspositionTable, depth: i32) -> (Move, i32) {
 
+        /*
         //using vanilla minimax
-        /* 
+
         let eval = match self.turn {
             Turn::White => self.maxi(true, depth),
             Turn::Black => self.mini(true, depth)
         };
+        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
         */
 
+        /*
         //using normal alphabeta
-        /* 
+        
         let eval = match self.turn {
             Turn::White => self.alpha_beta_max(true, i32::MIN, i32::MAX, depth),
             Turn::Black => self.alpha_beta_min(true, i32::MIN, i32::MAX, depth),
         };
+        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
         */
+
         
         //using alphabeta with transposition table
-        /*
+        
         let eval = match self.turn {
             Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
             Turn::Black => self.alpha_beta_min_tt(transposition_table,true, i32::MIN, i32::MAX, depth),
         };
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-        */
         
+        
+        /* 
         //Iterative deepening, needs move ordering to show its strength
         let eval = match self.turn {
             Turn::White => self.iterative_deepening(transposition_table, true, depth),
             Turn::Black => self.iterative_deepening(transposition_table, false, depth),
         }; 
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-
+        */
 
 
     }
@@ -57,6 +62,10 @@ impl Board {
 
             self.make_move(current_move);
             let score = self.mini(false, depth - 1);
+            if self.checkmate || self.draw || self.stalemate {
+                self.undo_move();
+                return self.evaluate();
+            }
             self.undo_move();
 
             if score > max {
@@ -80,6 +89,10 @@ impl Board {
 
             self.make_move(current_move);
             let score = self.maxi(false, depth - 1);
+            if self.checkmate || self.draw || self.stalemate {
+                self.undo_move();
+                return self.evaluate();
+            }
             self.undo_move();
 
             if score < min {
@@ -102,9 +115,12 @@ impl Board {
         let moves: Vec<Move> = self.generate_legal_moves();
 
         for current_move in moves {
-
             self.make_move(current_move);
             let score: i32 = self.alpha_beta_min(false, alpha, beta, depth_left - 1);
+            if self.checkmate || self.draw || self.stalemate {
+                self.undo_move();
+                return self.evaluate();
+            }
             self.undo_move();
             
             if score > best_value {
@@ -129,7 +145,7 @@ impl Board {
     }
     
     fn alpha_beta_min(&mut self, minimizing: bool, alpha: i32, mut beta: i32, depth_left: i32) -> i32 {
-        
+
         if depth_left == 0 {
             return self.evaluate();
         }
@@ -138,9 +154,12 @@ impl Board {
         let moves: Vec<Move> = self.generate_legal_moves();
 
         for current_move in moves {
-
             self.make_move(current_move);
             let score = self.alpha_beta_max(false, alpha, beta, depth_left-1);
+            if self.checkmate || self.draw || self.stalemate {
+                self.undo_move();
+                return self.evaluate();
+            }
             self.undo_move();
 
             if score < best_value {
@@ -211,6 +230,10 @@ impl Board {
 
             self.make_move(current_move);
             let score: i32 = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
+            if self.checkmate || self.draw || self.stalemate {
+                self.undo_move();
+                return self.evaluate();
+            }
             self.undo_move();
             
             if score > best_value {
@@ -284,6 +307,10 @@ impl Board {
 
             self.make_move(current_move);
             let score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
+            if self.checkmate || self.draw || self.stalemate {
+                self.undo_move();
+                return self.evaluate();
+            }
             self.undo_move();
 
             if score < best_value {
