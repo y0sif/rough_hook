@@ -1146,7 +1146,7 @@ impl Board {
         Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
     
-    fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
+    pub fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
         let not_ab_file = 0xFCFCFCFCFCFCFCFC;
         let not_a_file = 0xfefefefefefefefe;
         let not_gh_file = 0x3F3F3F3F3F3F3F3F;
@@ -1198,7 +1198,7 @@ impl Board {
         Self::construct_moves_squares(&self, moves, start_square, &mut legal_bitboard); 
     }
     
-    fn get_bishop_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
+    pub fn get_bishop_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
         let mut moves_bitboard = 0;
         let all_pieces = !self.bitboards.get_empty_squares();
         let king_bitboard = match self.turn {
@@ -1252,7 +1252,7 @@ impl Board {
         Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
 
-    fn get_rook_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
+    pub fn get_rook_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
         let mut moves_bitboard = 0;
         let all_pieces = !self.bitboards.get_empty_squares();
         let king_bitboard = match self.turn {
@@ -1296,7 +1296,7 @@ impl Board {
         return moves;
     }
     
-    fn get_queen_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
+    pub fn get_queen_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
         self.get_bishop_attacked_squares(piece_bitboard) | self.get_rook_attacked_squares(piece_bitboard)
     }
 
@@ -1416,7 +1416,7 @@ impl Board {
         }
     }
     
-    fn get_king_attacked_squares(&self, piece_bitboard: u64) -> u64 {
+    pub fn get_king_attacked_squares(&self, piece_bitboard: u64) -> u64 {
         let mut king_bitboard= piece_bitboard;
         
         let mut valid_bitboard = Bitboards::move_east(king_bitboard) | Bitboards::move_west(king_bitboard);

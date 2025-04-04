@@ -20,7 +20,7 @@ impl Board {
         v += self.mobility_mg() - color_flip_board.mobility_mg();
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
-        v += self.space() - color_flip_board.space();
+        v += self.space(true) - color_flip_board.space(true); // needs to see what tdo with middle_game var
         v += self.king_mg() - color_flip_board.king_mg();
         
         if !nowinnable {
@@ -782,7 +782,7 @@ impl Board {
             }
             pawn_bitboard &= pawn_bitboard -1;
         }
-        king_ring_bitboard = !(king_bitboard ^ protected_by_2_pawns_bitboard); // removes positions protected by 2 pawns , xand operation -> !^
+        king_ring_bitboard = !(king_bitboard & protected_by_2_pawns_bitboard); // removes positions protected by 2 pawns , notand operation -> !&
 
         king_ring_bitboard // still haven't decided how i'll use the bitboard
     }
@@ -1050,12 +1050,111 @@ impl Board {
     // SPACE FUNCTION
 
     // this function calculate how much space a side has
-    fn space(&self) -> i32 {
+    pub fn space(&self,is_middle_game: bool) -> i32 {
+        if self.non_pawn_material(is_middle_game) + self.color_flip().non_pawn_material(is_middle_game) < 12222 {
+            return 0
+        }
+        let piece_count = self.bitboards.get_ally_pieces(Turn::White).count_ones() as i32;
+        let mut blocked= 0;
         
+        let mut white_pawn_bitboard = self.bitboards.white_pawns;
+        while white_pawn_bitboard != 0 {
+            let pawn  = white_pawn_bitboard.trailing_zeros() as u64;
+            if (Square::from(pawn as u8).rank() as usize) < 7 {
+                if ((1u64 << pawn) << 8) & self.bitboards.black_pawns != 0{
+                    blocked +=1;
+                    // continue;
+                } 
+            }
+            if (Square::from(pawn as u8).rank() as usize) < 6 {
+                if (Square::from(pawn as u8).file() as usize) > (0 as usize) && (Square::from(pawn as u8).file() as usize) < 7{
+                    if ((((1u64 << pawn) << 15) & self.bitboards.black_pawns !=0 ) && (((1u64 << pawn) << 17) & self.bitboards.black_pawns != 0)){
+                        blocked+=1;
+                        // continue;
+                    }
+                } 
+            }
+            white_pawn_bitboard &= white_pawn_bitboard -1;
+        }
 
-        0
+        let mut black_pawn_bitboard = self.bitboards.black_pawns;
+        while black_pawn_bitboard != 0 {
+            let pawn  = black_pawn_bitboard.trailing_zeros() as u64;
+            if (Square::from(pawn as u8).rank() as usize) > 0 {
+                if ((1u64 << pawn) >> 8 ) & self.bitboards.white_pawns != 0{
+                    blocked +=1;
+                    // continue;
+                } 
+            }
+            if (Square::from(pawn as u8).rank() as usize) > 1 {
+                if (Square::from(pawn as u8).file() as usize) > (0 as usize) && (Square::from(pawn as u8).file() as usize) < 7{
+                    if ((((1u64 << pawn) >> 15) & self.bitboards.white_pawns != 0) && (((1u64 << pawn) >> 17) & self.bitboards.white_pawns != 0)){
+                        blocked+=1;
+                        // continue;
+                    }
+                } 
+            }
+            black_pawn_bitboard &= black_pawn_bitboard -1;
+        }
+
+        let enemy_pawn_attacks = {
+            let not_a_file : u64 = 0xfefefefefefefefe;
+            let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+            let right_capture = (self.bitboards.black_pawns >> 7) & not_a_file;
+            let left_capture = (self.bitboards.black_pawns >> 9) & not_h_file;                
+            right_capture | left_capture
+        };
+
+        let default_space : u64 = 0x000000003C3C3C00;
+        let mut space = (default_space & !self.bitboards.white_pawns); // removes pawns from space
+
+        space = space & !enemy_pawn_attacks; //remove enemy pawn attacks from space
+
+        let mut space_count = space.count_ones();
+        let mut pawn_bitboard = self.bitboards.white_pawns;
+        let mut behind_pawn_mask : u64 =0;
+        while pawn_bitboard != 0 {
+            let mut pawn = pawn_bitboard.trailing_zeros() as u64;
+            if (Square::from(pawn as u8).file() as usize) > 1 && (Square::from(pawn as u8).file() as usize) < 6 {
+                let mut mask = 1u64 << pawn; 
+                let mut count = 0 ;
+                while mask > 0xFF && count <3 { // While the mask isn't in rank 1
+                    count +=1;
+                    mask >>= 8; // Shift down one rank
+                    behind_pawn_mask |= mask;
+                }
+            }
+            pawn_bitboard &= pawn_bitboard -1;
+        }
+        let attacked_squares = {
+                enemy_pawn_attacks |
+                self.get_knight_attacked_squares(self.bitboards.black_knights) |
+                self.get_bishop_attacked_squares(&self.bitboards.black_bishops) |
+                self.get_rook_attacked_squares(&self.bitboards.black_rooks) |
+                self.get_queen_attacked_squares(&self.bitboards.black_queens) |
+                self.get_king_attacked_squares(self.bitboards.black_king)
+        };
+        
+        let double_count = (space & behind_pawn_mask & !attacked_squares);
+
+        space_count += double_count.count_ones();
+        let weight = piece_count - 3 + i32::min(blocked, 9);
+        let sum = (space_count as i32) * weight * weight / 16 ;
+
+        sum
     }
 
+    fn print_bitboard_raw(&self,bb: u64) {
+        for rank in (0..8).rev() {
+            for file in 0..8 {
+                let square = rank * 8 + file;
+                let bit = (bb >> square) & 1;
+                print!("{}", bit);
+            }
+            println!();
+        }
+    }
+    
     // KING MIDDLE GAME
 
     fn king_mg(&self) -> i32 {

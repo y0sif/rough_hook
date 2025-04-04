@@ -4,7 +4,7 @@ use rusty_brain::transposition::TranspositionTable;
 use rusty_brain::uci;
 fn main() {
 
-    let fen = String::from("rnbqkbnr/pp1ppppp/8/2p5/3P4/4P3/PPP2PPP/RNBQKBNR b KQkq - 0 2");
+    let fen = String::from("r1b1k1nr/6p1/2q1Pp2/pb1N2P1/1PPpP2P/1B1p4/6P1/R1Q2K2 b kq - 3 7");
     
     // // Create a Bitboards instance from the FEN string
     let mut board = Board::from_fen(fen);
@@ -18,16 +18,21 @@ fn main() {
     // println!("-------------------------");
 
     // // Get the white pawns bitboard
-    let mut white_pawns = board.bitboards.white_pawns;
-    let mut black_pawns = color_flip_board.bitboards.white_pawns;
+    // let mut white_pawns = board.bitboards.white_pawns;
+    // let mut black_pawns = color_flip_board.bitboards.white_pawns;
 
     // // Test Flipping Color
-    let sum_white = board.pawns_mg();
-    let sum_black = color_flip_board.pawns_mg();
+    // let sum_white = board.pawns_mg();
+    // let sum_black = color_flip_board.pawns_mg();
 
     // let mut sum_white = 0;
     // let mut sum_black = 0;
 
+    let white_space = board.space(true);
+    println!("White space: {}", white_space);
+
+    let black_space = color_flip_board.space(true);
+    println!("black_space: {}", black_space);
 
     // // Iterate over all white pawns
     //  while white_pawns != 0 {
@@ -60,9 +65,9 @@ fn main() {
 
     // }
 
-    println!("White Sum = {}", sum_white);
-    println!("Black Sum = {}", sum_black);
-    println!("Total Sum = {}", sum_white - sum_black);
+    // println!("White Sum = {}", sum_white);
+    // println!("Black Sum = {}", sum_black);
+    // println!("Total Sum = {}", sum_white - sum_black);
     
     /* 
     //let white_fen = String::from("rnbqkbnr/pp1p1ppp/2p1p3/8/8/2P5/PP2PPPP/RN1QKBNR w KQkq - 0 2");
