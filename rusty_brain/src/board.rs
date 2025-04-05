@@ -1146,7 +1146,7 @@ impl Board {
         Self::construct_moves_squares(self, moves, start_square, &mut legal_bitboard); 
     }
     
-    fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
+    pub fn get_knight_attacked_squares(&self, piece_position: u64) -> u64 {
         let not_ab_file = 0xFCFCFCFCFCFCFCFC;
         let not_a_file = 0xfefefefefefefefe;
         let not_gh_file = 0x3F3F3F3F3F3F3F3F;
@@ -1219,6 +1219,47 @@ impl Board {
         
         moves_bitboard       
     }
+
+    //For Evaluation
+    //For Queen Attack: as we know queen attack is combination of 
+    // bishop attack and rook attack, so the difference will be that king will be blocker
+    fn get_bishop_attacked_squares_for_queen_eval(&self, piece_bitboard: &u64) -> u64 {
+        let mut moves_bitboard = 0;
+        let all_pieces = !self.bitboards.get_empty_squares();
+
+        let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
+        for piece_position in all_piece_positions {
+            let start_square = piece_position.trailing_zeros() as u8;
+            let bishop_mask = Bitboards::bishop_mask_ex(start_square);
+
+            let blocker = all_pieces & bishop_mask; 
+            let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+
+            moves_bitboard |= self.bishop_attacks[start_square as usize][key as usize];
+        }
+        
+        moves_bitboard       
+    }
+
+    // For Evaluation
+    // The Difference is: 1- king will be blocker 2- queen will not be blocker
+    pub fn get_bishop_xray_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
+        let mut moves_bitboard = 0;
+        let all_pieces = !self.bitboards.get_empty_squares();
+        let queens_bitboard = self.bitboards.black_queens | self.bitboards.white_queens; 
+        let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
+        for piece_position in all_piece_positions {
+            let start_square = piece_position.trailing_zeros() as u8;
+            let bishop_mask = Bitboards::bishop_mask_ex(start_square);
+
+            let blocker = all_pieces & bishop_mask & !queens_bitboard; 
+            let key = (blocker.wrapping_mul(Magic::BISHOP_MAGICS[start_square as usize])) >> Magic::BISHOP_SHIFTS[start_square as usize];
+
+            moves_bitboard |= self.bishop_attacks[start_square as usize][key as usize];
+        }
+        
+        moves_bitboard       
+    }
     
     pub fn rook_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
@@ -1275,6 +1316,50 @@ impl Board {
         moves_bitboard       
     }
 
+    //For Evaluation
+    //For Queen Attack: as we know queen attack is combination of 
+    // bishop attack and rook attack, so the difference will be that king will be blocker
+    fn get_rook_attacked_squares_for_queen_eval(&self, piece_bitboard: &u64) -> u64 {
+        let mut moves_bitboard = 0;
+        let all_pieces = !self.bitboards.get_empty_squares();
+
+        let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
+        for piece_position in all_piece_positions {
+            let start_square = piece_position.trailing_zeros() as u8;
+            let rook_mask = Bitboards::rook_mask_ex(start_square);
+
+            let blocker = all_pieces & rook_mask; 
+            let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+
+            moves_bitboard |= self.rook_attacks[start_square as usize][key as usize];
+            
+        }
+        
+        moves_bitboard       
+    }
+
+    // For Evaluation
+    // The Difference is: 1- king will be blocker 2- queen will not be blocker
+    pub fn get_rook_xray_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
+        let mut moves_bitboard = 0;
+        let all_pieces = !self.bitboards.get_empty_squares();
+        let queens_bitboard = self.bitboards.black_queens | self.bitboards.white_queens; 
+
+        let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
+        for piece_position in all_piece_positions {
+            let start_square = piece_position.trailing_zeros() as u8;
+            let rook_mask = Bitboards::rook_mask_ex(start_square);
+
+            let blocker = all_pieces & rook_mask &!queens_bitboard; 
+            let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
+
+            moves_bitboard |= self.rook_attacks[start_square as usize][key as usize];
+            
+        }
+        
+        moves_bitboard       
+    }
+
     pub fn queen_moves(&self, pins: &Vec<u8>, check_bitboard: u64) -> Vec<Move> {
         let mut moves = Vec::new();
     
@@ -1298,6 +1383,13 @@ impl Board {
     
     fn get_queen_attacked_squares(&self, piece_bitboard: &u64) -> u64 {
         self.get_bishop_attacked_squares(piece_bitboard) | self.get_rook_attacked_squares(piece_bitboard)
+    }
+
+    // For Evaluation
+    // Queen attack is combination of rook attack and bishop attack
+    // and in evaluation king must be normal blocker
+    pub fn get_queen_attacked_squares_for_eval(&self, piece_bitboard: &u64) -> u64 {
+        self.get_bishop_attacked_squares_for_queen_eval(piece_bitboard) | self.get_rook_attacked_squares_for_queen_eval(piece_bitboard)
     }
 
     fn is_pined_square(sqaure : &u8 , pins :&Vec<u8>)-> bool{
@@ -1324,7 +1416,7 @@ impl Board {
         }
         panic!("Impossible")
     }
-    fn get_legal_bitboard(&self, start_square: &u8, pins: &Vec<u8>, valid_bitboard: &u64) -> u64 {
+    pub fn get_legal_bitboard(&self, start_square: &u8, pins: &Vec<u8>, valid_bitboard: &u64) -> u64 {
         let mut legal_bitboard = *valid_bitboard;
         let king_square = match self.turn {
             Turn::White=> self.bitboards.white_king.trailing_zeros() as u8,

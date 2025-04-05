@@ -12,12 +12,15 @@ impl Board {
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
         let mut v = 0;
         let color_flip_board = self.color_flip();
+        let (_, pins) = self.checks_and_pins();
+        let (_, flip_pins) = self.checks_and_pins();
+
         v += self.piece_value_mg() - color_flip_board.piece_value_mg();
         v += self.psqt_mg() - color_flip_board.psqt_mg();
         v += self.imbalance_total(&color_flip_board);
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
         v += self.pieces_mg() - color_flip_board.pieces_mg();
-        v += self.mobility_mg() - color_flip_board.mobility_mg();
+        v += self.mobility_mg(&pins) - color_flip_board.mobility_mg(&flip_pins);
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
         v += self.space() - color_flip_board.space();
@@ -264,7 +267,7 @@ impl Board {
     
     // PAWNS MIDDLE GAME
     
-    pub fn pawns_mg(&self) -> i32 {
+    fn pawns_mg(&self) -> i32 {
         // sum function
         
         let mut v = 0;
@@ -396,7 +399,7 @@ impl Board {
 
             // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
             // so it is valid, other that not valid
-            if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
+            if number_of_adjacent_pawns != number_of_friendly_pawns_above{
                 return 0;
             }    
         }
@@ -529,7 +532,7 @@ impl Board {
     }
     
     // check if the current pawn is phalanx or not
-    // return onlu two values 0 - 1
+    // return only two values 0 - 1
     fn phalanx(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let mut phalan = 0;
@@ -739,29 +742,26 @@ impl Board {
         0
     }
 
-    fn knight_attack(&self) -> i32 { //WILL be able to replace
-
-        0
+    fn rook_xray_attack(&self, pins : &Vec<u8>, rook_bitboard:u64) -> u64 {
+        let squares = self.get_rook_xray_attacked_squares(&rook_bitboard);
+        let rook_square = rook_bitboard.trailing_zeros() as u8;
+        let legal_rook_bitboard = self.get_legal_bitboard(&rook_square, pins, &squares);
+        return legal_rook_bitboard;
     }
 
-    fn bishop_xray_attack(&self) -> i32 {
-
-        0
+    fn bishop_xray_attack(&self, pins : &Vec<u8>, bishop_bitboard:u64) -> u64 {
+        let squares = self.get_bishop_xray_attacked_squares(&bishop_bitboard);
+        let bishop_square = bishop_bitboard.trailing_zeros() as u8;
+        let legal_bishop_bitboard = self.get_legal_bitboard(&bishop_square, pins, &squares);
+        return legal_bishop_bitboard;
     }
 
-    fn pinned_direction(&self) -> i32 { //WILL be able to replace
-
-        0
-    } 
-
-    fn rook_xray_attack(&self) -> i32 {
-
-        0
-    }
-
-    fn queen_attack(&self) -> i32 { //WILL be able to replace most likely
-        
-        0
+    
+    fn queen_attack(&self,pins : &Vec<u8>, queen_bitboard:u64) -> u64 {
+        let queen_attacked_squares = self.get_queen_attacked_squares_for_eval(&queen_bitboard);
+        let queen_square = queen_bitboard.trailing_zeros() as u8;
+        let legal_queen_bitboard = self.get_legal_bitboard(&queen_square, &pins, &queen_attacked_squares);
+        return legal_queen_bitboard;    
     }
 
     fn bishop_on_king_ring(&self) ->i32 {
@@ -815,36 +815,174 @@ impl Board {
 
     // MOBILITY MIDDLE GAME
 
-    fn mobility_mg(&self) -> i32 {
+    pub fn mobility_mg(&self, pins: &Vec<u8>) -> i32 {
         // sum function
         
-        self.mobility_bonus(true)
+        self.mobility_bonus(true, pins)
     }
     
-    fn mobility_bonus(&self, is_middle_game: bool) -> i32 {
-        // sum function
+    fn mobility_bonus(&self, is_middle_game: bool, pins: &Vec<u8>) -> i32 {
+        let bonus: Vec<Vec<i32>> = if is_middle_game {
+            vec![
+                vec![-62, -53, -12, -4, 3, 13, 22, 28, 33], // Knight
+                vec![-48, -20, 16, 26, 38, 51, 55, 63, 63, 68, 81, 81, 91, 98], // Bishop
+                vec![-60, -20, 2, 3, 3, 11, 22, 31, 40, 40, 41, 48, 57, 57, 62], // Rook
+                vec![-30, -12, -8, -9, 20, 23, 23, 35, 38, 53, 64, 65, 65, 66, 67, 67, 72, 72, 77, 79, 93, 108, 108, 108, 110, 114, 114, 116], // Queen
+            ]
+        } else {
+            vec![
+                vec![-81, -56, -31, -16, 5, 11, 17, 20, 25], // Knight
+                vec![-59, -23, -3, 13, 24, 42, 54, 57, 65, 73, 78, 86, 88, 97], // Bishop
+                vec![-78, -17, 23, 39, 70, 99, 103, 121, 134, 139, 158, 164, 168, 169, 172], // Rook
+                vec![-48, -30, -7, 19, 40, 55, 59, 75, 78, 96, 96, 100, 121, 127, 131, 133, 136, 141, 147, 150, 151, 168, 168, 171, 182, 182, 192, 219], // Queen
+            ]
+        };
 
-        // bonus depending on the middle game flag
+        let mut total_bonus = 0;
 
-        // check for square to see which piece is it and apply the bonus accordingly
+        // Loop through each piece type
+        let piece_types = [
+            (self.bitboards.white_knights, 0, Piece::Knight),
+            (self.bitboards.white_bishops, 1, Piece::Bishop),
+            (self.bitboards.white_rooks, 2, Piece::Rook),
+            (self.bitboards.white_queens, 3, Piece::Queen),
+        ];
+        let mobility_area = self.mobility_area(pins);
+        for (bitboard, piece_index, piece_type) in piece_types.iter() {
+            let mut pieces = *bitboard;
+            while pieces != 0 {
+                let square = pieces.trailing_zeros() as u64; // Get square position
+                let square_position = 1 << square;
 
-        // else
-
-        return 0
+                let mobility_index = self.mobility(*piece_type, square_position, mobility_area, pins); // Call mobility function
+                if mobility_index < bonus[*piece_index].len(){
+                    total_bonus += bonus[*piece_index][mobility_index];
+                }
+                pieces &= pieces - 1; // Remove piece from bitboard
+            }
+        }
+        total_bonus
     }
     
-    fn mobility(&self) -> i32 {
-        // sum function
+    fn get_black_pawn_protected_squares(&self) -> u64 {
+        let not_a_file = 0xfefefefefefefefe;
+        let not_h_file = 0x7f7f7f7f7f7f7f7f;
 
-        let mut v = 0;
+        // Black pawns attack southwest (↓↙) and southeast (↓↘)
+        let right_attacks = (self.bitboards.black_pawns >> 7) & not_a_file;
+        let left_attacks = (self.bitboards.black_pawns >> 9) & not_h_file;
 
-        // apply mobility bonues depending on the piece on given square
-        // 
-        // there is a lot of function calls here, remember that.
+        right_attacks | left_attacks
+    }
 
-        v
+    fn get_white_pawns_on_rank(&self, rank: u8) -> u64 {
+        // Rank is 0-based (0=rank1, 1=rank2, ..., 7=rank8)
+        let rank_mask = 0xFF << (rank * 8);
+        self.bitboards.white_pawns & rank_mask
     }
     
+    fn get_blocked_white_pawns(&self) -> u64 {
+        let mut blocked_pawns = 0;
+        let white_pawns = self.bitboards.white_pawns;
+        let all_pieces = !self.bitboards.get_empty_squares(); // All occupied squares
+
+        // For each white pawn, check if the square directly in front is occupied
+        let mut pawns = white_pawns;
+        while pawns != 0 {
+            let pawn_square = pawns.trailing_zeros() as u8;
+            let square_in_front = pawn_square + 8; // White pawns move north (+8)
+
+            // Only check if the square in front is on the board (not promotion rank)
+            if square_in_front < 64 && (all_pieces & (1 << square_in_front)) != 0 {
+                blocked_pawns |= 1 << pawn_square;
+            }
+
+            pawns &= pawns - 1; // Clear the least significant bit
+        }
+
+        blocked_pawns
+    }
+    
+    pub fn mobility_area(&self, pins: &Vec<u8>) -> u64 {
+        let mut mobility_area: u64 = !0; // Start with all bits set to 1.
+    
+        // Set the king's square to 0
+        mobility_area &= !self.bitboards.white_king;
+    
+        // Set the queen's square to 0
+        mobility_area &= !self.bitboards.white_queens;
+    
+        // Exclude squares protected by enemy pawns
+        let protected_squares = self.get_black_pawn_protected_squares();
+        mobility_area &= !protected_squares;
+
+        // Exclude white pawns on ranks 2 and 3
+        // Rank 2 (human-readable) is index 1 (0-based)
+        // Rank 3 (human-readable) is index 2 (0-based)
+        let white_pawns_ranks_2_3 =  self.get_white_pawns_on_rank(1) | self.get_white_pawns_on_rank(2);        mobility_area &= !white_pawns_ranks_2_3;
+        mobility_area &= !white_pawns_ranks_2_3;
+
+        // Exclude blocked white pawns
+        let blocked_white_pawns = self.get_blocked_white_pawns();
+        mobility_area &= !blocked_white_pawns;
+        
+        // the function called blockers_for_king is not important
+        // as i will use my existance checks_and_pins function
+        // Create bitboard of all pinned pieces
+        let mut pinned_bitboard = 0u64;
+        for &square in pins {
+            pinned_bitboard |= 1 << square;
+        }
+        mobility_area &= !pinned_bitboard;
+        
+        // Return the updated mobility area bitboard
+        mobility_area
+    }
+    
+    pub fn mobility(&self, piece: Piece, square_position: u64, mobility_area: u64, pins: &Vec<u8>) -> usize {
+        match piece{
+            Piece::Knight => {
+                let knight_attack = self.knight_attack(square_position, pins);
+                return (knight_attack & mobility_area).count_ones() as usize;
+            },
+            Piece::Bishop => {
+                let bishop_attack = self.bishop_xray_attack(pins, square_position);
+                return (bishop_attack & mobility_area).count_ones() as usize;
+
+            },
+            Piece::Rook => {
+                let rook_attack = self.rook_xray_attack(pins, square_position);
+                return (rook_attack & mobility_area).count_ones() as usize;
+            },
+            Piece::Queen => {
+                let queen_attack = self.queen_attack(pins, square_position);
+                return (queen_attack & mobility_area).count_ones() as usize;
+            },
+            Piece::Pawn =>{
+                return 0;
+            },
+            Piece::King =>{
+                return 0;
+            }
+        };
+    }
+    
+    // return number of accessible squares by one knight at a time 
+    fn knight_attack(&self, knight : u64, pins: &Vec<u8>) -> u64{
+        // in stock fish this function returns all possible squares the knight can reach
+        // but if the knight is pinned so it is ignored 
+        // First check if this knight is pinned
+        let knight_square = knight.trailing_zeros() as u8;
+        
+        // If knight is in the pins vector, return 0 (pinned knights can't move)
+        if pins.contains(&knight_square) {
+            return 0;
+        }
+        else {            
+            let attacks = self.get_knight_attacked_squares(knight);
+            return attacks;
+        }
+    }
     // THREATS MIDDLE GAME
     
     fn threats_mg(&self) -> i32 {
@@ -1085,16 +1223,23 @@ impl Board {
 
     /*
         this logic is correct and tested using psqt_bonus function
-
         Yousse, Please check it again and look for performance and you can test it with other function,
         then update the code, remove Turn:White or Turn:Black from code
 
      */
     // Function to flip the board vertically while keeping columns intact
     pub fn color_flip(&self) -> Self {
+        // match self.turn {
+        //     Turn::White =>{
+        //         println!("White");
+        //     },
+        //     Turn::Black =>{
+        //         println!("Black");
+        //     },
+        // };
+        
         // Clone the current board
         let mut clone_board = self.clone();
-
         fn flip_vertical(bb: u64) -> u64 {
             let mut flipped = 0;
             for rank in 0..8 {
@@ -1103,6 +1248,17 @@ impl Board {
             }
             flipped
         }
+
+        // match clone_board.turn {
+        //     Turn::White =>{
+        //         println!("White");
+        //     },
+        //     Turn::Black =>{
+        //         println!("Black");
+        //     },
+        // };
+
+        // The turn is White and still white
 
         // Flip the bitboards correctly
         clone_board.bitboards.white_pawns = flip_vertical(self.bitboards.black_pawns);
