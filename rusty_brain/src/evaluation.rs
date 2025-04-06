@@ -10,10 +10,10 @@ impl Board {
     }
     
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
-        let mut v = 0;
+        let mut v: i32 = 0;
         let color_flip_board = self.color_flip();
         let (_, pins) = self.checks_and_pins();
-        let (_, flip_pins) = self.checks_and_pins();
+        let (_, flip_pins) = color_flip_board.checks_and_pins();
 
         v += self.piece_value_mg() - color_flip_board.piece_value_mg();
         v += self.psqt_mg() - color_flip_board.psqt_mg();
@@ -898,7 +898,7 @@ impl Board {
             (self.bitboards.white_rooks, 2, Piece::Rook),
             (self.bitboards.white_queens, 3, Piece::Queen),
         ];
-        let mobility_area = self.mobility_area(pins);
+        let mobility_area = self.mobility_area();
         for (bitboard, piece_index, piece_type) in piece_types.iter() {
             let mut pieces = *bitboard;
             while pieces != 0 {
@@ -954,7 +954,7 @@ impl Board {
         blocked_pawns
     }
     
-    pub fn mobility_area(&self, pins: &Vec<u8>) -> u64 {
+    pub fn mobility_area(&self) -> u64 {
         let mut mobility_area: u64 = !0; // Start with all bits set to 1.
     
         // Set the king's square to 0
@@ -980,8 +980,10 @@ impl Board {
         // the function called blockers_for_king is not important
         // as i will use my existance checks_and_pins function
         // Create bitboard of all pinned pieces
+        let pins = self.blockers_for_king();
         let mut pinned_bitboard = 0u64;
-        for &square in pins {
+        for &square in &pins {
+            //println!("{}", square);
             pinned_bitboard |= 1 << square;
         }
         mobility_area &= !pinned_bitboard;

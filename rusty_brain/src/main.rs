@@ -38,12 +38,14 @@ fn main() {
         let (_, pins) = board.checks_and_pins();
         let (_, filp_pins) = flipped_board.checks_and_pins();
         
-        // Create bitboard of all pinned pieces
+        // //Create bitboard of all pinned pieces
+        // println!("White");
         // for &square in &pins {
         //     println!("{}", square);
         // }
-        // for &check in &checks {
-        //     println!("{}", check);
+        // println!("Black");
+        // for &square in &filp_pins {
+        //     println!("{}",square);
         // }
         println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
         println!("Mobility_MG For Black = {} ",flipped_board.mobility_mg(&filp_pins));
@@ -71,12 +73,20 @@ fn main() {
         //         }
         //     }
          
-        // let mobility = board.mobility_area(&filp_pins);
+        // let mobility = board.mobility_area();
         // // Print the raw hex value
         // println!("Mobility bitboard: {}", mobility.count_ones());
             
         // // Print the visual 8x8 representation
         // print_bitboard(mobility);
+
+        // let mobility_flip = flipped_board.mobility_area();
+        // // Print the raw hex value
+        // println!("Flipped Mobility bitboard: {}", mobility_flip.count_ones());
+            
+        // // Print the visual 8x8 representation
+        // print_bitboard(mobility_flip);
+        
         /*
         let queen_bitboard = board.bitboards.white_queens;
         let queen_attacked_squares = board.get_queen_attacked_squares_for_eval(&queen_bitboard);
