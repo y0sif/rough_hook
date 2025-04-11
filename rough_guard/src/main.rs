@@ -29,25 +29,27 @@ fn main() {
     let train_dataset = ChessGameDataSet::train();
     let class_weights = compute_class_weights::<Autodiff<Cuda<f32, i32>>>(&train_dataset, &device);
 
-    // let mlp_model = ModelEnum::Mlp(
-    //     Mlp::new(vec![], class_weights.clone(), &device)
-    // );
+    // num of features are 121
+    // num of classes are 2
 
-    let kan_model = ModelEnum::ModifiedKan(ModifiedKan::new(
-        vec![
-            ([241, 256, 128], [Some(10), Some(10), None, None]),
-            ([128, 64, 4], [Some(10), Some(10), None, None]),
-        ],
-        class_weights,
-        &device,
-    ));
+    let mlp_model = ModelEnum::Mlp(
+        Mlp::new(vec![(121, 64), (64, 128), (128, 64), (64, 32), (32, 2)], class_weights.clone(), &device)
+    );
+
+    // let kan_model = ModelEnum::ModifiedKan(ModifiedKan::new(
+    //     vec![
+    //         ([121, 256, 2], [Some(10), Some(10), None, None]),
+    //     ],
+    //     class_weights,
+    //     &device,
+    // ));
 
     rough_guard::training::train::<Autodiff<Cuda<f32, i32>>>(
         artifact_dir,
         TrainingConfig::new(AdamConfig::new()),
         device.clone(),
-        //mlp_model
-        kan_model,
+        mlp_model,
+        //kan_model,
     );
 
     // TEST DB
