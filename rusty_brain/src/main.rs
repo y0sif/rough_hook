@@ -4,7 +4,7 @@ use rusty_brain::transposition::TranspositionTable;
 use rusty_brain::uci;
 use crate::piece::Piece;
 
-use std::io;
+use std::{io, result};
 fn print_bitboard(bb: u64) {
     println!("\nBitboard visualization (LSB=a1, MSB=h8):");
     for rank in (0..8).rev() {
@@ -34,10 +34,50 @@ fn main() {
         
         let board = Board::from_fen(fen.to_string());
         
-        let flipped_board = board.color_flip();
-        let (_, pins) = board.checks_and_pins();
-        let (_, filp_pins) = flipped_board.checks_and_pins();
+        //println!("{}",board.pawnless_flank());
+        println!("{}", board.king_ring(false).count_ones())
+        // let flipped_board = board.color_flip();
+        // //let (_, pins) = board.checks_and_pins();
+        // //let (_, filp_pins) = flipped_board.checks_and_pins();
+        // // // // Get the white pawns bitboard
         
+        // let mut white_pawns = board.bitboards.white_pawns;
+        // let mut black_pawns = flipped_board.bitboards.white_pawns;
+
+        // // // // Test Flipping Color
+        // let sum_white = board.pawns_mg();
+        // let sum_black = flipped_board.pawns_mg();
+
+        // println!("Sum White = {}", sum_white);
+        
+        // println!("Sum Black = {}", sum_black);
+        // let mut sum_white = 0;
+        // let mut sum_black = 0;
+
+
+        // // Iterate over all white pawns
+        //  while white_pawns != 0 {
+        //     let white_square = white_pawns.trailing_zeros() as u8;
+        //     let square_position = 1 << white_square;
+        //     let result = board.backward(square_position, white_square);
+        //     // Check if the pawn is doubled isolated
+        //     sum_white += result;
+
+        //     println!("Is the white pawn on square {} Backward? {}", white_square, result);
+        //     white_pawns &= white_pawns - 1;
+        // }
+        // // Iterate over all Black pawns
+        // while black_pawns != 0 {
+        //     let black_square = black_pawns.trailing_zeros() as u8;
+        //     let square_position = 1 << black_square;
+        //     let result = flipped_board.backward(square_position, black_square);
+        //     // Check if the pawn is doubled isolated
+        //     sum_black += result;
+
+        //     println!("Is the Black pawn on square {} Backward? {}", black_square, result);
+        //     black_pawns &= black_pawns - 1;
+        // }
+
         // //Create bitboard of all pinned pieces
         // println!("White");
         // for &square in &pins {
@@ -47,8 +87,8 @@ fn main() {
         // for &square in &filp_pins {
         //     println!("{}",square);
         // }
-        println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
-        println!("Mobility_MG For Black = {} ",flipped_board.mobility_mg(&filp_pins));
+        //println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
+        //println!("Mobility_MG For Black = {} ",flipped_board.mobility_mg(&filp_pins));
 
         // board = flipped_board;        
         // //Test Mobility Complete Code

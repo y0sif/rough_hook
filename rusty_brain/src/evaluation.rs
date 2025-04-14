@@ -1,4 +1,5 @@
 use std::process::id;
+use crate::board;
 use crate::piece::Piece;
 
 use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
@@ -267,7 +268,7 @@ impl Board {
     
     // PAWNS MIDDLE GAME
     
-    fn pawns_mg(&self) -> i32 {
+    pub fn pawns_mg(&self) -> i32 {
         // sum function
         
         let mut v = 0;
@@ -368,7 +369,7 @@ impl Board {
 
     // return if current pawn is backward or not
     // return two values only 0 - 1
-    fn backward(&self,square_position: u64, square: u8) -> i32 {
+    pub fn backward(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
         let mut neighbor_pawns = 0u64;
@@ -742,24 +743,46 @@ impl Board {
     }
 
     fn king_attackers_count(&self) -> i32 { //might be able to remove and replace
-
+        /*
+            King attackers count is the number of pieces of the given color
+            which attack a square in the kingRing of the enemy king. 
+            For pawns we count number of attacked squares in kingRing.
+         */
+        let white_pieces = self.bitboards.get_ally_pieces(Turn::White) & !self.bitboards.white_king;
+        if white_pieces == 0 {
+            return 0;
+        }
+        
+        
         0
     }
 
-    fn king_ring(&self) -> u64 { //untested, should probably be called at the very start and stored as a struct fields because it's used multiple times
+    // Note in King Ring Function
+    // it calculate the king area for the other side
+    // mean we should calculate the King area square for Blck King
+    pub fn king_ring(&self, full: bool) -> u64 { //untested, should probably be called at the very start and stored as a struct fields because it's used multiple times
         let a_file_mask : u64 = 0x0101010101010101;
         let h_file_mask : u64 = 0x8080808080808080;
         let rank_1_mask : u64 = 0x00000000000000ff;
         let rank_8_mask : u64 = 0xff00000000000000;
         
-        let mut king_ring_bitboard = 0;
-        let mut king_bitboard = self.bitboards.white_king;
+        let mut king_ring_bitboard: u64 = 0;
+        let mut king_bitboard = self.bitboards.black_king;
 
-        // king's rings on these files and ranks behave the same as if they were on ther neighbours, so moving them helps with implementing logic. 
-        if (king_bitboard & rank_1_mask == 1) {king_bitboard = king_bitboard << 8;}
-        if (king_bitboard & rank_8_mask == 1) {king_bitboard = king_bitboard >> 8;}
-        if (king_bitboard & a_file_mask == 1) {king_bitboard = king_bitboard << 1;}
-        if (king_bitboard & h_file_mask == 1) {king_bitboard = king_bitboard >> 1;}
+        // the logic should be make area of king ring wit 1 in bitboard then based on full condition i will rempve protected by pawns
+
+        if king_bitboard & rank_1_mask != 0{
+            king_bitboard = king_bitboard << 8;
+        }
+        if king_bitboard & rank_8_mask != 0 {
+            king_bitboard = king_bitboard >> 8;
+        }
+        if king_bitboard & a_file_mask != 0{
+            king_bitboard = king_bitboard << 1;
+        }
+        if king_bitboard & h_file_mask != 0 {
+            king_bitboard = king_bitboard >> 1;
+        }
 
         king_ring_bitboard |= king_bitboard; //assuming there's only one king
         king_ring_bitboard |= Bitboards::move_east(king_bitboard);
@@ -771,23 +794,30 @@ impl Board {
         king_ring_bitboard |= Bitboards::move_south_east(king_bitboard);
         king_ring_bitboard |= Bitboards::move_south_west(king_bitboard);
         
-        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+        if full == false { // When full=false, checks if the square is defended by two black pawns diagonally below it
+            let not_g_h_file : u64 = 0x3F3F3F3F3F3F3F3F;
 
-        let mut pawn_bitboard = self.bitboards.white_pawns;
-        let mut protected_by_2_pawns_bitboard = 0 as u64;
-        while pawn_bitboard != 0 {
-            let pawn = pawn_bitboard.trailing_zeros() as u64;
-            while pawn & not_h_file != 1 {
-                let neighbour_pawn = pawn << 2; // check if there's a pawn to the right of the pawn by 2
-                if pawn_bitboard & neighbour_pawn !=0 {
-                    protected_by_2_pawns_bitboard |= pawn << 9; // if two pawns on the same rank apart by two squares, the square to their shared diagonal is protected
+            let mut pawn_bitboard = self.bitboards.black_pawns;
+            let black_pawns = pawn_bitboard;
+            let mut protected_by_2_pawns_bitboard = 0 as u64;
+            while pawn_bitboard != 0 {
+                let square = pawn_bitboard.trailing_zeros() as u8;
+                let pawn = 1 << square;
+                if pawn & not_g_h_file != 0 {
+                    let neighbour_pawn = pawn << 2; // check if there's a pawn to the right of the pawn by 2
+                    if black_pawns & neighbour_pawn !=0 { // as i from black prespective i will move south east 
+                        protected_by_2_pawns_bitboard |= pawn >> 7;
+                    }
                 }
+                pawn_bitboard &= pawn_bitboard -1;
             }
-            pawn_bitboard &= pawn_bitboard -1;
-        }
-        king_ring_bitboard = !(king_bitboard & protected_by_2_pawns_bitboard); // removes positions protected by 2 pawns , notand operation -> !&
+            king_ring_bitboard = king_ring_bitboard & !protected_by_2_pawns_bitboard; // removes positions protected by 2 pawns , notand operation -> !&
 
-        king_ring_bitboard // still haven't decided how i'll use the bitboard
+            return king_ring_bitboard // still haven't decided how i'll use the bitboard
+        }else{
+            return king_ring_bitboard;
+        }
+        
     }
 
     fn rook_xray_attack(&self, pins : &Vec<u8>, rook_bitboard:u64) -> u64 {
@@ -1299,7 +1329,7 @@ impl Board {
 
     fn king_mg(&self) -> i32 {
         let mut v = 0;
-        let mut kd = self.king_danger();
+        let kd = self.king_danger();
         
         v -= self.shelter_strength();
         v += self.shelter_storm();
@@ -1313,6 +1343,7 @@ impl Board {
     // check if the king is in danger, or can be in danger
     fn king_danger(&self) -> i32 {
         // this is a big function with a lot of branches 
+        let count = self.king_attackers_count();
         0
     }
 
@@ -1332,9 +1363,38 @@ impl Board {
         0
     }
     
-    fn pawnless_flank(&self) -> i32 {
+    pub fn pawnless_flank(&self) -> i32 {
+        // return 0 or 1
+        /*
+            Far Queenside (kx=0, a-file): Checks pawns on a,b,c.
 
-        0
+            Queenside (kx=1-2, b/c-file): Checks pawns on a,b,c,d.
+
+            Center (kx=3-4, d/e-file): Checks pawns on c,d,e,f.
+
+            Kingside (kx=5-6, f/g-file): Checks pawns on e,f,g,h.
+
+            Far Kingside (kx=7, h-file): Checks pawns on f,g,h.
+        */
+        let king_file = (self.bitboards.black_king.trailing_zeros() as u8) % 8; // 0 -> 7
+        // Get all pawns (both colors)
+        let all_pawns = self.bitboards.white_pawns | self.bitboards.black_pawns;
+        // Define flank masks based on king's file
+        let flank_mask: u64 = match king_file {
+            0 => 0x707070707070707, // a,b,c files (0x01 | 0x02 | 0x04)
+            1 | 2 => 0x0F0F0F0F0F0F0F0F, // a,b,c,d files
+            3 | 4 => 0x3C3C3C3C3C3C3C3C, // c,d,e,f files
+            5 | 6 => 0xF0F0F0F0F0F0F0F0, // e,f,g,h files
+            7 => 0xE0E0E0E0E0E0E0E0, // f,g,h files
+            _ => 0,
+        };
+        println!("{} THE {} Pawns {}",king_file, flank_mask, all_pawns);
+        // Check if any pawn exists in the flank area
+        if (all_pawns & flank_mask) != 0 {
+            0  // Pawns exist in flank -> No Penalty
+        } else {
+            1  // No pawns in flank (pawnless) -> Penaly
+        }
     }
 
     // WINNABLE MIDDLE GAME
