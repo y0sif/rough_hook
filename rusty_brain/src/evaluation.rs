@@ -25,7 +25,7 @@ impl Board {
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
         v += self.space(true) - color_flip_board.space(true); // needs to see what tdo with middle_game var
-        v += self.king_mg() - color_flip_board.king_mg();
+        v += self.king_mg(&pins) - color_flip_board.king_mg(&flip_pins);
         
         if !nowinnable {
             v += self.winnable_total_mg(Some(v));
@@ -741,20 +741,92 @@ impl Board {
 
         0
     }
-
-    fn king_attackers_count(&self) -> i32 { //might be able to remove and replace
+    // here we return number of pieces for Knight, Queen, Bishop, Rook
+    // but for Pawns we return number of attacked squares
+    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> i32 { //might be able to remove and replace
         /*
             King attackers count is the number of pieces of the given color
             which attack a square in the kingRing of the enemy king. 
             For pawns we count number of attacked squares in kingRing.
          */
+        let mut c = 0;
         let white_pieces = self.bitboards.get_ally_pieces(Turn::White) & !self.bitboards.white_king;
         if white_pieces == 0 {
             return 0;
         }
         
+        // Special Case For Pawns is duo pawns, if two pawns attacked the same enemy square,
+        // each one of them will count as 0.5 rather than 1, i will try another way,
+        // i will make bitboard for pawns attaked and before adding another 1 -refer for attack-
+        // i will check if it is in the bitboard or not
+
+        let king_ring_for_pawns = self.king_ring(true);
+        let normal_king_ring = self.king_ring(false);
         
-        0
+        let mut white_pawns = self.bitboards.white_pawns;
+
+        let mut pawns_attackers:u64 = 0;
+
+        while white_pawns != 0 {
+            let square = white_pawns.trailing_zeros() as u8;
+            let pawn = 1 << square;
+            let pawn_attack = Bitboards::move_north_east(pawn) |Bitboards::move_north_west(pawn);
+            let temp = king_ring_for_pawns & pawn_attack;
+            pawns_attackers |= temp;
+            white_pawns &= white_pawns - 1;
+        }
+        c += pawns_attackers.count_ones() as i32;
+
+        let mut knights = self.bitboards.white_knights;
+        let mut bishops = self.bitboards.white_bishops;
+        let mut queens = self.bitboards.white_queens;
+        let mut rooks = self.bitboards.white_rooks;
+        
+        while knights != 0 {
+            let square = knights.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.knight_attack(square_position, pins);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                break;
+            }
+            knights &= knights - 1;
+        }
+        while bishops != 0 {
+            let square = bishops.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.bishop_xray_attack(pins, square_position);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                break;
+            }
+            bishops &= bishops - 1;
+        }
+        while rooks != 0 {
+            let square = rooks.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.rook_xray_attack(pins, square_position);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                break;
+            }
+            rooks &= rooks - 1;
+        }
+        while queens != 0 {
+            let square = queens.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.queen_attack(pins, square_position);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                break;
+            }
+            queens &= queens - 1;
+        }
+        return c;
     }
 
     // Note in King Ring Function
@@ -1327,9 +1399,9 @@ impl Board {
     
     // KING MIDDLE GAME
 
-    fn king_mg(&self) -> i32 {
+    fn king_mg(&self, pins: &Vec<u8>) -> i32 {
         let mut v = 0;
-        let kd = self.king_danger();
+        let kd = self.king_danger(pins);
         
         v -= self.shelter_strength();
         v += self.shelter_storm();
@@ -1341,9 +1413,9 @@ impl Board {
     }
     
     // check if the king is in danger, or can be in danger
-    fn king_danger(&self) -> i32 {
+    fn king_danger(&self, pins: &Vec<u8>) -> i32 {
         // this is a big function with a lot of branches 
-        let count = self.king_attackers_count();
+        let count = self.king_attackers_count(pins);
         0
     }
 

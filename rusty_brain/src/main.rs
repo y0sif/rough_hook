@@ -35,9 +35,17 @@ fn main() {
         let board = Board::from_fen(fen.to_string());
         
         //println!("{}",board.pawnless_flank());
-        println!("{}", board.king_ring(false).count_ones())
+        // println!("{}", Bitboards::move_north_east(1));
+        // println!("{}", Bitboards::move_north_west(1));
+        // println!("{}", Bitboards::move_north_east(128));
+        // println!("{}", Bitboards::move_north_west(128));
+        
+
+
         // let flipped_board = board.color_flip();
-        // //let (_, pins) = board.checks_and_pins();
+        let (_, pins) = board.checks_and_pins();
+        println!("{}", board.king_attackers_count(&pins));
+
         // //let (_, filp_pins) = flipped_board.checks_and_pins();
         // // // // Get the white pawns bitboard
         
