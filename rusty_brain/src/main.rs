@@ -5,7 +5,7 @@ use rusty_brain::transposition::TranspositionTable;
 use rusty_brain::uci;
 use crate::piece::Piece;
 
-use std::{io, result};
+use std::{io, rc::Weak, result};
 fn print_bitboard(bb: u64) {
     println!("\nBitboard visualization (LSB=a1, MSB=h8):");
     for rank in (0..8).rev() {
@@ -34,7 +34,40 @@ fn main() {
         }
         
         let board = Board::from_fen(fen.to_string());
+        let flipped_board = board.color_flip();
+        let (_, filp_pins) = flipped_board.checks_and_pins();
+
+        let (_, pins) = board.checks_and_pins();
+        let (attack, arr, c) = board.attack(&pins);
+        let (attack1, arr1, c1) = flipped_board.attack(&filp_pins);
+
+        let weak_squares = board.weak_squares(&pins, &filp_pins);
+        println!("White {}", weak_squares.count_ones());
+
+        let weak_squares_flip = flipped_board.weak_squares(&filp_pins, &pins);
+        println!("Black {}", weak_squares_flip.count_ones());
+        //print_bitboard(weak_squares_flip);
+        println!("{}", c);
+        println!("{}", c1);
+
+        println!("-------------------------------------------------");
+
+        let normal_king_ring = board.king_ring(false);
+        let normal_king_flip = flipped_board.king_ring(false);
+
+        println!("White {} ", board.weak_bonus(normal_king_ring, &pins, &filp_pins));
+        println!("Black {} ", flipped_board.weak_bonus(normal_king_flip, &filp_pins, &pins));
         
+
+        // println!("Square | Attack Count");
+        // println!("-------------------");
+        // for square in 0..64 {
+        //     let file = (square % 8) as u8;
+        //     let rank = (square / 8) as u8 + 1;
+        //     let file_char = (b'a' + file) as char;
+        //     println!("{}{}    | {}", file_char, rank, arr[square as usize]);
+        // }
+
         //println!("{}",board.space(true));
         // println!("{}", Bitboards::move_west(1));
         // println!("{}", Bitboards::move_south(1));
@@ -44,11 +77,11 @@ fn main() {
 
 
         // // let flipped_board = board.color_flip();
-        let (_, pins) = board.checks_and_pins();
-        let (count,weight) = board.king_attackers_count(&pins);
-        println!("{} Then {}",count, weight);
-        let c = board.king_attacks(count, &pins);
-        println!("{}", c);
+        // let (_, pins) = board.checks_and_pins();
+        // let (count,weight) = board.king_attackers_count(&pins);
+        // println!("{} Then {}",count, weight);
+        // let c = board.king_attacks(count, &pins);
+        // println!("{}", c);
 
         // //let (_, filp_pins) = flipped_board.checks_and_pins();
         // // // // Get the white pawns bitboard
@@ -99,7 +132,7 @@ fn main() {
         // for &square in &filp_pins {
         //     println!("{}",square);
         // }
-        println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
+        // println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
         //println!("Mobility_MG For Black = {} ",flipped_board.mobility_mg(&filp_pins));
 
         // board = flipped_board;        

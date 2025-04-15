@@ -26,7 +26,7 @@ impl Board {
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
         v += self.space(true) - color_flip_board.space(true); // needs to see what tdo with middle_game var
-        v += self.king_mg(&pins) - color_flip_board.king_mg(&flip_pins);
+        v += self.king_mg(&pins, &flip_pins) - color_flip_board.king_mg(&flip_pins, &pins);
         
         if !nowinnable {
             v += self.winnable_total_mg(Some(v));
@@ -861,7 +861,9 @@ impl Board {
         sum
     }
 
-    // fn pawn_attack(&self) -> i32 { //might be able to remove and replace 
+
+    // I will not use this function and replace it with another one
+    // fn pawn_attack(&self) -> i32 { //might be able to remove and replace
 
     //     0
     // }
@@ -903,7 +905,13 @@ impl Board {
         while rook_bitboard != 0 {
             let rook_idx = rook_bitboard.trailing_zeros() as u8;
             let rook = (1u64 << rook_idx);
-            let rook_king_attacker_count = self.king_attackers_count( pins);
+            
+            //
+            let king_ring_for_pawns = self.king_ring(true);
+            let normal_king_ring = self.king_ring(false);
+            //
+
+            let rook_king_attacker_count = self.king_attackers_count( pins, king_ring_for_pawns, normal_king_ring);
             if !(rook_king_attacker_count.0 > 0) {
                 let rook_file_mask = Bitboards::file_mask_to_end(rook_idx);
                 if rook_file_mask & king_ring != 0 {
@@ -925,7 +933,7 @@ impl Board {
     // There is a dunction called King attackers weight:
     // is the sum of the "weights" of the pieces of the given color which attack a square in the kingRing of the enemy king.
     // i will update this function to return it also
-    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> (i32, i32) {
+    pub fn king_attackers_count(&self, pins: &Vec<u8>, king_ring_for_pawns:u64,normal_king_ring:u64 ) -> (i32, i32) {
         /*
             King attackers count is the number of pieces of the given color
             which attack a square in the kingRing of the enemy king. 
@@ -942,8 +950,6 @@ impl Board {
         // i will make bitboard for pawns attaked and before adding another 1 -refer for attack-
         // i will check if it is in the bitboard or not
 
-        let king_ring_for_pawns = self.king_ring(true);
-        let normal_king_ring = self.king_ring(false);
         
         let mut white_pawns = self.bitboards.white_pawns;
 
@@ -1636,9 +1642,9 @@ impl Board {
     
     // KING MIDDLE GAME
 
-    fn king_mg(&self, pins: &Vec<u8>) -> i32 {
+    fn king_mg(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>) -> i32 {
         let mut v = 0;
-        let kd = self.king_danger(pins);
+        let kd = self.king_danger(pins, flip_pins);
         
         v -= self.shelter_strength();
         v += self.shelter_storm();
@@ -1650,11 +1656,237 @@ impl Board {
     }
     
     // check if the king is in danger, or can be in danger
-    fn king_danger(&self, pins: &Vec<u8>) -> i32 {
+    fn king_danger(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>) -> i32 {
         // this is a big function with a lot of branches 
-        let (count, weight) = self.king_attackers_count(pins);
+        let king_ring_for_pawns = self.king_ring(true);
+        let normal_king_ring = self.king_ring(false);
+        
+        let (count, weight) = self.king_attackers_count(pins, king_ring_for_pawns,normal_king_ring );
         let king_attacks = self.king_attacks(count, pins);
+        let weak = self.weak_bonus(normal_king_ring, pins, flip_pins);
         0
+    }
+    /*
+     This function evaluates weak squares in the enemy king's ring from White's perspective. It assigns a bonus (1) if a square meets two conditions:
+
+     It is a weak square (undefended or poorly defended).
+
+     It is part of the enemy king's ring (critical attack zone around the king).
+    */
+    // return number of weak bonus
+    // Call 2 functions king_ring, weak_squares
+    pub fn weak_bonus(&self, normal_king_ring:u64, pins: &Vec<u8>, flip_pins: &Vec<u8>) -> i32{
+        
+        let weak_squares = self.weak_squares(pins, flip_pins);
+        return (weak_squares & normal_king_ring).count_ones() as i32;
+    }
+
+
+    // Function Attack it depends on 
+    // King attack - Knight attack - Bishop xray attak - Rook xray attak - Queen Attack 
+    // pawn attack -Not implemented but will deal with it-
+    // i will return 2 things - bitboard contains ones at aquares attacked by any piece
+    // and vector of size 64 at each index contains number of pieces attack this square
+    pub fn attack(&self, pins: &Vec<u8>) -> (u64, [u8; 64], i32){
+        let mut attack_bitboard: u64 = 0;
+        let mut attack_counts = [0u8; 64];
+        let mut num_of_attacks = 0;
+        // Process king attacks
+        let mut king_attacks = self.king_attack();
+        attack_bitboard |= king_attacks;
+        while king_attacks != 0 {
+            let square = king_attacks.trailing_zeros() as u8;
+            attack_counts[square as usize] += 1;
+            king_attacks &= king_attacks - 1;
+            num_of_attacks += 1;
+        }
+
+        let mut knights = self.bitboards.white_knights;
+        let mut bishops = self.bitboards.white_bishops;
+        let mut queens = self.bitboards.white_queens;
+        let mut rooks = self.bitboards.white_rooks;
+        
+        while knights != 0 {
+            let square = knights.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let mut attacked_squares = self.knight_attack(square_position, pins);
+            attack_bitboard |= attacked_squares;
+            while attacked_squares != 0 {
+                let square = attacked_squares.trailing_zeros() as u8;
+                attack_counts[square as usize] += 1;
+                attacked_squares &= attacked_squares - 1;
+                num_of_attacks += 1;
+
+            }
+
+            knights &= knights - 1;
+        }
+        while bishops != 0 { // For Bishop w = 52
+            let square = bishops.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let mut attacked_squares = self.bishop_xray_attack(pins, square_position);
+            attack_bitboard |= attacked_squares;
+            while attacked_squares != 0 {
+                let square = attacked_squares.trailing_zeros() as u8;
+                attack_counts[square as usize] += 1;
+                attacked_squares &= attacked_squares - 1;
+                num_of_attacks += 1;
+
+            }
+            bishops &= bishops - 1;
+        }
+        while rooks != 0 { // 44
+            let square = rooks.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let mut attacked_squares = self.rook_xray_attack(pins, square_position);
+            attack_bitboard |= attacked_squares;
+            while attacked_squares != 0 {
+                let square = attacked_squares.trailing_zeros() as u8;
+                attack_counts[square as usize] += 1;
+                attacked_squares &= attacked_squares - 1;
+                num_of_attacks += 1;
+
+            }
+            rooks &= rooks - 1;
+        }
+        while queens != 0 { //10
+            let square = queens.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let mut attacked_squares = self.queen_attack(pins, square_position);
+            attack_bitboard |= attacked_squares;
+            while attacked_squares != 0 {
+                let square = attacked_squares.trailing_zeros() as u8;
+                attack_counts[square as usize] += 1;
+                attacked_squares &= attacked_squares - 1;
+                num_of_attacks += 1;
+
+            }
+            queens &= queens - 1;
+        }
+
+        let mut white_pawns = self.bitboards.white_pawns;
+
+        while white_pawns != 0 {
+            let square = white_pawns.trailing_zeros() as u8;
+            let pawn = 1 << square;
+            let mut pawn_attack = Bitboards::move_north_east(pawn) |Bitboards::move_north_west(pawn);
+
+            attack_bitboard |= pawn_attack;
+            while pawn_attack != 0 {
+                let square = pawn_attack.trailing_zeros() as u8;
+                attack_counts[square as usize] += 1;
+                pawn_attack &= pawn_attack - 1;
+                num_of_attacks += 1;
+
+            }
+            white_pawns &= white_pawns - 1;
+        }
+
+        return (attack_bitboard, attack_counts, num_of_attacks);
+    }
+
+
+    pub fn king_attack(&self)->u64{
+        let king_bitboard = self.bitboards.white_king;
+        let mut king_attack = 0;
+        king_attack |= Bitboards::move_east(king_bitboard);
+        king_attack |= Bitboards::move_west(king_bitboard);
+        king_attack |= Bitboards::move_north(king_bitboard);
+        king_attack |= Bitboards::move_south(king_bitboard);
+        king_attack |= Bitboards::move_north_east(king_bitboard);
+        king_attack |= Bitboards::move_north_west(king_bitboard);
+        king_attack |= Bitboards::move_south_east(king_bitboard);
+        king_attack |= Bitboards::move_south_west(king_bitboard);
+
+        return king_attack;
+
+    }
+    // Call Function Attack, King_attack, Queen_attack
+    /*
+        Weak squares. Attacked squares defended at most once by our queen or king.
+
+        The weak_squares function identifies squares that:
+
+        Are attacked by white -Call Attack function and deal with bitboard returned-
+
+        Are defended by black at most once -so we need to call color flip-
+
+        If defended once, only by black's queen or king (not minor pieces or pawns) -another check- 
+     */
+    pub fn weak_squares(&self,pins: &Vec<u8>, flip_pins: &Vec<u8>)->u64{ // return bitboard contains 1 at weak squares
+        
+        /*
+        If ≥ 2 defenders → not weak (return 0)
+
+        If 0 defenders → weak (return 1)
+
+        If 1 defender → only weak if defender is queen or king
+        
+         */
+
+        // Helper function to flip the attack count array
+        fn flip_attack_array(arr: [u8; 64]) -> [u8; 64] {
+            let mut flipped = [0; 64];
+            for i in 0..64 {
+                let rank = i / 8;          // Original rank (0-7)
+                let file = i % 8;          // File stays the same
+                let new_rank = 7 - rank;   // Mirrored rank
+                let new_index = new_rank * 8 + file;
+                flipped[new_index] = arr[i];
+            }
+            flipped
+        }
+
+
+        let (white_attacks, _ , _) = self.attack(pins);
+
+        let flipped_bitboard = self.color_flip();
+        let (black_defend, black_defend_array, _) = flipped_bitboard.attack(flip_pins);
+
+        let black_defend_correct = self.flip_vertical(black_defend);
+        let black_defend_array_correct = flip_attack_array(black_defend_array);
+
+        let mut king_defended_squares = flipped_bitboard.king_attack();
+        king_defended_squares = self.flip_vertical(king_defended_squares);
+        
+        let mut queen_defended_squares = 0;
+        
+        let mut queen_bitboard = flipped_bitboard.bitboards.white_queens;
+        while queen_bitboard != 0  {
+            let square = queen_bitboard.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+            let  attacked_squares = self.queen_attack(flip_pins, square_position);
+            queen_defended_squares |= attacked_squares;    
+            queen_bitboard &= queen_bitboard - 1;
+        }
+
+        queen_defended_squares = self.flip_vertical(queen_defended_squares);
+        let mut weak_squares = 0;
+        // weak squares --> attacked by white and not defended by black
+        weak_squares |= white_attacks & !black_defend_correct;  
+        // weak squares --> attacked by white and defended by black
+        let mut attack_defend = white_attacks & black_defend_correct;
+        // if square defended by 2 or more not weak
+
+        while attack_defend != 0 {
+            let square = attack_defend.trailing_zeros() as usize;
+            if black_defend_array_correct[square] >= 2 {
+                // do nothing
+            }
+            // if == 0 --> has been handeled above
+            if black_defend_array_correct[square] == 1 { // weak if defnder is queen or king
+                let square_pos = 1 << (square as u8);
+                if square_pos & king_defended_squares != 0 || square_pos & queen_defended_squares != 0{ // 
+                    weak_squares |= square_pos;
+                }
+            }
+            attack_defend &= attack_defend - 1;
+        }
+        weak_squares
     }
     // takes king attackers count if = 0 then return 0
     pub fn king_attacks(&self, count:i32,pins: &Vec<u8> ) -> i32{
