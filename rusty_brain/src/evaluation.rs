@@ -1,5 +1,6 @@
 use std::process::id;
 use std::vec;
+use crate::board;
 use crate::piece::Piece;
 
 use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
@@ -11,10 +12,10 @@ impl Board {
     }
     
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
-        let mut v = 0;
+        let mut v: i32 = 0;
         let color_flip_board = self.color_flip();
         let (_, pins) = self.checks_and_pins();
-        let (_, flip_pins) = self.checks_and_pins();
+        let (_, flip_pins) = color_flip_board.checks_and_pins();
 
         v += self.piece_value_mg() - color_flip_board.piece_value_mg();
         v += self.psqt_mg() - color_flip_board.psqt_mg();
@@ -25,7 +26,7 @@ impl Board {
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
         v += self.space(true) - color_flip_board.space(true); // needs to see what tdo with middle_game var
-        v += self.king_mg() - color_flip_board.king_mg();
+        v += self.king_mg(&pins) - color_flip_board.king_mg(&flip_pins);
         
         if !nowinnable {
             v += self.winnable_total_mg(Some(v));
@@ -369,7 +370,7 @@ impl Board {
 
     // return if current pawn is backward or not
     // return two values only 0 - 1
-    fn backward(&self,square_position: u64, square: u8) -> i32 {
+    pub fn backward(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let rank = square / 8;
         let mut neighbor_pawns = 0u64;
@@ -917,6 +918,8 @@ impl Board {
         
     }
 
+        // i will check if it is in the bitboard or not
+
 // here we return number of pieces for Knight, Queen, Bishop, Rook
     // but for Pawns we return number of attacked squares
     // There is a dunction called King attackers weight:
@@ -1234,7 +1237,7 @@ impl Board {
             (self.bitboards.white_rooks, 2, Piece::Rook),
             (self.bitboards.white_queens, 3, Piece::Queen),
         ];
-        let mobility_area = self.mobility_area(pins);
+        let mobility_area = self.mobility_area();
         for (bitboard, piece_index, piece_type) in piece_types.iter() {
             let mut pieces = *bitboard;
             while pieces != 0 {
@@ -1290,7 +1293,7 @@ impl Board {
         blocked_pawns
     }
     
-    pub fn mobility_area(&self, pins: &Vec<u8>) -> u64 {
+    pub fn mobility_area(&self) -> u64 {
         let mut mobility_area: u64 = !0; // Start with all bits set to 1.
     
         // Set the king's square to 0
@@ -1316,8 +1319,10 @@ impl Board {
         // the function called blockers_for_king is not important
         // as i will use my existance checks_and_pins function
         // Create bitboard of all pinned pieces
+        let pins = self.blockers_for_king();
         let mut pinned_bitboard = 0u64;
-        for &square in pins {
+        for &square in &pins {
+            //println!("{}", square);
             pinned_bitboard |= 1 << square;
         }
         mobility_area &= !pinned_bitboard;
@@ -1631,9 +1636,9 @@ impl Board {
     
     // KING MIDDLE GAME
 
-    fn king_mg(&self) -> i32 {
+    fn king_mg(&self, pins: &Vec<u8>) -> i32 {
         let mut v = 0;
-        let mut kd = self.king_danger();
+        let kd = self.king_danger(pins);
         
         v -= self.shelter_strength();
         v += self.shelter_storm();
@@ -1645,8 +1650,10 @@ impl Board {
     }
     
     // check if the king is in danger, or can be in danger
-    fn king_danger(&self) -> i32 {
+    fn king_danger(&self, pins: &Vec<u8>) -> i32 {
         // this is a big function with a lot of branches 
+        let (count, weight) = self.king_attackers_count(pins);
+
         0
     }
 
@@ -1666,9 +1673,38 @@ impl Board {
         0
     }
     
-    fn pawnless_flank(&self) -> i32 {
+    pub fn pawnless_flank(&self) -> i32 {
+        // return 0 or 1
+        /*
+            Far Queenside (kx=0, a-file): Checks pawns on a,b,c.
 
-        0
+            Queenside (kx=1-2, b/c-file): Checks pawns on a,b,c,d.
+
+            Center (kx=3-4, d/e-file): Checks pawns on c,d,e,f.
+
+            Kingside (kx=5-6, f/g-file): Checks pawns on e,f,g,h.
+
+            Far Kingside (kx=7, h-file): Checks pawns on f,g,h.
+        */
+        let king_file = (self.bitboards.black_king.trailing_zeros() as u8) % 8; // 0 -> 7
+        // Get all pawns (both colors)
+        let all_pawns = self.bitboards.white_pawns | self.bitboards.black_pawns;
+        // Define flank masks based on king's file
+        let flank_mask: u64 = match king_file {
+            0 => 0x707070707070707, // a,b,c files (0x01 | 0x02 | 0x04)
+            1 | 2 => 0x0F0F0F0F0F0F0F0F, // a,b,c,d files
+            3 | 4 => 0x3C3C3C3C3C3C3C3C, // c,d,e,f files
+            5 | 6 => 0xF0F0F0F0F0F0F0F0, // e,f,g,h files
+            7 => 0xE0E0E0E0E0E0E0E0, // f,g,h files
+            _ => 0,
+        };
+        println!("{} THE {} Pawns {}",king_file, flank_mask, all_pawns);
+        // Check if any pawn exists in the flank area
+        if (all_pawns & flank_mask) != 0 {
+            0  // Pawns exist in flank -> No Penalty
+        } else {
+            1  // No pawns in flank (pawnless) -> Penaly
+        }
     }
 
     // WINNABLE MIDDLE GAME
@@ -1728,6 +1764,17 @@ impl Board {
         // Clone the current board
         let mut clone_board = self.clone();
 
+
+        // match clone_board.turn {
+        //     Turn::White =>{
+        //         println!("White");
+        //     },
+        //     Turn::Black =>{
+        //         println!("Black");
+        //     },
+        // };
+
+        // The turn is White and still white
 
         // match clone_board.turn {
         //     Turn::White =>{

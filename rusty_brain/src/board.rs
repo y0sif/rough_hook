@@ -830,6 +830,50 @@ impl Board {
         moves
     }
     
+    // For evaluation -Evaluation always from white perspective-
+    pub fn blockers_for_king(&self) -> Vec<u8>{
+        let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard) =
+            (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens);
+
+        let blockers_bitboard = !self.bitboards.get_empty_squares() & !self.bitboards.white_king;
+        
+        let mut pins = Vec::new();
+
+        let orth_directions = [Bitboards::move_north, Bitboards::move_east, Bitboards::move_south, Bitboards::move_west];
+        let diag_directions = [Bitboards::move_north_west, Bitboards::move_north_east, Bitboards::move_south_east, Bitboards::move_south_west]; 
+        
+        let orth_bitboard = rooks_bitboard | queen_bitboard;
+        let diag_bitboard = bishops_bitboard | queen_bitboard;
+        
+        for direction in orth_directions {
+            self.get_blockers_for_king(&mut pins, king_bitboard, orth_bitboard, blockers_bitboard, direction);
+        }
+
+        for direction in diag_directions {
+            self.get_blockers_for_king(&mut pins, king_bitboard, diag_bitboard, blockers_bitboard, direction);
+        }
+        pins
+    }
+
+    fn get_blockers_for_king(&self, pins: &mut Vec<u8>, king_bitboard: u64, enemy_bitboard: u64, blockers_bitboard: u64, move_fn: fn(u64) -> u64) {
+        let mut next_bitboard = move_fn(king_bitboard);
+        let mut flag = false;
+        let mut possible_bloker = 0;
+        while next_bitboard != 0 {
+            if next_bitboard & blockers_bitboard != 0 && flag == false{ // You Find Piece, and for first time
+                flag = true;
+                possible_bloker = next_bitboard;
+            }else if next_bitboard & enemy_bitboard != 0 && flag == true{
+                pins.push(possible_bloker.trailing_zeros() as u8);
+                break;
+            }else if flag == true && next_bitboard & blockers_bitboard != 0{
+                break;
+            }
+            next_bitboard = move_fn(next_bitboard);
+        }
+    }
+
+
     pub fn checks_and_pins(&self) -> (Vec<u64>, Vec<u8>) {
         let (king_bitboard, rooks_bitboard, bishops_bitboard, queen_bitboard, knight_bitboard, pawn_bitboard) = match self.turn {
             Turn::White => (self.bitboards.white_king, self.bitboards.black_rooks, self.bitboards.black_bishops, self.bitboards.black_queens, self.bitboards.black_knights, self.bitboards.black_pawns),
