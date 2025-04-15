@@ -1388,13 +1388,13 @@ impl Board {
         let mut moves_bitboard = 0;
         let all_pieces = !self.bitboards.get_empty_squares();
         let queens_bitboard = self.bitboards.black_queens | self.bitboards.white_queens; 
-
+        let another_rooks = self.bitboards.white_rooks & !piece_bitboard;
         let all_piece_positions = Self::get_piece_positions_from(&piece_bitboard);
         for piece_position in all_piece_positions {
             let start_square = piece_position.trailing_zeros() as u8;
             let rook_mask = Bitboards::rook_mask_ex(start_square);
 
-            let blocker = all_pieces & rook_mask &!queens_bitboard; 
+            let blocker = all_pieces & rook_mask &!queens_bitboard & !another_rooks; 
             let key = (blocker.wrapping_mul(Magic::ROOK_MAGICS[start_square as usize])) >> Magic::ROOK_SHIFTS[start_square as usize];
 
             moves_bitboard |= self.rook_attacks[start_square as usize][key as usize];

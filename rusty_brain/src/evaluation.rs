@@ -746,7 +746,7 @@ impl Board {
     // There is a dunction called King attackers weight:
     // is the sum of the "weights" of the pieces of the given color which attack a square in the kingRing of the enemy king.
     // i will update this function to return it also
-    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> (i32, i32) { //might be able to remove and replace
+    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> (i32, i32) {
         /*
             King attackers count is the number of pieces of the given color
             which attack a square in the kingRing of the enemy king. 
@@ -1361,7 +1361,7 @@ impl Board {
         let mut pawn_bitboard = self.bitboards.white_pawns;
         let mut behind_pawn_mask : u64 =0;
         while pawn_bitboard != 0 {
-            let mut pawn = pawn_bitboard.trailing_zeros() as u64;
+            let pawn = pawn_bitboard.trailing_zeros() as u64;
             if (Square::from(pawn as u8).file() as usize) > 1 && (Square::from(pawn as u8).file() as usize) < 6 {
                 let mut mask = 1u64 << pawn; 
                 let mut count = 0 ;
@@ -1421,10 +1421,81 @@ impl Board {
     fn king_danger(&self, pins: &Vec<u8>) -> i32 {
         // this is a big function with a lot of branches 
         let (count, weight) = self.king_attackers_count(pins);
-
+        let king_attacks = self.king_attacks(count, pins);
         0
     }
+    // takes king attackers count if = 0 then return 0
+    pub fn king_attacks(&self, count:i32,pins: &Vec<u8> ) -> i32{
+        if count == 0 {
+            return 0;
+        }
+        
+        let king_bitboard = self.bitboards.black_king;        
 
+        let mut king_squares = 0;
+        king_squares |= Bitboards::move_east(king_bitboard);
+        king_squares |= Bitboards::move_west(king_bitboard);
+        king_squares |= Bitboards::move_north(king_bitboard);
+        king_squares |= Bitboards::move_south(king_bitboard);
+        king_squares |= Bitboards::move_north_east(king_bitboard);
+        king_squares |= Bitboards::move_north_west(king_bitboard);
+        king_squares |= Bitboards::move_south_east(king_bitboard);
+        king_squares |= Bitboards::move_south_west(king_bitboard);
+
+        let mut c = 0;
+
+        let mut knights = self.bitboards.white_knights;
+        let mut bishops = self.bitboards.white_bishops;
+        let mut queens = self.bitboards.white_queens;
+        let mut rooks = self.bitboards.white_rooks;
+        
+        while knights != 0 { // For Kinght weight = 81
+            let square = knights.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.knight_attack(square_position, pins);
+            let attacks = attacked_squares & king_squares;
+            if attacks != 0{
+                c += attacks.count_ones();
+            }
+            knights &= knights - 1;
+        }
+        while bishops != 0 { // For Bishop w = 52
+            let square = bishops.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.bishop_xray_attack(pins, square_position);
+            let attacks = attacked_squares & king_squares;
+            if attacks != 0{
+                c += attacks.count_ones();
+            }
+            bishops &= bishops - 1;
+        }
+        while rooks != 0 { // 44
+            let square = rooks.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.rook_xray_attack(pins, square_position);
+            let attacks = attacked_squares & king_squares;
+            if attacks != 0{
+                c += attacks.count_ones();
+            }
+            rooks &= rooks - 1;
+        }
+        while queens != 0 { //10
+            let square = queens.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.queen_attack(pins, square_position);
+            let attacks = attacked_squares & king_squares;
+            if attacks != 0{
+                c += attacks.count_ones();
+            }
+            queens &= queens - 1;
+        }
+
+        return c as i32;
+    }
     fn shelter_strength(&self) -> i32 {
         // calculate the pieces sheltring the king
 

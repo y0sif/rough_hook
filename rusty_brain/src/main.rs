@@ -35,18 +35,20 @@ fn main() {
         
         let board = Board::from_fen(fen.to_string());
         
-        //println!("{}",board.pawnless_flank());
-        // println!("{}", Bitboards::move_north_east(1));
-        // println!("{}", Bitboards::move_north_west(1));
-        // println!("{}", Bitboards::move_north_east(128));
-        // println!("{}", Bitboards::move_north_west(128));
+        //println!("{}",board.space(true));
+        // println!("{}", Bitboards::move_west(1));
+        // println!("{}", Bitboards::move_south(1));
+        // println!("{}", Bitboards::move_east(128));
+        // println!("{}", Bitboards::move_south(128));
         
 
 
-        // let flipped_board = board.color_flip();
+        // // let flipped_board = board.color_flip();
         let (_, pins) = board.checks_and_pins();
         let (count,weight) = board.king_attackers_count(&pins);
         println!("{} Then {}",count, weight);
+        let c = board.king_attacks(count, &pins);
+        println!("{}", c);
 
         // //let (_, filp_pins) = flipped_board.checks_and_pins();
         // // // // Get the white pawns bitboard
@@ -97,7 +99,7 @@ fn main() {
         // for &square in &filp_pins {
         //     println!("{}",square);
         // }
-        //println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
+        println!("Mobility_MG For White = {} ",board.mobility_mg(&pins));
         //println!("Mobility_MG For Black = {} ",flipped_board.mobility_mg(&filp_pins));
 
         // board = flipped_board;        
