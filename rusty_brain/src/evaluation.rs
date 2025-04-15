@@ -743,7 +743,10 @@ impl Board {
     }
     // here we return number of pieces for Knight, Queen, Bishop, Rook
     // but for Pawns we return number of attacked squares
-    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> i32 { //might be able to remove and replace
+    // There is a dunction called King attackers weight:
+    // is the sum of the "weights" of the pieces of the given color which attack a square in the kingRing of the enemy king.
+    // i will update this function to return it also
+    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> (i32, i32) { //might be able to remove and replace
         /*
             King attackers count is the number of pieces of the given color
             which attack a square in the kingRing of the enemy king. 
@@ -752,7 +755,7 @@ impl Board {
         let mut c = 0;
         let white_pieces = self.bitboards.get_ally_pieces(Turn::White) & !self.bitboards.white_king;
         if white_pieces == 0 {
-            return 0;
+            return (0,0);
         }
         
         // Special Case For Pawns is duo pawns, if two pawns attacked the same enemy square,
@@ -777,56 +780,58 @@ impl Board {
         }
         c += pawns_attackers.count_ones() as i32;
 
+        let mut weights = 0; // For King attackers weight function
+
         let mut knights = self.bitboards.white_knights;
         let mut bishops = self.bitboards.white_bishops;
         let mut queens = self.bitboards.white_queens;
         let mut rooks = self.bitboards.white_rooks;
         
-        while knights != 0 {
+        while knights != 0 { // For Kinght weight = 81
             let square = knights.trailing_zeros() as u64; // Get square position
             let square_position = 1 << square;
 
             let attacked_squares = self.knight_attack(square_position, pins);
             if attacked_squares & normal_king_ring != 0{
                 c += 1;
-                break;
+                weights += 81;
             }
             knights &= knights - 1;
         }
-        while bishops != 0 {
+        while bishops != 0 { // For Bishop w = 52
             let square = bishops.trailing_zeros() as u64; // Get square position
             let square_position = 1 << square;
 
             let attacked_squares = self.bishop_xray_attack(pins, square_position);
             if attacked_squares & normal_king_ring != 0{
                 c += 1;
-                break;
+                weights += 52;
             }
             bishops &= bishops - 1;
         }
-        while rooks != 0 {
+        while rooks != 0 { // 44
             let square = rooks.trailing_zeros() as u64; // Get square position
             let square_position = 1 << square;
 
             let attacked_squares = self.rook_xray_attack(pins, square_position);
             if attacked_squares & normal_king_ring != 0{
                 c += 1;
-                break;
+                weights += 44;
             }
             rooks &= rooks - 1;
         }
-        while queens != 0 {
+        while queens != 0 { //10
             let square = queens.trailing_zeros() as u64; // Get square position
             let square_position = 1 << square;
 
             let attacked_squares = self.queen_attack(pins, square_position);
             if attacked_squares & normal_king_ring != 0{
                 c += 1;
-                break;
+                weights += 10;
             }
             queens &= queens - 1;
         }
-        return c;
+        return (c, weights);
     }
 
     // Note in King Ring Function
@@ -1415,7 +1420,8 @@ impl Board {
     // check if the king is in danger, or can be in danger
     fn king_danger(&self, pins: &Vec<u8>) -> i32 {
         // this is a big function with a lot of branches 
-        let count = self.king_attackers_count(pins);
+        let (count, weight) = self.king_attackers_count(pins);
+
         0
     }
 

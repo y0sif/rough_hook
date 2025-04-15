@@ -1,3 +1,4 @@
+use rand::distributions::weighted::alias_method::Weight;
 use rusty_brain::{bitboards::{self, Bitboards}, board::{self, Board}, square, piece};
 use rusty_brain::square::Square;
 use rusty_brain::transposition::TranspositionTable;
@@ -44,7 +45,8 @@ fn main() {
 
         // let flipped_board = board.color_flip();
         let (_, pins) = board.checks_and_pins();
-        println!("{}", board.king_attackers_count(&pins));
+        let (count,weight) = board.king_attackers_count(&pins);
+        println!("{} Then {}",count, weight);
 
         // //let (_, filp_pins) = flipped_board.checks_and_pins();
         // // // // Get the white pawns bitboard
