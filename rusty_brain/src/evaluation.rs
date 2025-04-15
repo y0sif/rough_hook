@@ -1,4 +1,5 @@
 use std::process::id;
+use std::vec;
 use crate::board;
 use crate::piece::Piece;
 
@@ -20,7 +21,7 @@ impl Board {
         v += self.psqt_mg() - color_flip_board.psqt_mg();
         v += self.imbalance_total(&color_flip_board);
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
-        v += self.pieces_mg() - color_flip_board.pieces_mg();
+        v += self.pieces_mg(&pins) - color_flip_board.pieces_mg(&flip_pins);
         v += self.mobility_mg(&pins) - color_flip_board.mobility_mg(&flip_pins);
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
@@ -268,7 +269,7 @@ impl Board {
     
     // PAWNS MIDDLE GAME
     
-    pub fn pawns_mg(&self) -> i32 {
+    fn pawns_mg(&self) -> i32 {
         // sum function
         
         let mut v = 0;
@@ -644,16 +645,16 @@ impl Board {
 
     // PIECES MIDDLES GAME
 
-    fn pieces_mg(&self) -> i32 {
+    fn pieces_mg(&self, pins: &Vec<u8>) -> i32 {
         let mut v = 0;
         v += [0, 31, -7, 30, 56][self.outpost_total() as usize];
         v += 18 * self.minor_behind_pawn();
         v -= 3 * self.bishop_pawns();
         v -= 4 * self.bishop_xray_pawns();
         v += 6 * self.rook_on_queen_file();
-        v += 16 * self.rook_on_king_ring();
+        v += 16 * self.rook_on_king_ring(pins);
         v += self.rook_on_file();
-        v -= self.trapped_rook() * 55 ; //idk incomplete for now
+        v -= self.trapped_rook(pins) * 55 ; //idk incomplete for now
         v -= 56 * self.weak_queen();
         v -= 2 * self.queen_infiltration();
         //king protector line idk
@@ -662,23 +663,148 @@ impl Board {
     }
 
     fn outpost_total(&self) -> i32 {
-    
+        let mut v = Vec::new();
+
+        let left_board_mask: u64 = 0xf0f0f0f0f0f0f0f0;
+        let right_board_mask: u64 = 0x0f0f0f0f0f0f0f0f;
+
+        let outposts = self.outpost();
+        let reachable_outposts  =self.reachable_outposts(); //only knights, no bishops
+
+        let bishops_outposts = self.bitboards.white_bishops & outposts;
+        // while bishops_outposts != 0 {
+        let count = bishops_outposts.count_ones();
+        for n in 0..count {
+            v.push(3);// outpost bishops worth 3
+        }
+        // }
+        let mut knight_outposts = self.bitboards.white_knights & outposts;
+        let only_reachable_knights = reachable_outposts & ! knight_outposts;
+        let count = only_reachable_knights.count_ones();
+        for n in 0..count {
+            v.push(1); //reachable outpost knights worth 1
+        }
+
+        while knight_outposts != 0 {
+            let knight_idx = knight_outposts.trailing_zeros();
+            let knight = 1u64 << knight_idx;
+            if (Square::from(knight_idx as u8).file() as usize) < (2 as usize) || (Square::from(knight_idx as u8).file() as usize) > (5 as usize) {
+
+            }
+            knight_outposts &= knight_outposts -1;
+        }
+
+
         0
     }
 
-    fn outpost(&self) -> i32 {
-    
-        0
+    fn outpost(&self) -> u64 {
+        let outpost_squares: u64 = self.outpost_squares();
+        let knights_and_bishops: u64 = self.bitboards.white_knights | self.bitboards.white_bishops;
+        let outposts = outpost_squares & knights_and_bishops;
+        outposts
     } 
 
-    fn outpost_square(&self) -> i32 {
-        //needs Rank function, might be able to fix from bitboards rank 
-        0
+    fn reachable_outposts(&self) -> u64 {
+        let mut reachable_outposts : u64 =0;
+        let mut bishops = self.bitboards.white_bishops;
+        let mut knights = self.bitboards.white_knights;
+        let outpost_squares = self.outpost_squares();
+        while knights != 0 {
+            let knight_idx = knights.trailing_zeros() as u64;
+            let knight = 1u64 << knight_idx;
+            let knight_moves = self.get_knight_attacked_squares(knight);
+            if knight_moves & outpost_squares !=0{
+                reachable_outposts |= knight;
+            }
+            knights &= knights-1;
+        }
+        // Original function checks for reachable outpost bishops, but they are never actually used in the parent functions
+        // So I removed them 
+
+        // while bishops != 0{
+        //     let bishop_idx = bishops.trailing_zeros() as u64;
+        //     let bishop = 1u64 << bishop_idx;
+        //     let bishop_moves = self.bishop_xray_attack(pins, bishop);
+        //     if bishop_moves & outpost_squares != 0 {
+        //         reachable_outposts |= bishop;
+        //     }
+        //     bishops &= bishops -1;
+        // }
+        reachable_outposts
     }
 
-    fn pawn_attacks_span(&self) -> i32 {
-    
-        0
+    pub fn outpost_squares(&self) -> u64 {
+        let not_a_file : u64 = 0xfefefefefefefefe;
+        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+
+        let ranks_456_mask : u64 = 0x0000FFFFFF000000;
+        let enemy_pawn_attack_span: u64 = self.pawn_attacks_span();
+        let pawns = self.bitboards.white_pawns;
+        let pawn_diagonals =  (pawns >> 7) & not_a_file | (pawns >> 9) & not_h_file;
+        let outpost_squares_bitboard = ranks_456_mask & !enemy_pawn_attack_span & pawn_diagonals;
+
+        outpost_squares_bitboard
+    }
+
+    pub fn pawn_attacks_span(&self) -> u64 {
+        // let mut enemy_pawns = self.bitboards.black_pawns;
+        let color_flipped_board = self.color_flip();
+
+        let mut my_pawns =  color_flipped_board.bitboards.white_pawns; // blackpawns, but now flipped as white
+        let mut pawn_attack_span_bitboard: u64 =0;
+
+        let not_a_file : u64 = 0xfefefefefefefefe;
+        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+
+        // while enemy_pawns != 0 {
+        //     let mut pawn_idx = enemy_pawns.trailing_zeros() as i64;
+        //     let pawn = (1u64 << pawn_idx);
+        //     let mut attack_diagonals = (pawn>> 7 & not_a_file) | (pawn >> 9 & not_h_file); 
+        //     pawn_attack_span_bitboard |= attack_diagonals;
+        //     if !((pawn >> 8 ) & self.bitboards.white_pawns != 0 || //blocked right ifnront of it
+        //     //(pawn >>15 ) & self.bitboards.white_pawns != 0 || //blocked right diagonal under
+        //     //(pawn >> 17 ) & self.bitboards.white_pawns != 0 || //blocked left idagonal under
+        //     self.backward(pawn, pawn_idx as u8) == 1){
+        //         while attack_diagonals != 0 {
+        //                 attack_diagonals = attack_diagonals >> 8;
+        //                 pawn_attack_span_bitboard |= attack_diagonals;
+        //                 // pawn_idx -=  8;
+        //             }
+        //         }
+        //     if self.backward(pawn, pawn_idx as u8) == 1 {
+        //         println!("backward pawn at idx: {}", pawn_idx);
+        //     }
+        //     else {
+        //         println!("not backward pawn at idx: {}", pawn_idx);
+        //     }
+        //     enemy_pawns &= enemy_pawns -1;
+        // }
+        while my_pawns != 0 {
+            let mut pawn_idx = my_pawns.trailing_zeros() as i64;
+            let pawn = (1u64 << pawn_idx);
+            let mut attack_diagonals = (pawn << 9 & not_a_file) | (pawn << 7 & not_h_file);
+            pawn_attack_span_bitboard |= attack_diagonals;
+            if !((pawn << 8 ) & self.bitboards.black_pawns != 0 || //blocked right ifnront of it
+            //(pawn >>15 ) & self.bitboards.white_pawns != 0 || //blocked right diagonal under
+            //(pawn >> 17 ) & self.bitboards.white_pawns != 0 || //blocked left idagonal under
+            self.backward(pawn, pawn_idx as u8) == 1){
+                while attack_diagonals != 0 {
+                        attack_diagonals = attack_diagonals << 8;
+                        pawn_attack_span_bitboard |= attack_diagonals;
+                        // pawn_idx -=  8;
+                    }
+                }
+                if self.backward(pawn, pawn_idx as u8) == 1 {
+                        println!("backward pawn at idx: {}", pawn_idx);
+                    }
+                    else {
+                        println!("not backward pawn at idx: {}", pawn_idx);
+                    }
+            my_pawns &= my_pawns -1;
+        }
+
+        self.flip_vertical(pawn_attack_span_bitboard)
     }
 
     fn minor_behind_pawn(&self) -> i32 {
@@ -697,15 +823,48 @@ impl Board {
         sum
     }
 
-    fn bishop_pawns(&self) -> i32 {
+    fn bishop_pawns(&self) -> i32 { //untested
+        // Light squares (a1, c1, e1, g1, b2, d2, f2, h2, etc)
+        let light_squares: u64 = 0x55AA55AA55AA55AA;
+        // Dark squares (b1, d1, f1, h1, a2, c2, e2, g2, etc)
+        let dark_squares : u64 = 0xAA55AA55AA55AA55;
+        let center_files_mask: u64 = 0x3C3C3C3C3C3C3C3C;
+        let mut bishops_bitboard = self.bitboards.white_bishops;
+        let pawns_bitboard = self.bitboards.white_pawns;
+        let all_pieces_bitboard = !self.bitboards.get_empty_squares();
+        let mut sum : i32 = 0;
 
-        0
+        let mut blocked = 0;
+        let mut center_pawns = pawns_bitboard & center_files_mask;
+        let infront_pawns = center_pawns << 8;
+        let blocked_pawns = infront_pawns & all_pieces_bitboard;
+        blocked = blocked_pawns.count_ones() as i32;
+        // if a pawn shifted off the board, it was on the last rank, therefore it is also considered blocked
+        blocked += (center_pawns.count_ones() - infront_pawns.count_ones()) as i32;
+
+        while bishops_bitboard != 0 {
+            let bishop_idx = bishops_bitboard.trailing_zeros() as u8;
+            let bishop = (1u64 << bishop_idx);
+            let is_light = (bishop & light_squares) != 0;
+
+            let same_color_pawns = if is_light {
+                pawns_bitboard & light_squares
+            } else {
+                pawns_bitboard & dark_squares
+            };
+
+            let same_color_pawns_count = same_color_pawns.count_ones() as i32;
+            sum += same_color_pawns_count * (blocked + 1);
+            bishops_bitboard &= bishops_bitboard - 1;
+        }
+
+        sum
     }
 
-    fn pawn_attack(&self) -> i32 { //might be able to remove and replace 
+    // fn pawn_attack(&self) -> i32 { //might be able to remove and replace 
 
-        0
-    }
+    //     0
+    // }
 
     fn bishop_xray_pawns(&self) -> i32 { //untested
         let mut sum: i32 = 0;
@@ -737,11 +896,31 @@ impl Board {
         sum
     }
 
-    fn rook_on_king_ring(&self) -> i32 {
+    fn rook_on_king_ring(&self,pins : &Vec<u8>) -> i32 {
+        let mut sum = 0;
+        let mut rook_bitboard = self.bitboards.white_rooks;
+        let king_ring = self.king_ring(false);
+        while rook_bitboard != 0 {
+            let rook_idx = rook_bitboard.trailing_zeros() as u8;
+            let rook = (1u64 << rook_idx);
+            let rook_king_attacker_count = self.king_attackers_count( pins);
+            if !(rook_king_attacker_count.0 > 0) {
+                let rook_file_mask = Bitboards::file_mask_to_end(rook_idx);
+                if rook_file_mask & king_ring != 0 {
+                    sum += 1;
+                }
+            }
 
-        0
+            rook_bitboard &= rook_bitboard -1;
+        }
+
+        sum
+        
     }
-    // here we return number of pieces for Knight, Queen, Bishop, Rook
+
+        // i will check if it is in the bitboard or not
+
+// here we return number of pieces for Knight, Queen, Bishop, Rook
     // but for Pawns we return number of attacked squares
     // There is a dunction called King attackers weight:
     // is the sum of the "weights" of the pieces of the given color which attack a square in the kingRing of the enemy king.
@@ -896,7 +1075,6 @@ impl Board {
         }
         
     }
-
     fn rook_xray_attack(&self, pins : &Vec<u8>, rook_bitboard:u64) -> u64 {
         let squares = self.get_rook_xray_attacked_squares(&rook_bitboard);
         let rook_square = rook_bitboard.trailing_zeros() as u8;
@@ -931,35 +1109,89 @@ impl Board {
         while rook_bitboard != 0 {
             let square = rook_bitboard.trailing_zeros() as u8;
             let file_mask = Bitboards::file_mask_to_end(square);
-            let num_of_pawns_masked = file_mask & rook_bitboard;
-            sum += num_of_pawns_masked.count_ones() as i32 -2;
+            let num_of_pawns_masked = file_mask & all_pawn_bitboard;
+            sum += 2 - (num_of_pawns_masked.count_ones() as i32);
             rook_bitboard &= rook_bitboard -1;
         }
         sum
     }
 
-    fn trapped_rook(&self) -> i32 {
-
+    fn trapped_rook(&self, pins : &Vec<u8>) -> i32 { //untested, probably doesn't work
+        
         0
     }
 
-    fn weak_queen(&self) -> i32 {
-
-        0
+    fn weak_queen(&self) -> i32 { // ask farouk
+        let queen_bitboard = self.bitboards.white_queens;
+        let mut sum = 0;
+        while queen_bitboard != 0 {
+            let queen_idx = queen_bitboard.trailing_zeros() as u8;
+            let queen: u64 = 1u64 << queen_idx;
+            //?????????? pins or something
+        }
+        sum
     }
 
     fn queen_infiltration(&self) -> i32 {
-
-        0
+        let queen_bitboard = self.bitboards.white_queens;
+        let mut sum = 0;
+        let upper_board_half_mask : u64 = 0xFFFFFFFF00000000;
+        let enemy_attack_span = self.pawn_attacks_span();
+        while queen_bitboard != 0 {
+            let queen_idx = queen_bitboard.trailing_zeros() as u8;
+            let queen: u64 = 1u64 << queen_idx;
+            if ((queen & upper_board_half_mask) & !(enemy_attack_span)) != 0 {
+                sum += 1;
+            }
+        }
+        sum
     }
 
     fn king_protector(&self) -> i32 {
+        // let mut knights_bishops_bitboard = self.bitboards.white_bishops | self.bitboards.white_knights;
+        let mut knights_bitboard = self.bitboards.white_knights;
+        let mut bishops_bitboard = self.bitboards.white_bishops;
+        let mut sum = 0;
+        let king_bitboard = self.bitboards.white_king;
+        let king_idx = king_bitboard.trailing_zeros() as u8;
+        let king_file = Square::from(king_idx).file();
+        let king_rank = Square::from(king_idx).rank();
 
-        0
+        while knights_bitboard != 0 {
+            let knight_idx = knights_bitboard.trailing_zeros() as u8;
+            // let square = 1u64 << knight_idx;
+            let square_rank = Square::from(knight_idx).rank();
+            let square_file = Square::from(knight_idx).file();
+            let file_dist = (king_file as i32 - square_file as i32).abs();
+            let rank_dist = (king_rank as i32 - square_rank as i32).abs();
+            if rank_dist > file_dist {
+                sum += 8 * rank_dist
+            } else {
+                sum += 8 * file_dist
+            }
+            knights_bitboard &= knights_bitboard -1;
+        }
+
+        while bishops_bitboard != 0 {
+            let bishop_idx = bishops_bitboard.trailing_zeros() as u8;
+            // let square = 1u64 << knight_idx;
+            let square_rank = Square::from(bishop_idx).rank();
+            let square_file = Square::from(bishop_idx).file();
+            let file_dist = (king_file as i32 - square_file as i32).abs();
+            let rank_dist = (king_rank as i32 - square_rank as i32).abs();
+            if rank_dist > file_dist {
+                sum += 6 * rank_dist
+            } else {
+                sum += 6 * file_dist
+            }
+            bishops_bitboard &= bishops_bitboard -1;
+        }
+
+        sum
     }
 
     fn king_distance(&self) -> i32 {
-
+        
         0
     }
 
@@ -1391,7 +1623,7 @@ impl Board {
         sum
     }
 
-    fn print_bitboard_raw(&self,bb: u64) {
+    pub fn print_bitboard_raw(&self,bb: u64) {
         for rank in (0..8).rev() {
             for file in 0..8 {
                 let square = rank * 8 + file;
@@ -1602,14 +1834,18 @@ impl Board {
         
         // Clone the current board
         let mut clone_board = self.clone();
-        fn flip_vertical(bb: u64) -> u64 {
-            let mut flipped = 0;
-            for rank in 0..8 {
-                let rank_bits = (bb >> (rank * 8)) & 0xFF;
-                flipped |= rank_bits << ((7 - rank) * 8);
-            }
-            flipped
-        }
+
+
+        // match clone_board.turn {
+        //     Turn::White =>{
+        //         println!("White");
+        //     },
+        //     Turn::Black =>{
+        //         println!("Black");
+        //     },
+        // };
+
+        // The turn is White and still white
 
         // match clone_board.turn {
         //     Turn::White =>{
@@ -1623,22 +1859,31 @@ impl Board {
         // The turn is White and still white
 
         // Flip the bitboards correctly
-        clone_board.bitboards.white_pawns = flip_vertical(self.bitboards.black_pawns);
-        clone_board.bitboards.white_bishops = flip_vertical(self.bitboards.black_bishops);
-        clone_board.bitboards.white_knights = flip_vertical(self.bitboards.black_knights);
-        clone_board.bitboards.white_rooks = flip_vertical(self.bitboards.black_rooks);
-        clone_board.bitboards.white_queens = flip_vertical(self.bitboards.black_queens);
-        clone_board.bitboards.white_king = flip_vertical(self.bitboards.black_king);
+        clone_board.bitboards.white_pawns = self.flip_vertical(self.bitboards.black_pawns);
+        clone_board.bitboards.white_bishops = self.flip_vertical(self.bitboards.black_bishops);
+        clone_board.bitboards.white_knights = self.flip_vertical(self.bitboards.black_knights);
+        clone_board.bitboards.white_rooks = self.flip_vertical(self.bitboards.black_rooks);
+        clone_board.bitboards.white_queens = self.flip_vertical(self.bitboards.black_queens);
+        clone_board.bitboards.white_king = self.flip_vertical(self.bitboards.black_king);
 
-        clone_board.bitboards.black_pawns = flip_vertical(self.bitboards.white_pawns);
-        clone_board.bitboards.black_bishops = flip_vertical(self.bitboards.white_bishops);
-        clone_board.bitboards.black_knights = flip_vertical(self.bitboards.white_knights);
-        clone_board.bitboards.black_rooks = flip_vertical(self.bitboards.white_rooks);
-        clone_board.bitboards.black_queens = flip_vertical(self.bitboards.white_queens);
-        clone_board.bitboards.black_king = flip_vertical(self.bitboards.white_king);
+        clone_board.bitboards.black_pawns = self.flip_vertical(self.bitboards.white_pawns);
+        clone_board.bitboards.black_bishops = self.flip_vertical(self.bitboards.white_bishops);
+        clone_board.bitboards.black_knights = self.flip_vertical(self.bitboards.white_knights);
+        clone_board.bitboards.black_rooks = self.flip_vertical(self.bitboards.white_rooks);
+        clone_board.bitboards.black_queens = self.flip_vertical(self.bitboards.white_queens);
+        clone_board.bitboards.black_king = self.flip_vertical(self.bitboards.white_king);
 
         // Return the modified cloned board
         clone_board
+    }
+
+    pub fn flip_vertical(&self, bb: u64) -> u64 {
+        let mut flipped = 0;
+        for rank in 0..8 {
+            let rank_bits = (bb >> (rank * 8)) & 0xFF;
+            flipped |= rank_bits << ((7 - rank) * 8);
+        }
+        flipped
     }
 
     /*
