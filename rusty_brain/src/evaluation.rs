@@ -1,4 +1,5 @@
 use std::process::id;
+use std::vec;
 use crate::piece::Piece;
 
 use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
@@ -12,12 +13,15 @@ impl Board {
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
         let mut v = 0;
         let color_flip_board = self.color_flip();
+        let (_, pins) = self.checks_and_pins();
+        let (_, flip_pins) = self.checks_and_pins();
+
         v += self.piece_value_mg() - color_flip_board.piece_value_mg();
         v += self.psqt_mg() - color_flip_board.psqt_mg();
         v += self.imbalance_total(&color_flip_board);
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
-        v += self.pieces_mg() - color_flip_board.pieces_mg();
-        v += self.mobility_mg() - color_flip_board.mobility_mg();
+        v += self.pieces_mg(&pins) - color_flip_board.pieces_mg(&flip_pins);
+        v += self.mobility_mg(&pins) - color_flip_board.mobility_mg(&flip_pins);
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
         v += self.space(true) - color_flip_board.space(true); // needs to see what tdo with middle_game var
@@ -264,7 +268,7 @@ impl Board {
     
     // PAWNS MIDDLE GAME
     
-    pub fn pawns_mg(&self) -> i32 {
+    fn pawns_mg(&self) -> i32 {
         // sum function
         
         let mut v = 0;
@@ -396,7 +400,7 @@ impl Board {
 
             // if number_of_friendly_pawns_above = number_of_adjacent_pawns so all pawns are above the desired one
             // so it is valid, other that not valid
-            if (number_of_adjacent_pawns != number_of_friendly_pawns_above){
+            if number_of_adjacent_pawns != number_of_friendly_pawns_above{
                 return 0;
             }    
         }
@@ -529,7 +533,7 @@ impl Board {
     }
     
     // check if the current pawn is phalanx or not
-    // return onlu two values 0 - 1
+    // return only two values 0 - 1
     fn phalanx(&self,square_position: u64, square: u8) -> i32 {
         let file = square % 8;
         let mut phalan = 0;
@@ -640,16 +644,16 @@ impl Board {
 
     // PIECES MIDDLES GAME
 
-    fn pieces_mg(&self) -> i32 {
+    fn pieces_mg(&self, pins: &Vec<u8>) -> i32 {
         let mut v = 0;
         v += [0, 31, -7, 30, 56][self.outpost_total() as usize];
         v += 18 * self.minor_behind_pawn();
         v -= 3 * self.bishop_pawns();
         v -= 4 * self.bishop_xray_pawns();
         v += 6 * self.rook_on_queen_file();
-        v += 16 * self.rook_on_king_ring();
+        v += 16 * self.rook_on_king_ring(pins);
         v += self.rook_on_file();
-        v -= self.trapped_rook() * 55 ; //idk incomplete for now
+        v -= self.trapped_rook(pins) * 55 ; //idk incomplete for now
         v -= 56 * self.weak_queen();
         v -= 2 * self.queen_infiltration();
         //king protector line idk
@@ -658,23 +662,148 @@ impl Board {
     }
 
     fn outpost_total(&self) -> i32 {
-    
+        let mut v = Vec::new();
+
+        let left_board_mask: u64 = 0xf0f0f0f0f0f0f0f0;
+        let right_board_mask: u64 = 0x0f0f0f0f0f0f0f0f;
+
+        let outposts = self.outpost();
+        let reachable_outposts  =self.reachable_outposts(); //only knights, no bishops
+
+        let bishops_outposts = self.bitboards.white_bishops & outposts;
+        // while bishops_outposts != 0 {
+        let count = bishops_outposts.count_ones();
+        for n in 0..count {
+            v.push(3);// outpost bishops worth 3
+        }
+        // }
+        let mut knight_outposts = self.bitboards.white_knights & outposts;
+        let only_reachable_knights = reachable_outposts & ! knight_outposts;
+        let count = only_reachable_knights.count_ones();
+        for n in 0..count {
+            v.push(1); //reachable outpost knights worth 1
+        }
+
+        while knight_outposts != 0 {
+            let knight_idx = knight_outposts.trailing_zeros();
+            let knight = 1u64 << knight_idx;
+            if (Square::from(knight_idx as u8).file() as usize) < (2 as usize) || (Square::from(knight_idx as u8).file() as usize) > (5 as usize) {
+
+            }
+            knight_outposts &= knight_outposts -1;
+        }
+
+
         0
     }
 
-    fn outpost(&self) -> i32 {
-    
-        0
+    fn outpost(&self) -> u64 {
+        let outpost_squares: u64 = self.outpost_squares();
+        let knights_and_bishops: u64 = self.bitboards.white_knights | self.bitboards.white_bishops;
+        let outposts = outpost_squares & knights_and_bishops;
+        outposts
     } 
 
-    fn outpost_square(&self) -> i32 {
-        //needs Rank function, might be able to fix from bitboards rank 
-        0
+    fn reachable_outposts(&self) -> u64 {
+        let mut reachable_outposts : u64 =0;
+        let mut bishops = self.bitboards.white_bishops;
+        let mut knights = self.bitboards.white_knights;
+        let outpost_squares = self.outpost_squares();
+        while knights != 0 {
+            let knight_idx = knights.trailing_zeros() as u64;
+            let knight = 1u64 << knight_idx;
+            let knight_moves = self.get_knight_attacked_squares(knight);
+            if knight_moves & outpost_squares !=0{
+                reachable_outposts |= knight;
+            }
+            knights &= knights-1;
+        }
+        // Original function checks for reachable outpost bishops, but they are never actually used in the parent functions
+        // So I removed them 
+
+        // while bishops != 0{
+        //     let bishop_idx = bishops.trailing_zeros() as u64;
+        //     let bishop = 1u64 << bishop_idx;
+        //     let bishop_moves = self.bishop_xray_attack(pins, bishop);
+        //     if bishop_moves & outpost_squares != 0 {
+        //         reachable_outposts |= bishop;
+        //     }
+        //     bishops &= bishops -1;
+        // }
+        reachable_outposts
     }
 
-    fn pawn_attacks_span(&self) -> i32 {
-    
-        0
+    pub fn outpost_squares(&self) -> u64 {
+        let not_a_file : u64 = 0xfefefefefefefefe;
+        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+
+        let ranks_456_mask : u64 = 0x0000FFFFFF000000;
+        let enemy_pawn_attack_span: u64 = self.pawn_attacks_span();
+        let pawns = self.bitboards.white_pawns;
+        let pawn_diagonals =  (pawns >> 7) & not_a_file | (pawns >> 9) & not_h_file;
+        let outpost_squares_bitboard = ranks_456_mask & !enemy_pawn_attack_span & pawn_diagonals;
+
+        outpost_squares_bitboard
+    }
+
+    pub fn pawn_attacks_span(&self) -> u64 {
+        // let mut enemy_pawns = self.bitboards.black_pawns;
+        let color_flipped_board = self.color_flip();
+
+        let mut my_pawns =  color_flipped_board.bitboards.white_pawns; // blackpawns, but now flipped as white
+        let mut pawn_attack_span_bitboard: u64 =0;
+
+        let not_a_file : u64 = 0xfefefefefefefefe;
+        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+
+        // while enemy_pawns != 0 {
+        //     let mut pawn_idx = enemy_pawns.trailing_zeros() as i64;
+        //     let pawn = (1u64 << pawn_idx);
+        //     let mut attack_diagonals = (pawn>> 7 & not_a_file) | (pawn >> 9 & not_h_file); 
+        //     pawn_attack_span_bitboard |= attack_diagonals;
+        //     if !((pawn >> 8 ) & self.bitboards.white_pawns != 0 || //blocked right ifnront of it
+        //     //(pawn >>15 ) & self.bitboards.white_pawns != 0 || //blocked right diagonal under
+        //     //(pawn >> 17 ) & self.bitboards.white_pawns != 0 || //blocked left idagonal under
+        //     self.backward(pawn, pawn_idx as u8) == 1){
+        //         while attack_diagonals != 0 {
+        //                 attack_diagonals = attack_diagonals >> 8;
+        //                 pawn_attack_span_bitboard |= attack_diagonals;
+        //                 // pawn_idx -=  8;
+        //             }
+        //         }
+        //     if self.backward(pawn, pawn_idx as u8) == 1 {
+        //         println!("backward pawn at idx: {}", pawn_idx);
+        //     }
+        //     else {
+        //         println!("not backward pawn at idx: {}", pawn_idx);
+        //     }
+        //     enemy_pawns &= enemy_pawns -1;
+        // }
+        while my_pawns != 0 {
+            let mut pawn_idx = my_pawns.trailing_zeros() as i64;
+            let pawn = (1u64 << pawn_idx);
+            let mut attack_diagonals = (pawn << 9 & not_a_file) | (pawn << 7 & not_h_file);
+            pawn_attack_span_bitboard |= attack_diagonals;
+            if !((pawn << 8 ) & self.bitboards.black_pawns != 0 || //blocked right ifnront of it
+            //(pawn >>15 ) & self.bitboards.white_pawns != 0 || //blocked right diagonal under
+            //(pawn >> 17 ) & self.bitboards.white_pawns != 0 || //blocked left idagonal under
+            self.backward(pawn, pawn_idx as u8) == 1){
+                while attack_diagonals != 0 {
+                        attack_diagonals = attack_diagonals << 8;
+                        pawn_attack_span_bitboard |= attack_diagonals;
+                        // pawn_idx -=  8;
+                    }
+                }
+                if self.backward(pawn, pawn_idx as u8) == 1 {
+                        println!("backward pawn at idx: {}", pawn_idx);
+                    }
+                    else {
+                        println!("not backward pawn at idx: {}", pawn_idx);
+                    }
+            my_pawns &= my_pawns -1;
+        }
+
+        self.flip_vertical(pawn_attack_span_bitboard)
     }
 
     fn minor_behind_pawn(&self) -> i32 {
@@ -693,15 +822,48 @@ impl Board {
         sum
     }
 
-    fn bishop_pawns(&self) -> i32 {
+    fn bishop_pawns(&self) -> i32 { //untested
+        // Light squares (a1, c1, e1, g1, b2, d2, f2, h2, etc)
+        let light_squares: u64 = 0x55AA55AA55AA55AA;
+        // Dark squares (b1, d1, f1, h1, a2, c2, e2, g2, etc)
+        let dark_squares : u64 = 0xAA55AA55AA55AA55;
+        let center_files_mask: u64 = 0x3C3C3C3C3C3C3C3C;
+        let mut bishops_bitboard = self.bitboards.white_bishops;
+        let pawns_bitboard = self.bitboards.white_pawns;
+        let all_pieces_bitboard = !self.bitboards.get_empty_squares();
+        let mut sum : i32 = 0;
 
-        0
+        let mut blocked = 0;
+        let mut center_pawns = pawns_bitboard & center_files_mask;
+        let infront_pawns = center_pawns << 8;
+        let blocked_pawns = infront_pawns & all_pieces_bitboard;
+        blocked = blocked_pawns.count_ones() as i32;
+        // if a pawn shifted off the board, it was on the last rank, therefore it is also considered blocked
+        blocked += (center_pawns.count_ones() - infront_pawns.count_ones()) as i32;
+
+        while bishops_bitboard != 0 {
+            let bishop_idx = bishops_bitboard.trailing_zeros() as u8;
+            let bishop = (1u64 << bishop_idx);
+            let is_light = (bishop & light_squares) != 0;
+
+            let same_color_pawns = if is_light {
+                pawns_bitboard & light_squares
+            } else {
+                pawns_bitboard & dark_squares
+            };
+
+            let same_color_pawns_count = same_color_pawns.count_ones() as i32;
+            sum += same_color_pawns_count * (blocked + 1);
+            bishops_bitboard &= bishops_bitboard - 1;
+        }
+
+        sum
     }
 
-    fn pawn_attack(&self) -> i32 { //might be able to remove and replace 
+    // fn pawn_attack(&self) -> i32 { //might be able to remove and replace 
 
-        0
-    }
+    //     0
+    // }
 
     fn bishop_xray_pawns(&self) -> i32 { //untested
         let mut sum: i32 = 0;
@@ -733,30 +895,147 @@ impl Board {
         sum
     }
 
-    fn rook_on_king_ring(&self) -> i32 {
+    fn rook_on_king_ring(&self,pins : &Vec<u8>) -> i32 {
+        let mut sum = 0;
+        let mut rook_bitboard = self.bitboards.white_rooks;
+        let king_ring = self.king_ring(false);
+        while rook_bitboard != 0 {
+            let rook_idx = rook_bitboard.trailing_zeros() as u8;
+            let rook = (1u64 << rook_idx);
+            let rook_king_attacker_count = self.king_attackers_count( pins);
+            if !(rook_king_attacker_count.0 > 0) {
+                let rook_file_mask = Bitboards::file_mask_to_end(rook_idx);
+                if rook_file_mask & king_ring != 0 {
+                    sum += 1;
+                }
+            }
 
-        0
+            rook_bitboard &= rook_bitboard -1;
+        }
+
+        sum
+        
     }
 
-    fn king_attackers_count(&self) -> i32 { //might be able to remove and replace
+// here we return number of pieces for Knight, Queen, Bishop, Rook
+    // but for Pawns we return number of attacked squares
+    // There is a dunction called King attackers weight:
+    // is the sum of the "weights" of the pieces of the given color which attack a square in the kingRing of the enemy king.
+    // i will update this function to return it also
+    pub fn king_attackers_count(&self, pins: &Vec<u8>) -> (i32, i32) { //might be able to remove and replace
+        /*
+            King attackers count is the number of pieces of the given color
+            which attack a square in the kingRing of the enemy king. 
+            For pawns we count number of attacked squares in kingRing.
+         */
+        let mut c = 0;
+        let white_pieces = self.bitboards.get_ally_pieces(Turn::White) & !self.bitboards.white_king;
+        if white_pieces == 0 {
+            return (0,0);
+        }
+        
+        // Special Case For Pawns is duo pawns, if two pawns attacked the same enemy square,
+        // each one of them will count as 0.5 rather than 1, i will try another way,
+        // i will make bitboard for pawns attaked and before adding another 1 -refer for attack-
+        // i will check if it is in the bitboard or not
 
-        0
+        let king_ring_for_pawns = self.king_ring(true);
+        let normal_king_ring = self.king_ring(false);
+        
+        let mut white_pawns = self.bitboards.white_pawns;
+
+        let mut pawns_attackers:u64 = 0;
+
+        while white_pawns != 0 {
+            let square = white_pawns.trailing_zeros() as u8;
+            let pawn = 1 << square;
+            let pawn_attack = Bitboards::move_north_east(pawn) |Bitboards::move_north_west(pawn);
+            let temp = king_ring_for_pawns & pawn_attack;
+            pawns_attackers |= temp;
+            white_pawns &= white_pawns - 1;
+        }
+        c += pawns_attackers.count_ones() as i32;
+
+        let mut weights = 0; // For King attackers weight function
+
+        let mut knights = self.bitboards.white_knights;
+        let mut bishops = self.bitboards.white_bishops;
+        let mut queens = self.bitboards.white_queens;
+        let mut rooks = self.bitboards.white_rooks;
+        
+        while knights != 0 { // For Kinght weight = 81
+            let square = knights.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.knight_attack(square_position, pins);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                weights += 81;
+            }
+            knights &= knights - 1;
+        }
+        while bishops != 0 { // For Bishop w = 52
+            let square = bishops.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.bishop_xray_attack(pins, square_position);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                weights += 52;
+            }
+            bishops &= bishops - 1;
+        }
+        while rooks != 0 { // 44
+            let square = rooks.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.rook_xray_attack(pins, square_position);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                weights += 44;
+            }
+            rooks &= rooks - 1;
+        }
+        while queens != 0 { //10
+            let square = queens.trailing_zeros() as u64; // Get square position
+            let square_position = 1 << square;
+
+            let attacked_squares = self.queen_attack(pins, square_position);
+            if attacked_squares & normal_king_ring != 0{
+                c += 1;
+                weights += 10;
+            }
+            queens &= queens - 1;
+        }
+        return (c, weights);
     }
 
-    fn king_ring(&self) -> u64 { //untested, should probably be called at the very start and stored as a struct fields because it's used multiple times
+    // Note in King Ring Function
+    // it calculate the king area for the other side
+    // mean we should calculate the King area square for Blck King
+    pub fn king_ring(&self, full: bool) -> u64 { //untested, should probably be called at the very start and stored as a struct fields because it's used multiple times
         let a_file_mask : u64 = 0x0101010101010101;
         let h_file_mask : u64 = 0x8080808080808080;
         let rank_1_mask : u64 = 0x00000000000000ff;
         let rank_8_mask : u64 = 0xff00000000000000;
         
-        let mut king_ring_bitboard = 0;
-        let mut king_bitboard = self.bitboards.white_king;
+        let mut king_ring_bitboard: u64 = 0;
+        let mut king_bitboard = self.bitboards.black_king;
 
-        // king's rings on these files and ranks behave the same as if they were on ther neighbours, so moving them helps with implementing logic. 
-        if (king_bitboard & rank_1_mask == 1) {king_bitboard = king_bitboard << 8;}
-        if (king_bitboard & rank_8_mask == 1) {king_bitboard = king_bitboard >> 8;}
-        if (king_bitboard & a_file_mask == 1) {king_bitboard = king_bitboard << 1;}
-        if (king_bitboard & h_file_mask == 1) {king_bitboard = king_bitboard >> 1;}
+        // the logic should be make area of king ring wit 1 in bitboard then based on full condition i will rempve protected by pawns
+
+        if king_bitboard & rank_1_mask != 0{
+            king_bitboard = king_bitboard << 8;
+        }
+        if king_bitboard & rank_8_mask != 0 {
+            king_bitboard = king_bitboard >> 8;
+        }
+        if king_bitboard & a_file_mask != 0{
+            king_bitboard = king_bitboard << 1;
+        }
+        if king_bitboard & h_file_mask != 0 {
+            king_bitboard = king_bitboard >> 1;
+        }
 
         king_ring_bitboard |= king_bitboard; //assuming there's only one king
         king_ring_bitboard |= Bitboards::move_east(king_bitboard);
@@ -768,48 +1047,51 @@ impl Board {
         king_ring_bitboard |= Bitboards::move_south_east(king_bitboard);
         king_ring_bitboard |= Bitboards::move_south_west(king_bitboard);
         
-        let not_h_file : u64 = 0x7f7f7f7f7f7f7f7f;
+        if full == false { // When full=false, checks if the square is defended by two black pawns diagonally below it
+            let not_g_h_file : u64 = 0x3F3F3F3F3F3F3F3F;
 
-        let mut pawn_bitboard = self.bitboards.white_pawns;
-        let mut protected_by_2_pawns_bitboard = 0 as u64;
-        while pawn_bitboard != 0 {
-            let pawn = pawn_bitboard.trailing_zeros() as u64;
-            while pawn & not_h_file != 1 {
-                let neighbour_pawn = pawn << 2; // check if there's a pawn to the right of the pawn by 2
-                if pawn_bitboard & neighbour_pawn !=0 {
-                    protected_by_2_pawns_bitboard |= pawn << 9; // if two pawns on the same rank apart by two squares, the square to their shared diagonal is protected
+            let mut pawn_bitboard = self.bitboards.black_pawns;
+            let black_pawns = pawn_bitboard;
+            let mut protected_by_2_pawns_bitboard = 0 as u64;
+            while pawn_bitboard != 0 {
+                let square = pawn_bitboard.trailing_zeros() as u8;
+                let pawn = 1 << square;
+                if pawn & not_g_h_file != 0 {
+                    let neighbour_pawn = pawn << 2; // check if there's a pawn to the right of the pawn by 2
+                    if black_pawns & neighbour_pawn !=0 { // as i from black prespective i will move south east 
+                        protected_by_2_pawns_bitboard |= pawn >> 7;
+                    }
                 }
+                pawn_bitboard &= pawn_bitboard -1;
             }
-            pawn_bitboard &= pawn_bitboard -1;
+            king_ring_bitboard = king_ring_bitboard & !protected_by_2_pawns_bitboard; // removes positions protected by 2 pawns , notand operation -> !&
+
+            return king_ring_bitboard // still haven't decided how i'll use the bitboard
+        }else{
+            return king_ring_bitboard;
         }
-        king_ring_bitboard = !(king_bitboard & protected_by_2_pawns_bitboard); // removes positions protected by 2 pawns , notand operation -> !&
-
-        king_ring_bitboard // still haven't decided how i'll use the bitboard
-    }
-
-    fn knight_attack(&self) -> i32 { //WILL be able to replace
-
-        0
-    }
-
-    // fn bishop_xray_attack(&self) -> i32 {
-
-    //     0
-    // }
-
-    fn pinned_direction(&self) -> i32 { //WILL be able to replace
-
-        0
-    } 
-
-    fn rook_xray_attack(&self) -> i32 {
-
-        0
-    }
-
-    fn queen_attack(&self) -> i32 { //WILL be able to replace most likely
         
-        0
+    }
+    fn rook_xray_attack(&self, pins : &Vec<u8>, rook_bitboard:u64) -> u64 {
+        let squares = self.get_rook_xray_attacked_squares(&rook_bitboard);
+        let rook_square = rook_bitboard.trailing_zeros() as u8;
+        let legal_rook_bitboard = self.get_legal_bitboard(&rook_square, pins, &squares);
+        return legal_rook_bitboard;
+    }
+
+    fn bishop_xray_attack(&self, pins : &Vec<u8>, bishop_bitboard:u64) -> u64 {
+        let squares = self.get_bishop_xray_attacked_squares(&bishop_bitboard);
+        let bishop_square = bishop_bitboard.trailing_zeros() as u8;
+        let legal_bishop_bitboard = self.get_legal_bitboard(&bishop_square, pins, &squares);
+        return legal_bishop_bitboard;
+    }
+
+    
+    fn queen_attack(&self,pins : &Vec<u8>, queen_bitboard:u64) -> u64 {
+        let queen_attacked_squares = self.get_queen_attacked_squares_for_eval(&queen_bitboard);
+        let queen_square = queen_bitboard.trailing_zeros() as u8;
+        let legal_queen_bitboard = self.get_legal_bitboard(&queen_square, &pins, &queen_attacked_squares);
+        return legal_queen_bitboard;    
     }
 
     fn bishop_on_king_ring(&self) ->i32 {
@@ -824,35 +1106,89 @@ impl Board {
         while rook_bitboard != 0 {
             let square = rook_bitboard.trailing_zeros() as u8;
             let file_mask = Bitboards::file_mask_to_end(square);
-            let num_of_pawns_masked = file_mask & rook_bitboard;
-            sum += num_of_pawns_masked.count_ones() as i32 -2;
+            let num_of_pawns_masked = file_mask & all_pawn_bitboard;
+            sum += 2 - (num_of_pawns_masked.count_ones() as i32);
             rook_bitboard &= rook_bitboard -1;
         }
         sum
     }
 
-    fn trapped_rook(&self) -> i32 {
-
+    fn trapped_rook(&self, pins : &Vec<u8>) -> i32 { //untested, probably doesn't work
+        
         0
     }
 
-    fn weak_queen(&self) -> i32 {
-
-        0
+    fn weak_queen(&self) -> i32 { // ask farouk
+        let queen_bitboard = self.bitboards.white_queens;
+        let mut sum = 0;
+        while queen_bitboard != 0 {
+            let queen_idx = queen_bitboard.trailing_zeros() as u8;
+            let queen: u64 = 1u64 << queen_idx;
+            //?????????? pins or something
+        }
+        sum
     }
 
     fn queen_infiltration(&self) -> i32 {
-
-        0
+        let queen_bitboard = self.bitboards.white_queens;
+        let mut sum = 0;
+        let upper_board_half_mask : u64 = 0xFFFFFFFF00000000;
+        let enemy_attack_span = self.pawn_attacks_span();
+        while queen_bitboard != 0 {
+            let queen_idx = queen_bitboard.trailing_zeros() as u8;
+            let queen: u64 = 1u64 << queen_idx;
+            if ((queen & upper_board_half_mask) & !(enemy_attack_span)) != 0 {
+                sum += 1;
+            }
+        }
+        sum
     }
 
     fn king_protector(&self) -> i32 {
+        // let mut knights_bishops_bitboard = self.bitboards.white_bishops | self.bitboards.white_knights;
+        let mut knights_bitboard = self.bitboards.white_knights;
+        let mut bishops_bitboard = self.bitboards.white_bishops;
+        let mut sum = 0;
+        let king_bitboard = self.bitboards.white_king;
+        let king_idx = king_bitboard.trailing_zeros() as u8;
+        let king_file = Square::from(king_idx).file();
+        let king_rank = Square::from(king_idx).rank();
 
-        0
+        while knights_bitboard != 0 {
+            let knight_idx = knights_bitboard.trailing_zeros() as u8;
+            // let square = 1u64 << knight_idx;
+            let square_rank = Square::from(knight_idx).rank();
+            let square_file = Square::from(knight_idx).file();
+            let file_dist = (king_file as i32 - square_file as i32).abs();
+            let rank_dist = (king_rank as i32 - square_rank as i32).abs();
+            if rank_dist > file_dist {
+                sum += 8 * rank_dist
+            } else {
+                sum += 8 * file_dist
+            }
+            knights_bitboard &= knights_bitboard -1;
+        }
+
+        while bishops_bitboard != 0 {
+            let bishop_idx = bishops_bitboard.trailing_zeros() as u8;
+            // let square = 1u64 << knight_idx;
+            let square_rank = Square::from(bishop_idx).rank();
+            let square_file = Square::from(bishop_idx).file();
+            let file_dist = (king_file as i32 - square_file as i32).abs();
+            let rank_dist = (king_rank as i32 - square_rank as i32).abs();
+            if rank_dist > file_dist {
+                sum += 6 * rank_dist
+            } else {
+                sum += 6 * file_dist
+            }
+            bishops_bitboard &= bishops_bitboard -1;
+        }
+
+        sum
     }
 
     fn king_distance(&self) -> i32 {
-
+        
         0
     }
 
@@ -866,36 +1202,174 @@ impl Board {
 
     // MOBILITY MIDDLE GAME
 
-    fn mobility_mg(&self) -> i32 {
+    pub fn mobility_mg(&self, pins: &Vec<u8>) -> i32 {
         // sum function
         
-        self.mobility_bonus(true)
+        self.mobility_bonus(true, pins)
     }
     
-    fn mobility_bonus(&self, is_middle_game: bool) -> i32 {
-        // sum function
+    fn mobility_bonus(&self, is_middle_game: bool, pins: &Vec<u8>) -> i32 {
+        let bonus: Vec<Vec<i32>> = if is_middle_game {
+            vec![
+                vec![-62, -53, -12, -4, 3, 13, 22, 28, 33], // Knight
+                vec![-48, -20, 16, 26, 38, 51, 55, 63, 63, 68, 81, 81, 91, 98], // Bishop
+                vec![-60, -20, 2, 3, 3, 11, 22, 31, 40, 40, 41, 48, 57, 57, 62], // Rook
+                vec![-30, -12, -8, -9, 20, 23, 23, 35, 38, 53, 64, 65, 65, 66, 67, 67, 72, 72, 77, 79, 93, 108, 108, 108, 110, 114, 114, 116], // Queen
+            ]
+        } else {
+            vec![
+                vec![-81, -56, -31, -16, 5, 11, 17, 20, 25], // Knight
+                vec![-59, -23, -3, 13, 24, 42, 54, 57, 65, 73, 78, 86, 88, 97], // Bishop
+                vec![-78, -17, 23, 39, 70, 99, 103, 121, 134, 139, 158, 164, 168, 169, 172], // Rook
+                vec![-48, -30, -7, 19, 40, 55, 59, 75, 78, 96, 96, 100, 121, 127, 131, 133, 136, 141, 147, 150, 151, 168, 168, 171, 182, 182, 192, 219], // Queen
+            ]
+        };
 
-        // bonus depending on the middle game flag
+        let mut total_bonus = 0;
 
-        // check for square to see which piece is it and apply the bonus accordingly
+        // Loop through each piece type
+        let piece_types = [
+            (self.bitboards.white_knights, 0, Piece::Knight),
+            (self.bitboards.white_bishops, 1, Piece::Bishop),
+            (self.bitboards.white_rooks, 2, Piece::Rook),
+            (self.bitboards.white_queens, 3, Piece::Queen),
+        ];
+        let mobility_area = self.mobility_area(pins);
+        for (bitboard, piece_index, piece_type) in piece_types.iter() {
+            let mut pieces = *bitboard;
+            while pieces != 0 {
+                let square = pieces.trailing_zeros() as u64; // Get square position
+                let square_position = 1 << square;
 
-        // else
-
-        return 0
+                let mobility_index = self.mobility(*piece_type, square_position, mobility_area, pins); // Call mobility function
+                if mobility_index < bonus[*piece_index].len(){
+                    total_bonus += bonus[*piece_index][mobility_index];
+                }
+                pieces &= pieces - 1; // Remove piece from bitboard
+            }
+        }
+        total_bonus
     }
     
-    fn mobility(&self) -> i32 {
-        // sum function
+    fn get_black_pawn_protected_squares(&self) -> u64 {
+        let not_a_file = 0xfefefefefefefefe;
+        let not_h_file = 0x7f7f7f7f7f7f7f7f;
 
-        let mut v = 0;
+        // Black pawns attack southwest (↓↙) and southeast (↓↘)
+        let right_attacks = (self.bitboards.black_pawns >> 7) & not_a_file;
+        let left_attacks = (self.bitboards.black_pawns >> 9) & not_h_file;
 
-        // apply mobility bonues depending on the piece on given square
-        // 
-        // there is a lot of function calls here, remember that.
+        right_attacks | left_attacks
+    }
 
-        v
+    fn get_white_pawns_on_rank(&self, rank: u8) -> u64 {
+        // Rank is 0-based (0=rank1, 1=rank2, ..., 7=rank8)
+        let rank_mask = 0xFF << (rank * 8);
+        self.bitboards.white_pawns & rank_mask
     }
     
+    fn get_blocked_white_pawns(&self) -> u64 {
+        let mut blocked_pawns = 0;
+        let white_pawns = self.bitboards.white_pawns;
+        let all_pieces = !self.bitboards.get_empty_squares(); // All occupied squares
+
+        // For each white pawn, check if the square directly in front is occupied
+        let mut pawns = white_pawns;
+        while pawns != 0 {
+            let pawn_square = pawns.trailing_zeros() as u8;
+            let square_in_front = pawn_square + 8; // White pawns move north (+8)
+
+            // Only check if the square in front is on the board (not promotion rank)
+            if square_in_front < 64 && (all_pieces & (1 << square_in_front)) != 0 {
+                blocked_pawns |= 1 << pawn_square;
+            }
+
+            pawns &= pawns - 1; // Clear the least significant bit
+        }
+
+        blocked_pawns
+    }
+    
+    pub fn mobility_area(&self, pins: &Vec<u8>) -> u64 {
+        let mut mobility_area: u64 = !0; // Start with all bits set to 1.
+    
+        // Set the king's square to 0
+        mobility_area &= !self.bitboards.white_king;
+    
+        // Set the queen's square to 0
+        mobility_area &= !self.bitboards.white_queens;
+    
+        // Exclude squares protected by enemy pawns
+        let protected_squares = self.get_black_pawn_protected_squares();
+        mobility_area &= !protected_squares;
+
+        // Exclude white pawns on ranks 2 and 3
+        // Rank 2 (human-readable) is index 1 (0-based)
+        // Rank 3 (human-readable) is index 2 (0-based)
+        let white_pawns_ranks_2_3 =  self.get_white_pawns_on_rank(1) | self.get_white_pawns_on_rank(2);        mobility_area &= !white_pawns_ranks_2_3;
+        mobility_area &= !white_pawns_ranks_2_3;
+
+        // Exclude blocked white pawns
+        let blocked_white_pawns = self.get_blocked_white_pawns();
+        mobility_area &= !blocked_white_pawns;
+        
+        // the function called blockers_for_king is not important
+        // as i will use my existance checks_and_pins function
+        // Create bitboard of all pinned pieces
+        let mut pinned_bitboard = 0u64;
+        for &square in pins {
+            pinned_bitboard |= 1 << square;
+        }
+        mobility_area &= !pinned_bitboard;
+        
+        // Return the updated mobility area bitboard
+        mobility_area
+    }
+    
+    pub fn mobility(&self, piece: Piece, square_position: u64, mobility_area: u64, pins: &Vec<u8>) -> usize {
+        match piece{
+            Piece::Knight => {
+                let knight_attack = self.knight_attack(square_position, pins);
+                return (knight_attack & mobility_area).count_ones() as usize;
+            },
+            Piece::Bishop => {
+                let bishop_attack = self.bishop_xray_attack(pins, square_position);
+                return (bishop_attack & mobility_area).count_ones() as usize;
+
+            },
+            Piece::Rook => {
+                let rook_attack = self.rook_xray_attack(pins, square_position);
+                return (rook_attack & mobility_area).count_ones() as usize;
+            },
+            Piece::Queen => {
+                let queen_attack = self.queen_attack(pins, square_position);
+                return (queen_attack & mobility_area).count_ones() as usize;
+            },
+            Piece::Pawn =>{
+                return 0;
+            },
+            Piece::King =>{
+                return 0;
+            }
+        };
+    }
+    
+    // return number of accessible squares by one knight at a time 
+    fn knight_attack(&self, knight : u64, pins: &Vec<u8>) -> u64{
+        // in stock fish this function returns all possible squares the knight can reach
+        // but if the knight is pinned so it is ignored 
+        // First check if this knight is pinned
+        let knight_square = knight.trailing_zeros() as u8;
+        
+        // If knight is in the pins vector, return 0 (pinned knights can't move)
+        if pins.contains(&knight_square) {
+            return 0;
+        }
+        else {            
+            let attacks = self.get_knight_attacked_squares(knight);
+            return attacks;
+        }
+    }
     // THREATS MIDDLE GAME
     
     fn threats_mg(&self) -> i32 {
@@ -1144,7 +1618,7 @@ impl Board {
         sum
     }
 
-    fn print_bitboard_raw(&self,bb: u64) {
+    pub fn print_bitboard_raw(&self,bb: u64) {
         for rank in (0..8).rev() {
             for file in 0..8 {
                 let square = rank * 8 + file;
@@ -1236,42 +1710,62 @@ impl Board {
 
     /*
         this logic is correct and tested using psqt_bonus function
-
         Yousse, Please check it again and look for performance and you can test it with other function,
         then update the code, remove Turn:White or Turn:Black from code
 
      */
     // Function to flip the board vertically while keeping columns intact
     pub fn color_flip(&self) -> Self {
+        // match self.turn {
+        //     Turn::White =>{
+        //         println!("White");
+        //     },
+        //     Turn::Black =>{
+        //         println!("Black");
+        //     },
+        // };
+        
         // Clone the current board
         let mut clone_board = self.clone();
 
-        fn flip_vertical(bb: u64) -> u64 {
-            let mut flipped = 0;
-            for rank in 0..8 {
-                let rank_bits = (bb >> (rank * 8)) & 0xFF;
-                flipped |= rank_bits << ((7 - rank) * 8);
-            }
-            flipped
-        }
+
+        // match clone_board.turn {
+        //     Turn::White =>{
+        //         println!("White");
+        //     },
+        //     Turn::Black =>{
+        //         println!("Black");
+        //     },
+        // };
+
+        // The turn is White and still white
 
         // Flip the bitboards correctly
-        clone_board.bitboards.white_pawns = flip_vertical(self.bitboards.black_pawns);
-        clone_board.bitboards.white_bishops = flip_vertical(self.bitboards.black_bishops);
-        clone_board.bitboards.white_knights = flip_vertical(self.bitboards.black_knights);
-        clone_board.bitboards.white_rooks = flip_vertical(self.bitboards.black_rooks);
-        clone_board.bitboards.white_queens = flip_vertical(self.bitboards.black_queens);
-        clone_board.bitboards.white_king = flip_vertical(self.bitboards.black_king);
+        clone_board.bitboards.white_pawns = self.flip_vertical(self.bitboards.black_pawns);
+        clone_board.bitboards.white_bishops = self.flip_vertical(self.bitboards.black_bishops);
+        clone_board.bitboards.white_knights = self.flip_vertical(self.bitboards.black_knights);
+        clone_board.bitboards.white_rooks = self.flip_vertical(self.bitboards.black_rooks);
+        clone_board.bitboards.white_queens = self.flip_vertical(self.bitboards.black_queens);
+        clone_board.bitboards.white_king = self.flip_vertical(self.bitboards.black_king);
 
-        clone_board.bitboards.black_pawns = flip_vertical(self.bitboards.white_pawns);
-        clone_board.bitboards.black_bishops = flip_vertical(self.bitboards.white_bishops);
-        clone_board.bitboards.black_knights = flip_vertical(self.bitboards.white_knights);
-        clone_board.bitboards.black_rooks = flip_vertical(self.bitboards.white_rooks);
-        clone_board.bitboards.black_queens = flip_vertical(self.bitboards.white_queens);
-        clone_board.bitboards.black_king = flip_vertical(self.bitboards.white_king);
+        clone_board.bitboards.black_pawns = self.flip_vertical(self.bitboards.white_pawns);
+        clone_board.bitboards.black_bishops = self.flip_vertical(self.bitboards.white_bishops);
+        clone_board.bitboards.black_knights = self.flip_vertical(self.bitboards.white_knights);
+        clone_board.bitboards.black_rooks = self.flip_vertical(self.bitboards.white_rooks);
+        clone_board.bitboards.black_queens = self.flip_vertical(self.bitboards.white_queens);
+        clone_board.bitboards.black_king = self.flip_vertical(self.bitboards.white_king);
 
         // Return the modified cloned board
         clone_board
+    }
+
+    pub fn flip_vertical(&self, bb: u64) -> u64 {
+        let mut flipped = 0;
+        for rank in 0..8 {
+            let rank_bits = (bb >> (rank * 8)) & 0xFF;
+            flipped |= rank_bits << ((7 - rank) * 8);
+        }
+        flipped
     }
 
     /*
