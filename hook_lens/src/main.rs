@@ -1,3 +1,8 @@
+use burn::backend::wgpu::WgpuDevice;
+use burn::backend::Wgpu;
+use burn::module::Module;
+use burn::record::{CompactRecorder, Recorder};
+use hook_lens::data_and_model::model::Cnn;
 use hook_lens::input_data_handling::fen_string_generation::get_fen_string_from;
 use opencv::{prelude::*, imgcodecs, highgui, imgproc};
 use reqwest;
@@ -8,6 +13,13 @@ use std::time::Duration;
 fn main() -> Result<(), Box<dyn Error>> {
     // put url from ip webcam app here    
     let url = "http://192.168.1.18:8080/shot.jpg";
+    let model_path = "/home/y0sif/models/cnn_hook_lens";
+    let device = WgpuDevice::default();
+    let record = CompactRecorder::new()
+        .load(format!("{model_path}/model").into(), &device)
+        .expect("Trained model should exist");
+    let model: Cnn<Wgpu> = Cnn::new(13, &device, 0);
+    let model = model.load_record(record);
 
     // Create a window
     highgui::named_window("Android_cam", highgui::WINDOW_AUTOSIZE)?;
@@ -50,7 +62,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             break;
         } else if key == 102 { // 'f' key
             println!("Processing image for FEN string extraction...");
-            let fen_string = get_fen_string_from(cropped_img_data,"/home/y0sif/models/cnn_hook_len", 1);
+            let fen_string = get_fen_string_from(cropped_img_data, model.clone(), &device);
             println!("FEN String: {}", fen_string);
         }
 

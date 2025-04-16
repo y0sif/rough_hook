@@ -10,4 +10,7 @@ pub mod input_data_handling{
     pub mod fen_string_generation;
 }
 
-pub mod tests;
+pub mod test{
+    pub mod tests;
+    pub mod test_models_repository;
+}
