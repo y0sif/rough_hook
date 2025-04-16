@@ -18,7 +18,14 @@ pub fn extract_board_sqaures_from(img_data : Vec<u8>) -> Vec<(Vec<u8> , u8)>{
 
      //using canny image we will apply hough line detection algorithm
     let mut s_lines = Vector::<Vec2f>::new();
-    imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 260.0, 170).unwrap();
+    imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 146.3, 120).unwrap();
+
+    // testing code that display affter we apply canny  (in dev env only)
+    #[cfg(debug_assertions)]
+    {
+        imshow("hough", &canny_image).unwrap();
+        wait_key_def().unwrap();
+    }
     
     let intersection_points = get_intersection_points(&s_lines , &mut img);
 
@@ -38,7 +45,7 @@ fn convert_image_to_gray_scale(colored_image : &Mat)->Mat{
 
 fn apply_canny(gray_scale_image : &Mat)-> Mat{
     let mut canny_img: Mat = Default::default();
-    imgproc::canny_def(&gray_scale_image, &mut canny_img,  46.0, 250.0).unwrap();
+    imgproc::canny_def(&gray_scale_image, &mut canny_img,  140.0, 340.0).unwrap();
     canny_img
 }
 
