@@ -13,7 +13,7 @@ impl<'a> Repository<'a> {
         self. test_models = vec![
              // kan models
             ("cnn", "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_models/cnn_hook_lens", 1),
-            ("kan_cnn", "hook_lens/hook_lens_models/ultra_agumented_kan_cnn_models/kan_cnn_hook_lens", 13),
+            //("kan_cnn", "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/pretrained_CNN and Kan32", 13),
             ("kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_256_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2", 20),
             ("kan_cnn_512_grid_size_15_spline_order_12_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_512_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2", 21),
             ("kan_cnn_1024_grid_size_15_spline_order_12_scale_base_4_scale_noise_2" , "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_kan_models/kan_cnn_1024_hook_lens_grid_size_15_spline_order_12_scale_base_4_scale_noise_2", 22),

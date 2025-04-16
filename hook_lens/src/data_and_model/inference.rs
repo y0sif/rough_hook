@@ -179,7 +179,7 @@ where
 
         10 => ModelEnum::Kan_256(Kan::new(13, device, 256, vec![None , None ,None ,None])),
         11 => ModelEnum::Kan_512(Kan::new(13, device, 512, vec![None , None ,None ,None])),
-
+        
         20 => ModelEnum::kan_cnn_256_grid_size_15_spline_order_12_scale_base_4_scale_noise_2(
             KanCnn::new(13, device, 256, vec![Some(15) ,Some(12) ,Some(4),Some(2)]), 
         ),

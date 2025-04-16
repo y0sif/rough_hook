@@ -17,22 +17,22 @@ mod tests {
     fn test_all() {
         // comment one of them to test the another one
 
-        // rela life test (test the models in real board)
-        // let flag = test_fen_string_of_image_1();
-        // assert_eq!(flag, true);
+        //rela life test (test the models in real board)
+        let flag = test_fen_string_of_image_1();
+        assert_eq!(flag, true);
 
         // generalization test
-        test_models_on_un_seen_data();
-        assert_eq!(1, 0);
+        // test_models_on_un_seen_data();
+        // assert_eq!(1, 0);
     }
 
     fn test_fen_string_of_image_1() -> bool {
-        let board_image_path = "/home/sasa630/Graduation_Project/test_images/input_img.png";
+        let board_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/test_6.png";
         // Name - Path - Id
         let mut repository = Repository::new();
 
-        repository.load_all_models();
-        //repository.load_models_by_ids(vec![1,13]);  // uncomment it to provide the models you want to test
+        //repository.load_all_models();
+        repository.load_models_by_ids(vec![1, 27]); // uncomment it to provide the models you want to test
 
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results: Vec<(&str, i16, i16, f32, f32)> = Vec::new();
