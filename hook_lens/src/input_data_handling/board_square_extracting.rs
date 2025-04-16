@@ -1,8 +1,9 @@
 use image::imageops::FilterType;
-use image::{imageops, ColorType, GenericImageView};
-use opencv::core::{MatTraitConst, Point_, Rect};
+use image::{imageops, ColorType, DynamicImage, GenericImageView, ImageFormat};
+use opencv::core::{MatTraitConst, MatTraitConstManual, Point_, Rect, Size};
 use opencv::highgui;
 use opencv::imgcodecs::{imread, imwrite, IMREAD_COLOR};
+use opencv::types::VectorOfu8;
 use opencv::{
     core::{Mat, Point, Point2f, Vec2f, Vector},
     highgui::{imshow, wait_key_def},
@@ -16,9 +17,8 @@ use std::fs::File;
 use std::path::Path;
 
 pub fn extract_board_sqaures_from(board_image_path: &str) -> Vec<Vec<u8>> {
-    /////
-    let prepared_img = prepare_image_on_template_image("/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/test5.png");
-    let img = remove_borders(prepared_img, 15, 30, 10, 20);
+    let prepared_img = prepare_image_on_template_image(board_image_path);
+    let (img, path_of_image_to_draw_on) = remove_borders(prepared_img, 15, 30, 10, 20);
     /////
     let mut img = img.unwrap();
     //let mut img = imgcodecs::imread(board_image_path, imgcodecs::IMREAD_COLOR).unwrap();
@@ -36,7 +36,7 @@ pub fn extract_board_sqaures_from(board_image_path: &str) -> Vec<Vec<u8>> {
 
     //using canny image we will apply hough line detection algorithm
     let mut s_lines = Vector::<Vec2f>::new();
-    imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 156.6, 125).unwrap();
+    imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 153.0, 123).unwrap();
 
     let mut intersection_points = get_intersection_points(&s_lines, &mut img);
 
@@ -44,7 +44,7 @@ pub fn extract_board_sqaures_from(board_image_path: &str) -> Vec<Vec<u8>> {
     // prepare intersection points
     for i in 1..65 {
         if i <= 8 {
-            intersection_points[i - 1].1 -= 40;
+            intersection_points[i - 1].1 -= 45;
         } else {
             intersection_points[i - 1].1 -= 30;
         }
@@ -53,7 +53,9 @@ pub fn extract_board_sqaures_from(board_image_path: &str) -> Vec<Vec<u8>> {
     #[cfg(debug_assertions)]
     draw_intersection_points_on(&mut img, &intersection_points);
     // crop images from the original image and return them with their positions
-    let pieces_images_and_position = crop_images_from(board_image_path, intersection_points);
+
+    let pieces_images_and_position =
+        crop_images_from(path_of_image_to_draw_on.as_str(), intersection_points);
 
     pieces_images_and_position
 }
@@ -167,6 +169,7 @@ fn crop_images_from(
     original_image_path: &str,
     intersection_points: Vec<(i32, i32)>,
 ) -> Vec<Vec<u8>> {
+    println!("I'm here ya man !!");
     let mut pieces_images_and_position = Vec::new();
     let mut input_image = image::open(original_image_path).unwrap();
 
@@ -218,42 +221,6 @@ fn draw_intersection_points_on(image_to_draw_on: &mut Mat, intersection_points: 
     wait_key_def().unwrap();
 }
 
-// fn prepare_image_on_tempale_image(target_image: &str) {
-//     let first_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/input_img.png";
-//     let second_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/test5.png";
-//     let output_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/my_converted_image.png";
-
-//     // Open first image to get properties
-//     let img1_reader =
-//         BufReader::new(File::open(&first_image_path).expect("Cannot open first image"));
-//     let img1_format = image::guess_format(&std::fs::read(&first_image_path).unwrap())
-//         .expect("Cannot detect format");
-//     let img1 = image::load(img1_reader, img1_format).expect("Cannot load first image");
-
-//     let (width, height) = img1.dimensions();
-//     let target_color = img1.color();
-
-//     let img2_reader =
-//         BufReader::new(File::open(&second_image_path).expect("Cannot open first image"));
-//     let img2_format = image::guess_format(&std::fs::read(&second_image_path).unwrap())
-//         .expect("Cannot detect format");
-//     let img2 = image::load(img2_reader, img2_format).expect("Cannot load first image");
-
-//     // Resize and convert color if needed
-//     let resized = img2.resize_exact(width, height, FilterType::Lanczos3);
-//     let converted = match target_color {
-//         ColorType::Rgba8 => resized.to_rgba8(),
-//         _ => panic!("Unsupported color type: {:?}", target_color),
-//     };
-
-//     // Save in the same format as the first image
-//     converted
-//         .save_with_format(output_path, img1_format)
-//         .expect("Failed to save the converted image");
-
-//     println!("Second image has been resized and converted to match the first image.");
-// }
-
 fn prepare_image_on_template_image(target_image: &str) -> Result<Mat, opencv::Error> {
     let first_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/input_img.png";
     let second_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/test5.png";
@@ -302,7 +269,7 @@ fn remove_borders(
     bottom: i32,
     left: i32,
     right: i32,
-) -> Result<Mat, opencv::Error> {
+) -> (Result<Mat, opencv::Error>, String) {
     // Read image
     let temp_img = img.unwrap().clone();
     let size = temp_img.size();
@@ -325,16 +292,23 @@ fn remove_borders(
     let cropped_img3 = Mat::roi(&temp_img, roi);
 
     // // Show the cropped image
-    highgui::imshow("Cropped Chessboard", &cropped_img.unwrap());
-    highgui::wait_key(0);
+    #[cfg(debug_assertions)]
+    {
+        highgui::imshow("Cropped Chessboard", &cropped_img.unwrap());
+        highgui::wait_key(0);
+    }
 
     // Save the cropped image
+    let output_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/cropped_chessboard_1.png";
     imwrite(
-        "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/my_cropped_image.png",
+        output_path,
         &cropped_img2.unwrap(),
         &opencv::core::Vector::<i32>::new(),
     )
     .unwrap();
     println!("Saved cropped image to cropped_chessboard_1.png");
-    Ok(cropped_img3.unwrap().clone_pointee())
+    (
+        Ok(cropped_img3.unwrap().clone_pointee()),
+        output_path.to_string(),
+    )
 }
