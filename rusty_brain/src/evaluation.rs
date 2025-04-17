@@ -877,7 +877,7 @@ impl Board {
             let bishop_mask = Bitboards::bishop_mask(bishop_square);
             let bishop_xray_pawns = bishop_mask & enemy_pawns;
             sum += bishop_xray_pawns.count_ones() as i32;
-            bishop_bitboard *= bishop_bitboard-1;
+            bishop_bitboard &= bishop_bitboard-1;
         }
         sum
     }
