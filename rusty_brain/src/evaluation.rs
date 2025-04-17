@@ -2,6 +2,7 @@ use std::process::id;
 use std::vec;
 use crate::board;
 use crate::piece::Piece;
+use std::cmp;
 
 use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, Rank, Square}};
 
@@ -1646,8 +1647,11 @@ impl Board {
         let mut v = 0;
         let kd = self.king_danger(pins, flip_pins);
         
-        v -= self.shelter_strength();
-        v += self.shelter_storm();
+        let (strength_arr,_) = self.strength_square();
+        let (storm_arr,_) = self.storm_square(false);
+        let (shelter_strength,shelter_storm) = self.shelter_strength_and_storm(strength_arr, storm_arr); 
+        v -= shelter_strength;
+        v += shelter_storm;
         v += kd * kd / 4096;
         v += 8 * self.flank_attack(pins);
         v += 17 * self.pawnless_flank();
@@ -1960,20 +1964,178 @@ impl Board {
 
         return c as i32;
     }
-    fn shelter_strength(&self) -> i32 {
+       
+    // From Stock Fish the 2 functions does the same thing
+    // but shelter return W and storm return S
+    // so i will make only 1 function
+    pub fn shelter_strength_and_storm(&self, strength_arr:[i32; 64], storm_arr:[i32; 64]) -> (i32, i32) {
         // calculate the pieces sheltring the king
+        let mut w = 0;
+        let mut s = 1024;
 
-        0
+        let mut checked_squares = self.bitboards.black_king;
+        if self.castling_rights.black_king_side == true{
+            checked_squares |= 1 << 62;
+        }
+        if self.castling_rights.black_queen_side == true {
+            checked_squares |= 1 << 58;
+        }
+        while checked_squares != 0 {
+            let sq = checked_squares.trailing_zeros() as usize;
+            let w1 = strength_arr[sq];
+            let s1 = storm_arr[sq];
+            
+            if s1 - w1 < s - w {
+                w = w1;
+                s = s1;
+            }   
+            checked_squares &= checked_squares - 1;
+        }
+        // w (the strength value)
+        // s (the storm value)
+        (w,s)
     }
     
-    fn shelter_storm(&self) -> i32 {
-
-        0
-    }
     
+    // This Function has bug if the black pawn at rank 0 but this will
+    // not happen in normal play
 
-    // The logic of flamk attack will be 1- find flank area 2- get attacks and count number of flank attacks
+    pub fn storm_square(&self, eg:bool) -> ([i32; 64], i32){
+        let mut storm = [0; 64];
+        let mut total = 0;
 
+        // Storm tables matching JavaScript version
+        const UNBLOCKED_STORM: [[i32; 7]; 4] = [
+            [85, -289, -166, 97, 50, 45, 50],
+            [46, -25, 122, 45, 37, -10, 20],
+            [-6, 51, 168, 34, -2, -22, -14],
+            [-15, -11, 101, 4, 11, -15, -29]
+        ];
+
+        const BLOCKED_STORM: [[i32; 7]; 2] = [
+            [0, 0, 76, -10, -7, -4, -1],
+            [0, 0, 78, 15, 10, 6, 2]
+        ];
+
+        // Process each square
+        for square in 0..64 {
+            let file = (square % 8) as u8;  // 0-7 (a-h)
+            let rank = (square / 8) as u8;
+            let mut v = 0;
+            let mut ev = 5;  // Endgame value starts at 5
+
+            // Adjust king file to b-g (1-6)
+            let kx = cmp::min(6, cmp::max(1, file));
+
+            for x in kx-1..=kx+1 {
+                if x > 7 { continue; }  // Skip invalid files
+
+                let file_mask = Bitboards::file_mask(x);
+                let mut black_pawns = self.bitboards.black_pawns & file_mask;
+                let mut white_pawns = self.bitboards.white_pawns & file_mask;
+
+                // Find highest black pawn (unprotected)
+                let mut us = 0;
+                while black_pawns != 0 {
+                    let sq = black_pawns.trailing_zeros() as u8;
+                    let pos = 1 << sq;
+                    let r = sq / 8;
+
+
+                    // Check if pawn is unprotected
+                    let attack = Bitboards::move_south_east(pos) | Bitboards::move_south_west(pos);
+                    if (attack & self.bitboards.white_pawns) == 0 && r <= rank {
+                        us = 7 - r;  // Convert to table index
+                    }
+                    black_pawns &= black_pawns - 1;
+                }
+
+                // Find highest white pawn
+                let mut them = 0;
+                while white_pawns != 0 {
+                    let sq = white_pawns.trailing_zeros() as u8;
+                    let r = sq / 8;
+                    if r <= rank {
+                        them = 7 - r;  // Keep the highest valid pawn
+                    }
+                    white_pawns &= white_pawns - 1;
+                }
+
+                let f = cmp::min(x, 7 - x) as usize;
+
+                // Check for blocked case (our pawn directly below theirs)
+                if us > 0 && them == us + 1 {
+                    v += BLOCKED_STORM[0][them as usize];
+                    ev += BLOCKED_STORM[1][them as usize];
+                } else {
+                    v += UNBLOCKED_STORM[f][them as usize];
+                }
+            }
+
+            storm[square as usize] = if eg { ev } else { v };
+            total += if eg { ev } else { v };
+        }
+
+        (storm, total)
+    }
+
+    // This Function has bug if the black pawn at rank 0 but this will
+    // not happen in normal play
+
+    pub fn strength_square(&self) -> ([i32; 64], i32){
+        let mut strength = [0; 64];
+        let mut total = 0;
+        
+        // Weakness table [file][pawn_rank]
+        const WEAKNESS: [[i32; 7]; 4] = [
+            [-6, 81, 93, 58, 39, 18, 25],
+            [-43, 61, 35, -49, -29, -11, -63],
+            [-10, 75, 23, -2, 32, 3, -45],
+            [-39, -13, -29, -52, -48, -67, -166]
+        ];
+
+        // Process each square
+        for square in 0..64 {
+            let file = (square % 8) as u8;  // 0-7 (a-h)
+            let rank = (square / 8) as u8;
+            // Base value
+            let mut v = 5;
+
+            // Adjust king file to b-g (1-6)
+            let kx = cmp::min(6, cmp::max(1, file));
+
+            for x in kx-1..=kx+1{
+                let mut us = 0;
+
+                let file_mask = Bitboards::file_mask(x);
+                let mut black_pawns_in_this_file = self.bitboards.black_pawns & file_mask;
+                
+                // Find Highest Unprotected Pawn
+                while black_pawns_in_this_file != 0{
+                    let square = black_pawns_in_this_file.trailing_zeros() as u8;
+                    let pos = 1 << square;
+
+                    let possiple_attack = Bitboards::move_south_east(pos)|Bitboards::move_south_west(pos);
+                    if possiple_attack & self.bitboards.white_pawns == 0{
+                        let r = square / 8;
+                        if r <= rank{
+                            us = 7 - r;
+                        } 
+                    }
+                    black_pawns_in_this_file &= black_pawns_in_this_file -1;
+                }
+                let f = cmp::min(x, 7-x);
+                v += WEAKNESS[f as usize][us as usize];
+            }            
+            strength[square as usize] = v;
+            total += v;
+        }
+
+        (strength, total)
+    }
+
+
+    // The logic of flank attack will be 1- find flank area 2- get attacks and count number of flank attacks
     pub fn flank_attack(&self, pins: &Vec<u8>) -> i32 {
 
         // if (square.y > 4) return 0;
@@ -2056,8 +2218,8 @@ impl Board {
         }
     }
 
-    // WINNABLE MIDDLE GAME
 
+    // WINNABLE MIDDLE GAME
     fn winnable_total_mg(&self, v: Option<i32>) -> i32 {
         let v = if let Some(v) = v {
             let ret = if v > 0 {
@@ -2151,6 +2313,16 @@ impl Board {
         clone_board.bitboards.black_queens = self.flip_vertical(self.bitboards.white_queens);
         clone_board.bitboards.black_king = self.flip_vertical(self.bitboards.white_king);
 
+        // We Should Take care of Castling also
+
+        clone_board.castling_rights.white_king_side= self.castling_rights.black_king_side;
+        clone_board.castling_rights.white_queen_side= self.castling_rights.black_queen_side;
+        clone_board.castling_rights.black_king_side= self.castling_rights.white_king_side;
+        clone_board.castling_rights.black_queen_side= self.castling_rights.white_queen_side;
+
+        
+        
+        
         // Return the modified cloned board
         clone_board
     }
