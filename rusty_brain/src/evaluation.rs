@@ -1649,7 +1649,7 @@ impl Board {
         v -= self.shelter_strength();
         v += self.shelter_storm();
         v += kd * kd / 4096;
-        v += 8 * self.flank_attack();
+        v += 8 * self.flank_attack(pins);
         v += 17 * self.pawnless_flank();
         
         v
@@ -1971,9 +1971,55 @@ impl Board {
         0
     }
     
-    fn flank_attack(&self) -> i32 {
 
-        0
+    // The logic of flamk attack will be 1- find flank area 2- get attacks and count number of flank attacks
+
+    pub fn flank_attack(&self, pins: &Vec<u8>) -> i32 {
+
+        // if (square.y > 4) return 0;
+        // reject rank 0, 1, 2 from calculations
+        let mut flank_area:u64 = 0xFFFFFFFFFF000000;
+        let file_h: u64 = 0x8080808080808080;
+        let file_g: u64 = 0x4040404040404040;
+        let file_f: u64 = 0x2020202020202020;
+        let file_e: u64 = 0x1010101010101010;
+        let file_d: u64 = 0x0808080808080808;
+        let file_c: u64 = 0x0404040404040404;
+        let file_b: u64 = 0x0202020202020202;
+        let file_a: u64 = 0x0101010101010101;
+
+        let black_king_file = (self.bitboards.black_king.trailing_zeros() as u8) % 8;
+
+        if black_king_file == 0 {
+            flank_area = flank_area & (file_a | file_b | file_c);
+        }else if black_king_file == 1 || black_king_file == 2 {
+            flank_area = flank_area & (file_a | file_b | file_c | file_d);
+        }else if  black_king_file == 3 || black_king_file == 4{
+            flank_area = flank_area & (file_c | file_d | file_e | file_f);
+        }else if  black_king_file == 5 || black_king_file == 6{
+            flank_area = flank_area & (file_e | file_f | file_g | file_h);
+        }else if black_king_file == 7{
+            flank_area = flank_area & (file_f | file_g | file_h);
+        }
+        let (attacks, attacks_array, _) = self.attack(pins);
+
+        let mut checked_area = flank_area & attacks;
+
+        let mut c = 0;
+
+        while checked_area != 0 {
+            
+            let square = checked_area.trailing_zeros() as usize;
+            if attacks_array[square] == 0{
+                c += 0;
+            }else if  attacks_array[square] == 1{
+                c += 1;
+            }else {
+                c+=2;
+            }
+            checked_area &= checked_area - 1;
+        }
+        c
     }
     
     pub fn pawnless_flank(&self) -> i32 {

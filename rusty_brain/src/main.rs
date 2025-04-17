@@ -41,22 +41,29 @@ fn main() {
         let (attack, arr, c) = board.attack(&pins);
         let (attack1, arr1, c1) = flipped_board.attack(&filp_pins);
 
-        let weak_squares = board.weak_squares(&pins, &filp_pins);
-        println!("White {}", weak_squares.count_ones());
+        let flanck_w = board.flank_attack(&pins);
+        let flanck_b = flipped_board.flank_attack(&filp_pins);
 
-        let weak_squares_flip = flipped_board.weak_squares(&filp_pins, &pins);
-        println!("Black {}", weak_squares_flip.count_ones());
+        println!("White {}", flanck_w);
+        println!("Black {}", flanck_b);
+
+        
+        //let weak_squares = board.weak_squares(&pins, &filp_pins);
+        //println!("White {}", weak_squares.count_ones());
+
+        //let weak_squares_flip = flipped_board.weak_squares(&filp_pins, &pins);
+        //println!("Black {}", weak_squares_flip.count_ones());
         //print_bitboard(weak_squares_flip);
         println!("{}", c);
         println!("{}", c1);
 
         println!("-------------------------------------------------");
 
-        let normal_king_ring = board.king_ring(false);
-        let normal_king_flip = flipped_board.king_ring(false);
+        //let normal_king_ring = board.king_ring(false);
+        //let normal_king_flip = flipped_board.king_ring(false);
 
-        println!("White {} ", board.weak_bonus(normal_king_ring, &pins, &filp_pins));
-        println!("Black {} ", flipped_board.weak_bonus(normal_king_flip, &filp_pins, &pins));
+        //println!("White {} ", board.weak_bonus(normal_king_ring, &pins, &filp_pins));
+        //println!("Black {} ", flipped_board.weak_bonus(normal_king_flip, &filp_pins, &pins));
         
 
         // println!("Square | Attack Count");
