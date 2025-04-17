@@ -18,7 +18,7 @@ use std::path::Path;
 
 pub fn extract_board_sqaures_from(img_data: &Vec<u8>) -> Vec<Vec<u8>> {
     let prepared_img = prepare_image_on_template_image(img_data);
-    let (img, path_of_image_to_draw_on) = remove_borders(prepared_img, 15, 30, 10, 20);
+    let (img, path_of_image_to_draw_on) = remove_borders(prepared_img, 0, 0, 0, 15);
     /////
     let mut img = img.unwrap();
     //let mut img = imgcodecs::imread(board_image_path, imgcodecs::IMREAD_COLOR).unwrap();
@@ -36,7 +36,7 @@ pub fn extract_board_sqaures_from(img_data: &Vec<u8>) -> Vec<Vec<u8>> {
 
     //using canny image we will apply hough line detection algorithm
     let mut s_lines = Vector::<Vec2f>::new();
-    imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 153.0, 123).unwrap();
+    imgproc::hough_lines_def(&canny_image, &mut s_lines, 1.0, PI / 131.0, 123).unwrap();
 
     let mut intersection_points = get_intersection_points(&s_lines, &mut img);
 
@@ -44,7 +44,7 @@ pub fn extract_board_sqaures_from(img_data: &Vec<u8>) -> Vec<Vec<u8>> {
     // prepare intersection points
     for i in 1..65 {
         if i <= 8 {
-            intersection_points[i - 1].1 -= 45;
+            intersection_points[i - 1].1 -= 60;
         } else {
             intersection_points[i - 1].1 -= 30;
         }
@@ -201,7 +201,7 @@ fn crop_images_from(
             let folder_name = "/home/y0sif/cropped";
             let image_name = format!("{}{}{}", standard_name, image_number.to_string(), ".png");
             let path = format!("{}{}", folder_name, image_name);
-            cropped_image.save(path).unwrap();
+            cropped_image.save(path);
             image_number += 1;
         }
     }
