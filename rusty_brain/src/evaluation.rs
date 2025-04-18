@@ -7,8 +7,17 @@ use crate::{bitboards::{self, Bitboards}, board::{Board, Turn}, square::{self, R
 
 impl Board {
     pub fn evaluate(&mut self) -> i32 {
-        let mg = self.middle_game_evaluation(true);
-        mg
+        let mg = self.middle_game_evaluation(true); //should figure out what to do with these bools
+        let mut eg = self.end_game_evaluation(true);
+        let p = self.phase(true);
+        let rule50= self.rule50();
+        //eg = eg * self.scale_factor() / 64; //not implemented
+        let mut v = (mg *p + (eg *(138 -p)))/128;
+        // if (arguments.length == 1) v = ((v / 16) << 0) * 16; //genuinely what
+        v += self.tempo();
+        v  = (v * (100 - rule50) / 100);
+
+        v
     }
     
     fn middle_game_evaluation(&self, nowinnable: bool) -> i32 {
@@ -19,7 +28,7 @@ impl Board {
 
         v += self.piece_value_mg() - color_flip_board.piece_value_mg();
         v += self.psqt_mg() - color_flip_board.psqt_mg();
-        v += self.imbalance_total(&color_flip_board);
+        v += self.imbalance_total(&color_flip_board); // need to check this cuz in the wiki it doesn't pass flipped board
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
         v += self.pieces_mg(&pins) - color_flip_board.pieces_mg(&flip_pins);
         v += self.mobility_mg(&pins) - color_flip_board.mobility_mg(&flip_pins);
@@ -34,6 +43,46 @@ impl Board {
 
         v
     }
+
+    fn end_game_evaluation(&self, nowinnable: bool) -> i32{
+        let mut v: i32 =0;
+        let color_flip_board = self.color_flip();
+        let (_, pins) = self.checks_and_pins();
+        let (_, flip_pins) = color_flip_board.checks_and_pins();
+
+        v += self.piece_value_eg() - color_flip_board.piece_value_eg();
+        v += self.psqt_eq() - color_flip_board.psqt_eq();
+        v += self.imbalance_total(&color_flip_board); // same thing as mg
+        v += self.pawns_eg() - color_flip_board.pawns_eg();
+        v += self.pieces_eg(&pins) - color_flip_board.pieces_eg(&flip_pins);
+        v += self.mobility_eg(&pins) - color_flip_board.mobility_eg(&flip_pins);
+        v += self.threats_eg() - color_flip_board.threats_eg();
+        v += self.passed_eg() - color_flip_board.passed_eg();
+        v += self.king_eg(&pins, &flip_pins) - color_flip_board.king_eg(&flip_pins, &pins);
+
+        if !nowinnable {
+            v += self.winnable_total_eg(Some(v));
+        }
+
+    v
+    }
+
+    fn rule50(&self) -> i32 {
+
+        self.half_move_clock as i32
+    }
+
+    fn tempo(&self) -> i32 {
+        let mut v: i32 =0;
+        let turn = {
+            if self.turn == Turn::White {
+                1
+            } else {
+                -1
+            }
+        };
+        28 * turn
+    }
     
     // PIECE VALUE MIDDLE GAME
     
@@ -46,6 +95,19 @@ impl Board {
         sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, true);
         sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, true);
         sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, true);
+
+        sum
+    }
+
+    fn piece_value_eg(&self) -> i32 {
+        // self.piece_value_bonus(false)
+        let mut sum = 0;
+
+        sum += self.bitboards.white_pawns.count_ones() as i32 * self.piece_value_bonus(Piece::Pawn, false);
+        sum += self.bitboards.white_knights.count_ones() as i32 * self.piece_value_bonus(Piece::Knight, false);
+        sum += self.bitboards.white_bishops.count_ones() as i32 * self.piece_value_bonus(Piece::Bishop, false);
+        sum += self.bitboards.white_rooks.count_ones() as i32 * self.piece_value_bonus(Piece::Rook, false);
+        sum += self.bitboards.white_queens.count_ones() as i32 * self.piece_value_bonus(Piece::Queen, false);
 
         sum
     }
@@ -83,6 +145,10 @@ impl Board {
 
     fn psqt_mg(&self) -> i32 {
         self.psqt_bonus(true)
+    }
+
+    fn psqt_eq(&self) -> i32 {
+        self.psqt_bonus(false)
     }
     
     fn psqt_bonus(&self, is_middle_game: bool) -> i32 {
@@ -305,7 +371,64 @@ impl Board {
     
         v
     }
+
+    fn pawns_eg(&self) -> i32 {
+
+        let mut v: i32 = 0;
+        
+        let mut pawn_bitboard = self.bitboards.white_pawns;
+
+        while pawn_bitboard != 0 {
+            let square = pawn_bitboard.trailing_zeros() as u8;
+            let square_position = 1 << square;
+
+            if self.doubled_isolated(square_position, square) == 1{
+                v -= 56;
+            }else if self.isolated(square_position,square) == 1{
+                v -= 15;
+            }else if self.backward(square_position,square) == 1{
+                v -= 24;
+            }
+
+            v -= self.doubled(square) * 56;
+
+                    
+            if self.connected(square_position,square) == 1{
+                v += (self.connected_bonus(square_position,square) * (Square::from(square).rank() as i32 - 3)/ 4);
+            }
+
+            v -= 27 * self.weak_unopposeed_pawn(square_position, square);
+
+            v -= 56 * self.weak_lever(square_position, square);
+
+            let arr = [0, -4, 4];
+
+            v += arr[self.blocked(square_position, square) as usize];            
+
+            pawn_bitboard &= pawn_bitboard - 1;
+        }
+        v 
+    }
     
+    fn weak_lever(&self, square_position: u64, square: u8) -> i32 {
+        let not_a_file = 0xFEFEFEFEFEFEFEFE;
+        let not_h_file = 0x7F7F7F7F7F7F7F7F;
+
+        let enemy_pawms = self.bitboards.black_pawns;
+        let ally_pawns = self.bitboards.white_pawns;
+        let attacked_twice =  (square_position << 7) & not_a_file & enemy_pawms != 0 && 
+            (square_position << 9) & not_h_file & enemy_pawms != 0;
+
+        let not_defended = (square_position >> 7) & not_h_file & ally_pawns == 0 &&
+            (square_position >> 9) & not_a_file & ally_pawns == 0;
+        
+        if attacked_twice && not_defended {
+            1
+        } else {
+            0
+        }
+    }
+
     // return if current pawn is double isolated or not
     // return two values only 0 - 1
     fn doubled_isolated(&self,square_position: u64, square: u8) -> i32 {
@@ -660,6 +783,12 @@ impl Board {
         //king protector line idk
         v += 45 * self.long_diagonal_bishop();
         return v;
+    }
+
+    fn pieces_eg(&self, pins: &Vec<u8>) -> i32 {
+        let mut v: i32 =0;
+
+        v
     }
 
     fn outpost_total(&self) -> i32 {
@@ -1216,6 +1345,10 @@ impl Board {
         
         self.mobility_bonus(true, pins)
     }
+
+    fn mobility_eg(&self, pins: &Vec<u8>) -> i32 {
+        self.mobility_bonus(false, pins)
+    }
     
     fn mobility_bonus(&self, is_middle_game: bool, pins: &Vec<u8>) -> i32 {
         let bonus: Vec<Vec<i32>> = if is_middle_game {
@@ -1399,6 +1532,20 @@ impl Board {
 
         v
     }
+
+    fn threats_eg(&self) -> i32 {
+        let mut v: i32 =0;
+        v += 36 * self.hanging();
+        v += 89* self.king_threat();
+        v += 39 * self.pawn_push_threat();
+        v += 94 * self.threat_safe_pawn();
+        v += 18 * self.slider_on_queen();
+        v += 11 * self.knight_on_queen();
+        v += 7 * self.restricted();
+        //minor_threat
+        //rook_threat
+        v
+    }
     
     fn hanging(&self) -> i32 {
         // sum function
@@ -1532,6 +1679,17 @@ impl Board {
         v
     }
 
+    fn passed_eg(&self) -> i32 {
+        
+        // if !self.passed_leverable() {
+        //     return 0;
+        // }
+        let mut v: i32 = 0;
+
+
+        v
+    }
+
     // SPACE FUNCTION
 
     // this function calculate how much space a side has
@@ -1652,6 +1810,12 @@ impl Board {
         v += 8 * self.flank_attack(pins);
         v += 17 * self.pawnless_flank();
         
+        v
+    }
+
+    fn king_eg(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>) -> i32 {
+        let mut v: i32 =0;
+
         v
     }
     
@@ -2058,7 +2222,7 @@ impl Board {
 
     // WINNABLE MIDDLE GAME
 
-    fn winnable_total_mg(&self, v: Option<i32>) -> i32 {
+    fn winnable_total_mg(&self, v: Option<i32>) -> i32 { //this is wrong
         let v = if let Some(v) = v {
             let ret = if v > 0 {
                 1
@@ -2088,6 +2252,12 @@ impl Board {
         return v * i32::max(i32::min(self.winnable() + 50, 0), -i32::abs(v));
     }
     
+    fn winnable_total_eg(&self, v: Option<i32>) -> i32 {
+        let v: i32 = 0;
+
+        0
+    }
+
     fn winnable(&self) -> i32 {
 
         0
