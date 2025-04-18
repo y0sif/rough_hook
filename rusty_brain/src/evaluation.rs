@@ -925,12 +925,12 @@ impl Board {
                         // pawn_idx -=  8;
                     }
                 }
-                if self.backward(pawn, pawn_idx as u8) == 1 {
-                        println!("backward pawn at idx: {}", pawn_idx);
-                    }
-                    else {
-                        println!("not backward pawn at idx: {}", pawn_idx);
-                    }
+                // if self.backward(pawn, pawn_idx as u8) == 1 {
+                //     println!("backward pawn at idx: {}", pawn_idx);
+                // }
+                // else {
+                //     println!("not backward pawn at idx: {}", pawn_idx);
+                // }
             my_pawns &= my_pawns -1;
         }
 
@@ -2373,7 +2373,7 @@ impl Board {
             7 => 0xE0E0E0E0E0E0E0E0, // f,g,h files
             _ => 0,
         };
-        println!("{} THE {} Pawns {}",king_file, flank_mask, all_pawns);
+        // println!("{} THE {} Pawns {}",king_file, flank_mask, all_pawns);
         // Check if any pawn exists in the flank area
         if (all_pawns & flank_mask) != 0 {
             0  // Pawns exist in flank -> No Penalty
