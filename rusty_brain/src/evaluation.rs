@@ -31,7 +31,7 @@ impl Board {
         v += self.psqt_mg() - color_flip_board.psqt_mg();
         v += self.imbalance_total(&color_flip_board); // need to check this cuz in the wiki it doesn't pass flipped board
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
-        v += self.pieces_mg(&pins) - color_flip_board.pieces_mg(&flip_pins);
+        // v += self.pieces_mg(&pins) - color_flip_board.pieces_mg(&flip_pins);
         v += self.mobility_mg(&pins) - color_flip_board.mobility_mg(&flip_pins);
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
@@ -55,7 +55,7 @@ impl Board {
         v += self.psqt_eq() - color_flip_board.psqt_eq();
         v += self.imbalance_total(&color_flip_board); // same thing as mg
         v += self.pawns_eg() - color_flip_board.pawns_eg();
-        v += self.pieces_eg(&pins) - color_flip_board.pieces_eg(&flip_pins);
+        // v += self.pieces_eg(&pins) - color_flip_board.pieces_eg(&flip_pins);
         v += self.mobility_eg(&pins) - color_flip_board.mobility_eg(&flip_pins);
         v += self.threats_eg() - color_flip_board.threats_eg();
         v += self.passed_eg() - color_flip_board.passed_eg();
@@ -84,7 +84,83 @@ impl Board {
         };
         28 * turn
     }
+
+    fn scale_factor(&self, eg: i32) -> i32 {
+        let flipped_board = self.color_flip();
+        let pos_w = {
+            if eg >0 {
+                self
+            } else {
+                &flipped_board
+            }
+        };
+        let pos_b = {
+            if eg >0 {
+                &flipped_board
+            } else {
+                self
+            }
+        };
+        let mut sf = 64;
+
+        let pc_w = pos_w.bitboards.white_pawns.count_ones() as i32;
+        let pc_b = pos_b.bitboards.black_pawns.count_ones() as i32;
+        let qc_w = pos_w.bitboards.white_queens.count_ones() as i32;
+        let qc_b = pos_b.bitboards.black_queens.count_ones() as i32;
+        let bc_w = pos_w.bitboards.white_bishops.count_ones() as i32;
+        let bc_b = pos_b.bitboards.black_bishops.count_ones() as i32;
+        let nc_w = pos_w.bitboards.white_knights.count_ones() as i32;
+        let nc_b = pos_b.bitboards.black_knights.count_ones() as i32;
+        let npm_w = pos_w.non_pawn_material(true); //unsure if it should be passed as true or false
+        let npm_b = pos_b.non_pawn_material(true);
+        let bishop_value_mg = 825;
+        let bishop_value_eg = 915;
+        let rook_value_mg = 1276;
+        if (pc_w == 0 && (npm_w - npm_b) <= bishop_value_mg ) {
+            sf = {
+                if npm_w < rook_value_mg {
+                    0
+                } else if npm_b <= bishop_value_mg {
+                    4
+                } else {
+                    14
+                }
+            };
+        }
+        if sf == 64 {
+            let ob = self.opposite_bishops();
+            if ob > 0 && npm_w == bishop_value_mg && npm_b == bishop_value_mg {
+                // sf = 22 + 4 * self.candidate_passed() // not implemeneted 
+            }
+        }
+
+
+        
+        0
+    }
     
+    fn opposite_bishops(&self) -> i32 { //untested
+        let white_bishops = self.bitboards.white_bishops;
+        let black_bishops = self.bitboards.black_bishops;
+        if white_bishops.count_ones() != 1{
+            return 0;
+        } 
+        if black_bishops.count_ones() != 1 {
+            return 0;
+        }
+        let w_bishop = white_bishops.trailing_zeros() as u8;
+        let w_b_c = (Square::from(w_bishop).rank() as usize + Square::from(w_bishop).file() as usize) % 2;
+        let b_bishop = black_bishops.trailing_zeros() as u8;
+        let b_b_c = (Square::from(b_bishop).rank() as usize + Square::from(b_bishop).file() as usize) % 2;
+
+        if w_b_c == b_b_c {
+            0
+        } else {
+            1
+        }
+
+    }
+
     // PIECE VALUE MIDDLE GAME
     
     fn piece_value_mg(&self) -> i32 {
@@ -2373,7 +2449,7 @@ impl Board {
             7 => 0xE0E0E0E0E0E0E0E0, // f,g,h files
             _ => 0,
         };
-        println!("{} THE {} Pawns {}",king_file, flank_mask, all_pawns);
+        // println!("{} THE {} Pawns {}",king_file, flank_mask, all_pawns);
         // Check if any pawn exists in the flank area
         if (all_pawns & flank_mask) != 0 {
             0  // Pawns exist in flank -> No Penalty
