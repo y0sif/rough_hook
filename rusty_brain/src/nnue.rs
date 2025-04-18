@@ -8,7 +8,7 @@ This is how you would load the network in rust.
 Commented out because it will error if it can't find the file.
 */
 pub static NNUE: Network =
-    unsafe { std::mem::transmute(*include_bytes!("/home/y0sif/college/gp/bullet/checkpoints/simple_with_more_data-10/quantised.bin")) };
+    unsafe { std::mem::transmute(*include_bytes!("/home/y0sif/college/gp/bullet/checkpoints/simple-40/quantised.bin")) };
 
 #[inline]
 /// Clipped ReLU - Activation Function.

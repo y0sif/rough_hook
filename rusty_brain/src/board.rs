@@ -159,55 +159,85 @@ impl Board {
     }
 
     // Compute feature index for a piece at a square
-    fn get_feature_index(&self, piece: Piece, turn: Turn, square: u8) -> usize {
-        // Each piece type has 64 indices per color (one for each square)
-        // This gives a total of 12*64 = 768 indices
-        let piece_offset = match piece {
-            Piece::Pawn => 0,
-            Piece::Knight => 1,
-            Piece::Bishop => 2,
-            Piece::Rook => 3,
-            Piece::Queen => 4,
-            Piece::King => 5,
-        } * 128;
-        
-        let color_offset = match turn {
-            Turn::White => 0,
-            Turn::Black => 64,
+    fn get_feature_index(&self, piece: Piece, color: Turn, square: u8) -> usize {
+        let piece_base = match (piece, color) {
+            (Piece::Pawn, Turn::White) => 0,
+            (Piece::Knight, Turn::White) => 64,
+            (Piece::Bishop, Turn::White) => 128,
+            (Piece::Rook, Turn::White) => 192,
+            (Piece::Queen, Turn::White) => 256,
+            (Piece::King, Turn::White) => 320,
+            (Piece::Pawn, Turn::Black) => 384,
+            (Piece::Knight, Turn::Black) => 448,
+            (Piece::Bishop, Turn::Black) => 512,
+            (Piece::Rook, Turn::Black) => 576,
+            (Piece::Queen, Turn::Black) => 640,
+            (Piece::King, Turn::Black) => 704,
         };
         
-        piece_offset + color_offset + square as usize
+        piece_base + square as usize
     }
 
+    // Add features for all pieces of a certain type on a bitboard
     // Add features for all pieces of a certain type on a bitboard
     fn add_piece_features(&mut self, bitboard: u64, piece: Piece, color: Turn) {
         let mut pieces = bitboard;
         while pieces != 0 {
             let square = pieces.trailing_zeros() as u8;
-            let feature_idx = self.get_feature_index(piece, color, square);
-            self.white_accumulator.add_feature(feature_idx, &NNUE);
-            self.black_accumulator.add_feature(feature_idx, &NNUE);
+            
+            // White accumulator - use original piece color and square
+            let feature_idx_white = self.get_feature_index(piece, color, square);
+            
+            // Black accumulator - flip both square AND color
+            let flipped_square = square ^ 56;
+            let flipped_color = match color {
+                Turn::White => Turn::Black,
+                Turn::Black => Turn::White,
+            };
+            let feature_idx_black = self.get_feature_index(piece, flipped_color, flipped_square);
+            
+            // println!("active white {}, active black {}" , feature_idx_white, feature_idx_black);
+            self.white_accumulator.add_feature(feature_idx_white, &NNUE);
+            self.black_accumulator.add_feature(feature_idx_black, &NNUE);
             pieces &= pieces - 1; // Clear the least significant bit
         }
     }
 
     // Update accumulators when a piece moves
     fn update_piece_feature(&mut self, from: u8, to: u8, piece: Piece, color: Turn) {
-        let old_feature = self.get_feature_index(piece, color, from);
-        let new_feature = self.get_feature_index(piece, color, to);
+        // White accumulator - use original color and square
+        let old_feature_white = self.get_feature_index(piece, color, from);
+        let new_feature_white = self.get_feature_index(piece, color, to);
         
-        self.white_accumulator.remove_feature(old_feature, &NNUE);
-        self.black_accumulator.remove_feature(old_feature, &NNUE);
+        // Black accumulator - flip both square AND color
+        let flipped_color = match color {
+            Turn::White => Turn::Black,
+            Turn::Black => Turn::White,
+        };
+        let old_feature_black = self.get_feature_index(piece, flipped_color, from ^ 56);
+        let new_feature_black = self.get_feature_index(piece, flipped_color, to ^ 56);
         
-        self.white_accumulator.add_feature(new_feature, &NNUE);
-        self.black_accumulator.add_feature(new_feature, &NNUE);
+        self.white_accumulator.remove_feature(old_feature_white, &NNUE);
+        self.black_accumulator.remove_feature(old_feature_black, &NNUE);
+        
+        self.white_accumulator.add_feature(new_feature_white, &NNUE);
+        self.black_accumulator.add_feature(new_feature_black, &NNUE);
     }
 
     // Remove a piece's feature (for captures)
     fn remove_piece_feature(&mut self, square: u8, piece: Piece, color: Turn) {
-        let feature_idx = self.get_feature_index(piece, color, square);
-        self.white_accumulator.remove_feature(feature_idx, &NNUE);
-        self.black_accumulator.remove_feature(feature_idx, &NNUE);
+        // White accumulator - use original color and square
+        let feature_idx_white = self.get_feature_index(piece, color, square);
+        
+        // Black accumulator - flip both square AND color
+        let flipped_color = match color {
+            Turn::White => Turn::Black,
+            Turn::Black => Turn::White,
+        };
+        let feature_idx_black = self.get_feature_index(piece, flipped_color, square ^ 56);
+        
+        self.white_accumulator.remove_feature(feature_idx_white, &NNUE);
+        self.black_accumulator.remove_feature(feature_idx_black, &NNUE);
     }
         
     pub fn make_move(&mut self, move_to_make: Move) {
@@ -231,7 +261,6 @@ impl Board {
         // Get source and destination squares
         let from = move_to_make.get_from();
         let to = move_to_make.get_to();
-        let flag = move_to_make.get_flags();
         
         // Determine piece being moved
         let piece = self.get_piece_at_square(from);
@@ -267,25 +296,38 @@ impl Board {
                 _ => panic!("Invalid promotion flag"),
             };
             
-            let feature_idx = self.get_feature_index(promoted_piece, color, to);
-            self.white_accumulator.add_feature(feature_idx, &NNUE);
-            self.black_accumulator.add_feature(feature_idx, &NNUE);
-        } else {
-            // Normal piece movement
-            self.update_piece_feature(from, to, piece, color);
-        }
-        
-        // Handle castling (rook movement)
-        if flag == Move::KING_CASTLE {
+            // White accumulator
+            let feature_idx_white = self.get_feature_index(promoted_piece, color, to);
+            
+            // Black accumulator - flip both square AND color
+            let flipped_color = match color {
+                Turn::White => Turn::Black,
+                Turn::Black => Turn::White,
+            };
+            let feature_idx_black = self.get_feature_index(promoted_piece, flipped_color, to ^ 56);
+            
+            self.white_accumulator.add_feature(feature_idx_white, &NNUE);
+            self.black_accumulator.add_feature(feature_idx_black, &NNUE);
+        } else if flag == Move::KING_CASTLE {
+            // Update king features for kingside castling
+            self.update_piece_feature(from, to, Piece::King, color);
+            
+            // Update rook features for kingside castling
             let rook_from = if color == Turn::White { 7 } else { 63 };
             let rook_to = if color == Turn::White { 5 } else { 61 };
             self.update_piece_feature(rook_from, rook_to, Piece::Rook, color);
         } else if flag == Move::QUEEN_CASTLE {
+            // Update king features for queenside castling
+            self.update_piece_feature(from, to, Piece::King, color);
+            
+            // Update rook features for queenside castling
             let rook_from = if color == Turn::White { 0 } else { 56 };
             let rook_to = if color == Turn::White { 3 } else { 59 };
             self.update_piece_feature(rook_from, rook_to, Piece::Rook, color);
+        } else if flag < Move::QUEEN_PROMOTION || flag > Move::BISHOP_PROMO_CAPTURE {
+            // Normal piece movement (not castling, not promotion)
+            self.update_piece_feature(from, to, piece, color);
         }
-        
 
         match flag {
             Move::CAPTURE | Move::QUEEN_PROMO_CAPTURE | Move::KNIGHT_PROMO_CAPTURE |
