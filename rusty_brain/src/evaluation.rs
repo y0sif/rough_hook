@@ -23,11 +23,14 @@ impl Board {
         v += self.imbalance_total(&color_flip_board);
         v += self.pawns_mg() - color_flip_board.pawns_mg(); 
         v += self.pieces_mg(&pins) - color_flip_board.pieces_mg(&flip_pins);
-        v += self.mobility_mg(&pins) - color_flip_board.mobility_mg(&flip_pins);
+        let mobility_mg = self.mobility_mg(&pins);
+        let mobility_mg_flip = color_flip_board.mobility_mg(&flip_pins);
+
+        v +=  mobility_mg - mobility_mg_flip;
         v += self.threats_mg() - color_flip_board.threats_mg();
         v += self.passed_mg() - color_flip_board.passed_mg();
         v += self.space(true) - color_flip_board.space(true); // needs to see what tdo with middle_game var
-        v += self.king_mg(&pins, &flip_pins) - color_flip_board.king_mg(&flip_pins, &pins);
+        v += self.king_mg(&pins, &flip_pins,mobility_mg) - color_flip_board.king_mg(&flip_pins, &pins,mobility_mg_flip);
         
         if !nowinnable {
             v += self.winnable_total_mg(Some(v));
@@ -1082,7 +1085,7 @@ impl Board {
         }
         
     }
-    fn rook_xray_attack(&self, pins : &Vec<u8>, rook_bitboard:u64) -> u64 {
+    pub fn rook_xray_attack(&self, pins : &Vec<u8>, rook_bitboard:u64) -> u64 {
         let squares = self.get_rook_xray_attacked_squares(&rook_bitboard);
         let rook_square = rook_bitboard.trailing_zeros() as u8;
         let legal_rook_bitboard = self.get_legal_bitboard(&rook_square, pins, &squares);
@@ -1323,9 +1326,6 @@ impl Board {
         let blocked_white_pawns = self.get_blocked_white_pawns();
         mobility_area &= !blocked_white_pawns;
         
-        // the function called blockers_for_king is not important
-        // as i will use my existance checks_and_pins function
-        // Create bitboard of all pinned pieces
         let pins = self.blockers_for_king();
         let mut pinned_bitboard = 0u64;
         for &square in &pins {
@@ -1643,31 +1643,50 @@ impl Board {
     
     // KING MIDDLE GAME
 
-    fn king_mg(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>) -> i32 {
+    fn king_mg(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>, mobility_mg:i32, ) -> i32 {
         let mut v = 0;
-        let kd = self.king_danger(pins, flip_pins);
-        
         let (strength_arr,_) = self.strength_square();
         let (storm_arr,_) = self.storm_square(false);
         let (shelter_strength,shelter_storm) = self.shelter_strength_and_storm(strength_arr, storm_arr); 
+        
+        let flank_attack = self.flank_attack(pins);;
+        let kd = self.king_danger(pins, flip_pins, shelter_strength,shelter_storm, flank_attack,mobility_mg);
+        
         v -= shelter_strength;
         v += shelter_storm;
         v += kd * kd / 4096;
-        v += 8 * self.flank_attack(pins);
+        v += 8 * flank_attack;
         v += 17 * self.pawnless_flank();
         
         v
     }
     
     // check if the king is in danger, or can be in danger
-    fn king_danger(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>) -> i32 {
-        // this is a big function with a lot of branches 
+    fn king_danger(&self, pins: &Vec<u8>, flip_pins: &Vec<u8>, shelter_strength:i32,
+        shelter_storm:i32, flank_attack:i32,mobility_mg:i32) -> i32 {
+
+        // var count = king_attackers_count(pos);
+        // var weight = king_attackers_weight(pos);
         let king_ring_for_pawns = self.king_ring(true);
         let normal_king_ring = self.king_ring(false);
-        
         let (count, weight) = self.king_attackers_count(pins, king_ring_for_pawns,normal_king_ring );
+        
+        //  var kingAttacks = king_attacks(pos);
         let king_attacks = self.king_attacks(count, pins);
+        
+        //var weak = weak_bonus(pos);
         let weak = self.weak_bonus(normal_king_ring, pins, flip_pins);
+        
+        // var unsafeChecks = unsafe_checks(pos); --> Not Implemented
+
+        // var blockersForKing = blockers_for_king(pos);
+        let blockersForKing = self.blockers_for_king().len() as i32;
+
+        //   var kingFlankAttack = flank_attack(pos); Done
+        let kingFlankAttack = flank_attack;
+
+        // var kingFlankDefense = flank_defense(pos);
+        
         0
     }
     /*
@@ -1893,7 +1912,7 @@ impl Board {
         weak_squares
     }
     // takes king attackers count if = 0 then return 0
-    pub fn king_attacks(&self, count:i32,pins: &Vec<u8> ) -> i32{
+    pub fn king_attacks(&self, count:i32, pins: &Vec<u8> ) -> i32{
         if count == 0 {
             return 0;
         }
@@ -2135,7 +2154,8 @@ impl Board {
     }
 
 
-    // The logic of flank attack will be 1- find flank area 2- get attacks and count number of flank attacks
+    // The logic of flank attack will be 1- find flank area
+    // 2- get attacks and count number of flank attacks
     pub fn flank_attack(&self, pins: &Vec<u8>) -> i32 {
 
         // if (square.y > 4) return 0;
