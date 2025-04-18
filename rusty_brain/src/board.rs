@@ -1597,7 +1597,7 @@ impl Board {
         }
     }
 
-    pub fn print_board(&mut self) {
+    pub fn print_board(&self) {
         println!("\nWhite:♚ - Black:♔\n");
 
         for rank in (0..8).rev() {
