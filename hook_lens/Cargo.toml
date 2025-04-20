@@ -33,3 +33,4 @@ prettytable-rs = "0.10"
 [dev-dependencies.ndarray-linalg]
 version = "0.16"
 features = ["netlib-system"]
+
