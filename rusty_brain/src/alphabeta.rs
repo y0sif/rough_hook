@@ -8,36 +8,12 @@ use crate::transposition::{TranspositionTable, Node};
 impl Board {
 
     pub fn find_best_move(&mut self, transposition_table: &mut TranspositionTable, depth: i32) -> (Move, i32) {
-
-        /*
-        //using vanilla minimax
-
-        let eval = match self.turn {
-            Turn::White => self.maxi(true, depth),
-            Turn::Black => self.mini(true, depth)
-        };
-        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-        */
-
-        /*
-        //using normal alphabeta
-        
-        let eval = match self.turn {
-            Turn::White => self.alpha_beta_max(true, i32::MIN, i32::MAX, depth),
-            Turn::Black => self.alpha_beta_min(true, i32::MIN, i32::MAX, depth),
-        };
-        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-        */
-
-        
-        //using alphabeta with transposition table
-        
+        // Start with max for White, min for Black to ensure correct root node selection
         let eval = match self.turn {
             Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
-            Turn::Black => self.alpha_beta_min_tt(transposition_table,true, i32::MIN, i32::MAX, depth),
+            Turn::Black => self.alpha_beta_min_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
         };
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
-        
         
         /* 
         //Iterative deepening, needs move ordering to show its strength
@@ -217,9 +193,10 @@ impl Board {
         }
 
         if depth_left == 0 {
+            // Always evaluate from White's perspective for consistency
             return match self.turn {
                 Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
-                Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
             };
         }
 
@@ -234,7 +211,7 @@ impl Board {
                 self.undo_move();
                 return match self.turn {
                     Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
-                    Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                    Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
                 };
             }
             self.undo_move();
@@ -299,7 +276,7 @@ impl Board {
         if depth_left == 0 {
             return match self.turn {
                 Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
-                Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
             };
         }
 
@@ -314,7 +291,7 @@ impl Board {
                 self.undo_move();
                 return match self.turn {
                     Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
-                    Turn::Black => NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                    Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
                 };
             }
             self.undo_move();

@@ -22,7 +22,7 @@ impl Uci {
     pub fn new() ->Self{
         Uci {
             current_board : Board::new(),
-            depth: 6,
+            depth: 5,
             transposition_table : TranspositionTable::init(),
 
 
