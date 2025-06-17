@@ -119,6 +119,13 @@ impl  fmt::Display for Move {
         let start = self.get_from();
         let end = self.get_to();
         let flag = self.get_flags();
-        write!(f, "{}{}  {}", Square::from(start), Square::from(end), flag)
+        let promotion = match flag {
+            Move::QUEEN_PROMOTION | Move::QUEEN_PROMO_CAPTURE => "q",
+            Move::ROOK_PROMOTION | Move::ROOK_PROMO_CAPTURE => "r",
+            Move::BISHOP_PROMOTION | Move::BISHOP_PROMO_CAPTURE => "b",
+            Move::KNIGHT_PROMOTION | Move::KNIGHT_PROMO_CAPTURE => "n",
+            _ => "",
+        };
+        write!(f, "{}{}{}", Square::from(start).to_string().to_lowercase(), Square::from(end).to_string().to_lowercase(), promotion)
     }
 }
