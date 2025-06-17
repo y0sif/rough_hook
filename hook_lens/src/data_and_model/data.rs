@@ -1,18 +1,25 @@
 use std::path::Path;
 
-use burn::{data::{dataloader::batcher::Batcher, dataset::{transform::ShuffledDataset, Dataset, SqliteDataset}}, prelude::Backend, tensor::{ElementConversion, Int, Shape, Tensor, TensorData}};
-use serde::{Serialize, Deserialize};
+use burn::{
+    data::{
+        dataloader::batcher::Batcher,
+        dataset::{transform::ShuffledDataset, Dataset, SqliteDataset},
+    },
+    prelude::Backend,
+    tensor::{ElementConversion, Int, Shape, Tensor, TensorData},
+};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ChessBoardSquareItem {
     pub board_squares: Vec<u8>,
-    pub square_label: u8 
+    pub square_label: u8,
 }
 
 type MappedDataset = Box<dyn Dataset<ChessBoardSquareItem>>;
 
 pub struct ChessDataset {
-    dataset: MappedDataset
+    dataset: MappedDataset,
 }
 
 impl Dataset<ChessBoardSquareItem> for ChessDataset {
@@ -27,45 +34,47 @@ impl Dataset<ChessBoardSquareItem> for ChessDataset {
 
 impl ChessDataset {
     /// Creates a new train dataset.
-    pub fn train() -> Self { // return self
+    pub fn train() -> Self {
+        // return self
         Self::new("train")
     }
 
     /// Creates a new test dataset.
-    pub fn test() -> Self { // return self
+    pub fn test() -> Self {
+        // return self
         Self::new("test")
     }
-    
+
     // no panics exist here
-    fn new(split: &str) -> Self { // return self
-        let train_db_file = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_ultra_augmentation_train.db");
-        let test_db_file  = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_ultra_augmentation_test.db");
-        
+    fn new(split: &str) -> Self {
+        // return self
+        let train_db_file =
+            Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_old_train_augmented.db");
+        let test_db_file = Path::new("hook_lens/data_in_sql_lite/chess_pieces_images_old_test.db");
+
         match split {
             "train" => {
                 let dataset = SqliteDataset::from_db_file(train_db_file, split).unwrap();
-                
-                let dataset: MappedDataset = Box::new(ShuffledDataset::<SqliteDataset<ChessBoardSquareItem>, ChessBoardSquareItem>::with_seed(dataset, 42));
 
-                ChessDataset {
-                    dataset
-                }
-            },
+                let dataset: MappedDataset = Box::new(ShuffledDataset::<
+                    SqliteDataset<ChessBoardSquareItem>,
+                    ChessBoardSquareItem,
+                >::with_seed(dataset, 42));
+
+                ChessDataset { dataset }
+            }
             _ => {
-                
                 let dataset = SqliteDataset::from_db_file(test_db_file, split).unwrap();
-        
-                let dataset: MappedDataset = Box::new(ShuffledDataset::<SqliteDataset<ChessBoardSquareItem>, ChessBoardSquareItem>::with_seed(dataset, 42));
 
-                ChessDataset {
-                    dataset
-                }
+                let dataset: MappedDataset = Box::new(ShuffledDataset::<
+                    SqliteDataset<ChessBoardSquareItem>,
+                    ChessBoardSquareItem,
+                >::with_seed(dataset, 42));
+
+                ChessDataset { dataset }
             }
         }
-        
-        
     }
-    
 }
 
 #[derive(Clone, Debug)]

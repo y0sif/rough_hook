@@ -3,9 +3,33 @@ name = "hook_lens"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+
+netlib = ["ndarray-linalg/netlib"]
+openblas = ["ndarray-linalg/openblas"]
+intel-mkl = ["ndarray-linalg/intel-mkl"]
+
+netlib-static = ["ndarray-linalg/netlib-static"]
+netlib-system = ["ndarray-linalg/netlib-system"]
+
+openblas-static = ["ndarray-linalg/openblas-static"]
+openblas-system = ["ndarray-linalg/openblas-system"]
+
+intel-mkl-static = ["ndarray-linalg/intel-mkl-static"]
+intel-mkl-system = ["ndarray-linalg/intel-mkl-system"]
+
 [dependencies]
 burn = { version = "0.14.0", features = ["train", "wgpu", "vision"] }
 burn-cuda = "0.14.0"
 serde = "*"
 image = "*"
+opencv="*"
+burn-efficient-kan = "*"
+ndarray = "0.14"  
+ndarray-linalg = "0.16"  
 rusty_brain = {path = "../rusty_brain"}
+prettytable-rs = "0.10"
+[dev-dependencies.ndarray-linalg]
+version = "0.16"
+features = ["netlib-system"]

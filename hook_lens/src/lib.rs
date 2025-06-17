@@ -4,3 +4,13 @@ pub mod data_and_model{
     pub mod model;
     pub mod training;
 }
+
+pub mod input_data_handling{
+    pub mod board_square_extracting;
+    pub mod fen_string_generation;
+}
+
+pub mod test{
+    pub mod tests;
+    pub mod test_models_repository;
+}
