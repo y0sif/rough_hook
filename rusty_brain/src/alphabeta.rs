@@ -29,7 +29,10 @@ impl Board {
 
     fn maxi(&mut self, maximazing: bool, depth: i32) -> i32 {
         if depth == 0 {
-            return self.evaluate();
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            };
         }
         let mut max = i32::MIN;
         let moves: Vec<Move> = self.generate_legal_moves();
@@ -38,9 +41,16 @@ impl Board {
 
             self.make_move(current_move);
             let score = self.mini(false, depth - 1);
-            if self.checkmate || self.draw || self.stalemate {
+            if self.checkmate {
                 self.undo_move();
-                return self.evaluate();
+                match self.turn {
+                    Turn::White => return i32::MIN,
+                    Turn::Black => return i32::MAX,
+                };
+            }
+            else if self.draw || self.stalemate {
+                self.undo_move();
+                return 0;
             }
             self.undo_move();
 
@@ -56,7 +66,10 @@ impl Board {
 
     fn mini(&mut self, minimizing: bool, depth: i32) -> i32 {
         if depth == 0 {
-            return self.evaluate();
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            };
         }
         let mut min = i32::MAX;
         let moves: Vec<Move> = self.generate_legal_moves();
@@ -65,9 +78,16 @@ impl Board {
 
             self.make_move(current_move);
             let score = self.maxi(false, depth - 1);
-            if self.checkmate || self.draw || self.stalemate {
+            if self.checkmate {
                 self.undo_move();
-                return self.evaluate();
+                match self.turn {
+                    Turn::White => return i32::MIN,
+                    Turn::Black => return i32::MAX,
+                };
+            }
+            else if self.draw || self.stalemate {
+                self.undo_move();
+                return 0;
             }
             self.undo_move();
 
@@ -84,7 +104,10 @@ impl Board {
     fn alpha_beta_max(&mut self, maximizing: bool, mut alpha: i32, beta: i32, depth_left: i32) -> i32 {
 
         if depth_left == 0 {
-            return self.evaluate();
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            };
         }
 
         let mut best_value = i32::MIN;
@@ -93,9 +116,16 @@ impl Board {
         for current_move in moves {
             self.make_move(current_move);
             let score: i32 = self.alpha_beta_min(false, alpha, beta, depth_left - 1);
-            if self.checkmate || self.draw || self.stalemate {
+            if self.checkmate {
                 self.undo_move();
-                return self.evaluate();
+                match self.turn {
+                    Turn::White => return i32::MIN,
+                    Turn::Black => return i32::MAX,
+                };
+            }
+            else if self.draw || self.stalemate {
+                self.undo_move();
+                return 0;
             }
             self.undo_move();
             
@@ -123,7 +153,10 @@ impl Board {
     fn alpha_beta_min(&mut self, minimizing: bool, alpha: i32, mut beta: i32, depth_left: i32) -> i32 {
 
         if depth_left == 0 {
-            return self.evaluate();
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            };
         }
 
         let mut best_value = i32::MAX;
@@ -132,9 +165,16 @@ impl Board {
         for current_move in moves {
             self.make_move(current_move);
             let score = self.alpha_beta_max(false, alpha, beta, depth_left-1);
-            if self.checkmate || self.draw || self.stalemate {
+            if self.checkmate {
                 self.undo_move();
-                return self.evaluate();
+                match self.turn {
+                    Turn::White => return i32::MIN,
+                    Turn::Black => return i32::MAX,
+                };
+            }
+            else if self.draw || self.stalemate {
+                self.undo_move();
+                return 0;
             }
             self.undo_move();
 
@@ -207,12 +247,16 @@ impl Board {
 
             self.make_move(current_move);
             let score: i32 = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
-            if self.checkmate || self.draw || self.stalemate {
+            if self.checkmate {
                 self.undo_move();
-                return match self.turn {
-                    Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
-                    Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                match self.turn {
+                    Turn::White => return i32::MIN,
+                    Turn::Black => return i32::MAX,
                 };
+            }
+            else if self.draw || self.stalemate {
+                self.undo_move();
+                return 0;
             }
             self.undo_move();
             
@@ -287,12 +331,16 @@ impl Board {
 
             self.make_move(current_move);
             let score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
-            if self.checkmate || self.draw || self.stalemate {
+            if self.checkmate {
                 self.undo_move();
-                return match self.turn {
-                    Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
-                    Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+                match self.turn {
+                    Turn::White => return i32::MIN,
+                    Turn::Black => return i32::MAX,
                 };
+            }
+            else if self.draw || self.stalemate {
+                self.undo_move();
+                return 0;
             }
             self.undo_move();
 
