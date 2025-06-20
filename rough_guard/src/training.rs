@@ -1,7 +1,7 @@
 use crate::{
     data::{ChessGameBatcher, ChessGameDataSet, FeaturesBatch},
     inference::ModelEnum,
-    model::{DeepLearningModel, Mlp, ModifiedKan},
+    model::{DeepLearningModel, Mlp, ModifiedKan}//, //FocalLoss},
 };
 use burn::{
     config::Config,
@@ -12,6 +12,7 @@ use burn::{
     prelude::Backend,
     record::CompactRecorder,
     tensor::{backend::AutodiffBackend, Int, Tensor},
+    backend::Autodiff,
     train::{
         metric::{
             store::{Aggregate, Direction, Split},
@@ -21,13 +22,14 @@ use burn::{
         TrainOutput, TrainStep, ValidStep,
     },
 };
+use burn_cuda::Cuda;
 use burn_dataset::Dataset;
 
 pub fn compute_class_weights<B: Backend>(
     dataset: &crate::data::ChessGameDataSet,
     device: &B::Device,
 ) -> Tensor<B, 1> {
-    let num_classes = 2;
+    let num_classes = 4;
     let mut counts = vec![0f32; num_classes];
     let total = dataset.len() as f32;
 
@@ -52,34 +54,38 @@ impl<B: Backend> Mlp<B> {
         features: Tensor<B, 2>,
         label: Tensor<B, 1, Int>,
         class_weights: Tensor<B, 1>,
+        focal: bool,
     ) -> ClassificationOutput<B>
     where
         B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
     {
         let output = self.forward(features);
-        let loss = CrossEntropyLossConfig::new()
-            .with_weights(Some(
-                class_weights
-                    .clone()
-                    .into_data()
-                    .convert::<f32>()
-                    .to_vec()
-                    .unwrap(),
-            ))
-            .init(&output.device())
-            .forward(output.clone(), label.clone().unsqueeze());
 
-        ClassificationOutput::new(loss, output, label)
+        // if focal{
+        //     let focal_loss = FocalLoss::new(&output.device(), class_weights.clone(), 2.0);
+        //     let loss = focal_loss.forward(output.clone(), label.clone());
+        
+        //     ClassificationOutput::new(loss, output, label)
+        // }
+        // else{
+            let loss = CrossEntropyLossConfig::new()
+                .with_weights(Some(self.class_weights.clone().into_data().to_vec().unwrap()))
+                .init(&output.device())
+                .forward(output.clone(), label.clone().unsqueeze());
+            
+            ClassificationOutput::new(loss, output, label)
+        //}
+        
     }
 }
 
-impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B>
+impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
         let label = batch.label.clone();
-        let item = self.forward_classification(batch.features, label, self.class_weights.clone());
+        let item = self.forward_classification(batch.features, label, self.class_weights.clone(), true);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
@@ -90,7 +96,7 @@ where
 {
     fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
         let label = batch.label.clone();
-        self.forward_classification(batch.features, label, self.class_weights.clone())
+        self.forward_classification(batch.features, label, self.class_weights.clone(), true)
     }
 }
 
@@ -121,7 +127,7 @@ impl<B: Backend> ModifiedKan<B> {
     }
 }
 
-impl<B: AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
+impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
@@ -131,7 +137,6 @@ where
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
-
 impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
@@ -142,16 +147,17 @@ where
     }
 }
 
+
 #[derive(Config)]
 pub struct TrainingConfig {
     pub optimizer: AdamConfig,
     #[config(default = 100)]
     pub num_epochs: usize,
-    #[config(default = 256)]
+    #[config(default = 256)] 
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
-    #[config(default = 42)]
+    #[config(default = 42)] 
     pub seed: u64,
     #[config(default = 1.0e-4)]
     pub learning_rate: f64,
@@ -163,12 +169,13 @@ fn create_artifact_dir(artifact_dir: &str) {
     std::fs::create_dir_all(artifact_dir).ok();
 }
 
-pub fn train<B: AutodiffBackend>(
+pub fn train<B: Backend + AutodiffBackend>(
     artifact_dir: &str,
     config: TrainingConfig,
     device: B::Device,
     model: ModelEnum<B>,
-) where
+) 
+where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
     create_artifact_dir(artifact_dir);

@@ -7,6 +7,11 @@ use burn::{
     record::{CompactRecorder, Recorder},
     tensor::{activation::softmax, cast::ToElement},
 };
+use burn::tensor::backend::AutodiffBackend;
+use burn::train::{TrainStep, ValidStep, ClassificationOutput};
+
+// Import FeaturesBatch and ClassificationOutput from their module
+use crate::data::{FeaturesBatch};
 
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
@@ -104,47 +109,55 @@ where
         // mlp model with 12 linerar layer
         1 => ModelEnum::Mlp(Mlp::new(
             vec![
-                (241, 64),
-                (64, 128),
-                (128, 256),
-                (256, 512),
-                (512, 1024),
-                (1024, 512),
-                (512, 256),
-                (256, 128),
-                (128, 64),
-                (64, 4),
+                (7, 16),
+                (16, 16),
+                (16, 16),
+                (16, 8),
+                (8, 8),
+                (8, 8),
+                (8, 4),
+                (4, 4),
+                (4, 4),
+                (4, 2),
             ],
             class_weights,
+            0.3,
             device,
         )),
         2 => ModelEnum::Mlp(Mlp::new(
             vec![
-                (241, 64),
-                (64, 128),
-                (128, 256),
-                (256, 512),
-                (512, 1024),
-                (1024, 2048),
-                (2048, 1024),
-                (1024, 512),
-                (512, 256),
-                (256, 128),
-                (128, 64),
-                (64, 4),
+                (7, 7),
+                (7, 7),
+                (7, 7),
+                (7, 6),
+                (6, 6),
+                (6, 6),
+                (6, 5),
+                (5, 5),
+                (5, 5),
+                (5, 4),
+                (4, 4),
+                (4, 4),
+                (4, 3),
+                (3, 3),
+                (3, 3),
+                (3, 2),
+                (2, 2),
+                (2, 2),
             ],
             class_weights,
+            0.3,
             device,
         )),
-        // kan model with 2 kan layers
-        5 => ModelEnum::ModifiedKan(ModifiedKan::new(
-            vec![
-                ([241, 256, 128], [Some(10), Some(10), None, None]),
-                ([128, 64, 4], [Some(10), Some(10), None, None]),
-            ],
-            class_weights,
-            device,
-        )),
+        // // kan model with 2 kan layers
+        // 5 => ModelEnum::ModifiedKan(ModifiedKan::new(
+        //     vec![
+        //         ([241, 256, 128], [Some(10), Some(10), None, None]),
+        //         ([128, 64, 4], [Some(10), Some(10), None, None]),
+        //     ],
+        //     class_weights,
+        //     device,
+        // )),
         _ => panic!("not valid model Id"),
     }
 }

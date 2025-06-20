@@ -1,5 +1,4 @@
 // Please Copy and Paste from data_rs folder according to your needs
-use burn::data;
 use burn::data::dataloader::batcher::Batcher;
 use burn::prelude::*;
 use burn_dataset::transform::ShuffledDataset;
@@ -58,7 +57,7 @@ impl ChessGameDataSet {
         Self::new("test")
     }
     fn new(split: &str) -> Self {
-        let db_file = Path::new("/home/y0sif/college/gp/rough_hook/rough_guard/data_in_sql_lite/pgn_distances.db");
+        let db_file = Path::new("/home/khaled/merged_unnorm.db");
         let dataset = SqliteDataset::from_db_file(db_file, "distances").unwrap();
        
         let (train_indices, test_indices) = Self::create_stratified_split(&dataset);
