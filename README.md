@@ -63,7 +63,7 @@ rough_hook/
 - **Operating System**: Linux (Ubuntu 20.04+ recommended)
 - **Rust**: Latest stable version
 - **Python**: 3.8+
-- **CUDA**: 11.0+ (for GPU acceleration)
+- **CUDA**: 12.0+ (for GPU acceleration)
 - **Memory**: 16GB+ RAM recommended
 - **Storage**: 50GB+ free space (for datasets)
 
