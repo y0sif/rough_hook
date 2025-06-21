@@ -2,7 +2,7 @@
 
 This directory contains data preprocessing and augmentation scripts for the Rough Hook project.
 
-## 📋 Planned Scripts
+## Planned Scripts
 
 [Placeholder: Script implementations to be added based on research needs]
 
@@ -18,7 +18,7 @@ This directory contains data preprocessing and augmentation scripts for the Roug
 ### Model Utilities
 - [Placeholder: Script names and descriptions]
 
-## 🚀 Usage
+## Usage
 
 ### Prerequisites
 [Placeholder: Dependencies to be determined]
@@ -26,12 +26,12 @@ This directory contains data preprocessing and augmentation scripts for the Roug
 ### Running Scripts
 [Placeholder: Usage examples to be added]
 
-## 📝 Implementation Status
+## Implementation Status
 
 **Current Status**: Placeholder directory
 - Scripts are planned but not yet implemented
 - Implementations will be added based on research requirements
 
-## 🔗 Dependencies
+## Dependencies
 
 [Placeholder: Dependencies to be determined based on implementation needs]

@@ -2,7 +2,7 @@
 
 This directory contains the datasets required for training and evaluation across all three research components of the Rough Hook project.
 
-## 📁 Expected Directory Structure
+## Expected Directory Structure
 
 ```
 databases/
@@ -34,7 +34,7 @@ databases/
         └── [Placeholder: Individual game files structure to be confirmed]
 ```
 
-## 📥 Dataset Download Instructions
+## Dataset Download Instructions
 
 Due to the large size of the datasets (multiple GB), they are hosted externally:
 
@@ -44,7 +44,7 @@ Due to the large size of the datasets (multiple GB), they are hosted externally:
 ### Step 2: Extract to Databases Directory
 - [Placeholder: extraction to be added]
 
-## 📊 Dataset Specifications
+## Dataset Specifications
 
 ### Chess Piece Images Dataset
 - **Total Images**: 10,000+
@@ -65,11 +65,11 @@ Due to the large size of the datasets (multiple GB), they are hosted externally:
 - **Features**: Time patterns, move accuracy, engine correlation
 - **Labels**: Binary classification (legitimate/suspicious)
 
-## 🔧 Database Setup
+## Database Setup
 
 - [Placeholder: setup to be added]
 
-## 📋 Usage Notes
+## Usage Notes
 
 ### For Hook Lens (Computer Vision)
 - Images should be preprocessed to 32x32 pixels

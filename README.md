@@ -6,7 +6,7 @@
   **A Comprehensive Research Framework for Evaluating Kolmogorov-Arnold Networks (KANs) in Chess-Related Applications**
 </div>
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Research Objectives](#research-objectives)
@@ -26,11 +26,11 @@
 - [Contributing](#contributing)
 - [License](#license)
 
-## 🎯 Overview
+## Overview
 
 **Rough Hook** is a comprehensive research project that empirically evaluates Kolmogorov-Arnold Networks (KANs) across three distinct domains: chess engine evaluation, computer vision classification, and behavioral anomaly detection. This project provides rigorous real-world performance assessment of KANs as a promising alternative to traditional Multi-Layer Perceptrons (MLPs).
 
-## 🔬 Research Objectives
+## Research Objectives
 
 This research addresses the critical need for empirical validation of KANs across diverse applications by implementing three modular systems:
 
@@ -43,7 +43,7 @@ This research addresses the critical need for empirical validation of KANs acros
 - Do KANs offer advantages in computer vision tasks when computational overhead is justified?
 - How do KANs perform in behavioral pattern recognition compared to MLPs?
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 ```
 rough_hook/
@@ -56,7 +56,7 @@ rough_hook/
 └── assets/               # Project assets and documentation
 ```
 
-## 🛠️ Installation
+## Installation
 
 ### System Requirements
 
@@ -129,7 +129,7 @@ cargo test -p hook_lens --release
 cargo test -p rough_guard --release
 ```
 
-## 🎯 Project Components
+## Project Components
 
 ### Rusty Brain - Chess Engine
 
@@ -222,7 +222,7 @@ cargo test -p rough_guard --release
 - `src/data.rs` - Data loading and preprocessing
 - `src/inference.rs` - Model inference and evaluation
 
-## 🗄️ Databases
+## Databases
 
 The project requires several large datasets that are stored externally due to size constraints:
 
@@ -236,14 +236,14 @@ mkdir -p databases
 # Extract to databases/ folder
 ```
 
-## 📜 Scripts
+## Scripts
 
 The `scripts/` directory contains data preprocessing and augmentation utilities:
 
 **Planned Scripts:**
 - [Placeholder: Script implementations to be added based on research needs]
 
-## 🚀 Usage Examples
+## Usage Examples
 
 ### Example 1: Chess Engine Analysis
 ```bash
@@ -263,7 +263,7 @@ go depth 10
 ### Example 3: Behavioral Analysis
 - [Placeholder: example to be added]
 
-## 📊 Research Results
+## Research Results
 
 **Key Findings:**
 
@@ -283,11 +283,11 @@ go depth 10
 - **Insight**: Revealed fundamental feature representation limitations rather than architectural deficiencies
 - **Conclusion**: Success depends more on feature quality than architecture choice
 
-## 🤝 Contributing
+## Contributing
 
 - [Placeholder: contributing to be added]
 
-## 📝 License
+## License
 
 - [Placeholder: license to be added]
 ---
