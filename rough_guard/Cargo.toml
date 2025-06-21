@@ -3,4 +3,39 @@ name = "rough_guard"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+
+netlib = ["ndarray-linalg/netlib"]
+openblas = ["ndarray-linalg/openblas"]
+intel-mkl = ["ndarray-linalg/intel-mkl"]
+
+netlib-static = ["ndarray-linalg/netlib-static"]
+netlib-system = ["ndarray-linalg/netlib-system"]
+
+openblas-static = ["ndarray-linalg/openblas-static"]
+openblas-system = ["ndarray-linalg/openblas-system"]
+
+intel-mkl-static = ["ndarray-linalg/intel-mkl-static"]
+intel-mkl-system = ["ndarray-linalg/intel-mkl-system"]
+
+
 [dependencies]
+burn = { version = "0.14.0", features = ["train", "wgpu", "vision", "ndarray"] }
+burn-cuda = "0.14.0"
+burn-dataset = "*"
+burn-efficient-kan = "*"
+ndarray = "0.14"  
+ndarray-linalg = "0.16"  
+serde = "*"
+rand = "0.8"
+prettytable-rs = "0.10"
+burn-fusion = "0.14.0"
+burn-jit = "0.14.0"
+
+[dev-dependencies.ndarray-linalg]
+version = "0.16"
+features = ["netlib-system"]
+
+[patch.crates-io]
+burn_tensor = { version = "0.14.0" }
