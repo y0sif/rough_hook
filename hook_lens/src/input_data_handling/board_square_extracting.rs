@@ -30,11 +30,11 @@ pub fn extract_board_sqaures_from(board_image_path: &str) -> Vec<Vec<u8>> {
     let canny_image = apply_canny(&gray_scale_image);
 
     // testing code that display affter we apply canny  (in dev env only)
-    #[cfg(debug_assertions)]
-    {
-        imshow("canny", &canny_image).unwrap();
-        wait_key_def().unwrap();
-    }
+    // #[cfg(debug_assertions)]
+    // {
+    //     imshow("canny", &canny_image).unwrap();
+    //     wait_key_def().unwrap();
+    // }
 
     //using canny image we will apply hough line detection algorithm
     let mut s_lines = Vector::<Vec2f>::new();
@@ -52,9 +52,9 @@ pub fn extract_board_sqaures_from(board_image_path: &str) -> Vec<Vec<u8>> {
         }
     }
     //intersection_points.truncate(16);
-    #[cfg(debug_assertions)]
-    draw_intersection_points_on(&mut img, &intersection_points);
-    // crop images from the original image and return them with their positions
+    // #[cfg(debug_assertions)]
+    // draw_intersection_points_on(&mut img, &intersection_points);
+    // // crop images from the original image and return them with their positions
 
     let pieces_images_and_position =
         crop_images_from(path_of_image_to_draw_on.as_str(), intersection_points);
@@ -109,11 +109,11 @@ fn get_intersection_points(s_lines: &Vector<Vec2f>, img: &mut Mat) -> Vec<(i32, 
     vertical_lines_points.truncate(8);
 
     // draw the lines on the board in the debug env
-    #[cfg(debug_assertions)]
-    {
-        draw_horizontals_lines(img, &horizontal_lines_points);
-        draw_vertical_lines(img, &vertical_lines_points);
-    }
+    // #[cfg(debug_assertions)]
+    // {
+    //     draw_horizontals_lines(img, &horizontal_lines_points);
+    //     draw_vertical_lines(img, &vertical_lines_points);
+    // }
 
     //println!("h = {}", horizontal_lines_points.len());
     //println!("V = {}", vertical_lines_points.len());
@@ -202,41 +202,41 @@ fn crop_images_from(
         // push the image and its position to the vector to use it to generate the fen string
         pieces_images_and_position.push(resized_img_as_vec);
 
-        #[cfg(debug_assertions)]
-        {
-            let standard_name = String::from("cropped");
-            let folder_name = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/cropped_images/";
-            let image_name = format!("{}{}{}", standard_name, image_number.to_string(), ".png");
-            let path = format!("{}{}", folder_name, image_name);
-            cropped_image.save(path).unwrap();
-            image_number += 1;
-        }
+        // #[cfg(debug_assertions)]
+        // {
+        //     let standard_name = String::from("cropped");
+        //     let folder_name = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/cropped_images/";
+        //     let image_name = format!("{}{}{}", standard_name, image_number.to_string(), ".png");
+        //     let path = format!("{}{}", folder_name, image_name);
+        //     cropped_image.save(path).unwrap();
+        //     image_number += 1;
+        // }
     }
-    #[cfg(debug_assertions)]
-    sleep(Duration::from_millis(20000));
+    // #[cfg(debug_assertions)]
+    // sleep(Duration::from_millis(20000));
     pieces_images_and_position
 }
 
-#[cfg(debug_assertions)]
-fn draw_intersection_points_on(image_to_draw_on: &mut Mat, intersection_points: &Vec<(i32, i32)>) {
-    for point in intersection_points {
-        imgproc::circle_def(
-            image_to_draw_on,
-            Point::new(point.0, point.1),
-            3,
-            (0, 0, 255).into(),
-        )
-        .unwrap();
-    }
+// #[cfg(debug_assertions)]
+// fn draw_intersection_points_on(image_to_draw_on: &mut Mat, intersection_points: &Vec<(i32, i32)>) {
+//     for point in intersection_points {
+//         imgproc::circle_def(
+//             image_to_draw_on,
+//             Point::new(point.0, point.1),
+//             3,
+//             (0, 0, 255).into(),
+//         )
+//         .unwrap();
+//     }
 
-    imshow("intersections", image_to_draw_on).unwrap();
-    wait_key_def().unwrap();
-}
+//     imshow("intersections", image_to_draw_on).unwrap();
+//     wait_key_def().unwrap();
+// }
 
 fn prepare_image_on_template_image(target_image: &str) -> Result<Mat, opencv::Error> {
-    let first_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/input_img.png";
+    let first_image_path = "/home/sasa/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/input_img.png";
     let second_image_path = target_image;
-    let output_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/Abo_younis.png";
+    let output_path = "/home/sasa/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/Abo_younis.png";
     // Load first image to get dimensions and color type
     let img1_reader =
         BufReader::new(File::open(first_image_path).expect("Cannot open first image"));
@@ -304,14 +304,14 @@ fn remove_borders(
     let cropped_img3 = Mat::roi(&temp_img, roi);
 
     // // Show the cropped image
-    #[cfg(debug_assertions)]
-    {
-        highgui::imshow("Cropped Chessboard", &cropped_img.unwrap());
-        highgui::wait_key(0);
-    }
+    // #[cfg(debug_assertions)]
+    // {
+    //     highgui::imshow("Cropped Chessboard", &cropped_img.unwrap());
+    //     highgui::wait_key(0);
+    // }
 
     // Save the cropped image
-    let output_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/cropped_chessboard_1.png";
+    let output_path = "/home/sasa/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/cropped_chessboard_1.png";
     imwrite(
         output_path,
         &cropped_img2.unwrap(),

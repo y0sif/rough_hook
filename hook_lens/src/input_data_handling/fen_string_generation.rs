@@ -34,9 +34,6 @@ pub fn get_fen_string_from(board_image_path: &str, model: ModelEnum<Cuda<f32, i3
             CudaDevice::default(),
             image.to_vec(),
         )];
-        if i == 57 {
-            piece = "R";
-        }
 
         predicted_labels.push(piece);
         if piece == "e" {
@@ -57,7 +54,7 @@ pub fn get_fen_string_from(board_image_path: &str, model: ModelEnum<Cuda<f32, i3
             fen_string.push_str("/");
         }
     }
-    draw_table_of_predicted_labels(predicted_labels);
+    //draw_table_of_predicted_labels(predicted_labels);
     fen_string.pop(); // remove the last '/' from the fen string
     fen_string
 }

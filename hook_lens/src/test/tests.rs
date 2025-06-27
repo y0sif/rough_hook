@@ -31,17 +31,17 @@ mod tests {
     }
 
     fn test_fen_string_of_image_1() -> bool {
-        #[cfg(debug_assertions)]
-        {
-            let img_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/real1.png";
-            let img = imgcodecs::imread(img_path, imgcodecs::IMREAD_COLOR).unwrap();
-            // Display the image
-            //set window size
-            highgui::named_window("Android_cam", WINDOW_NORMAL).unwrap();
-            highgui::resize_window("Android_cam", 800, 600).unwrap();
-            highgui::imshow("Android_cam", &img);
-            wait_key_def().unwrap();
-        }
+        // #[cfg(debug_assertions)]
+        // {
+        //     let img_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/real1.png";
+        //     let img = imgcodecs::imread(img_path, imgcodecs::IMREAD_COLOR).unwrap();
+        //     // Display the image
+        //     //set window size
+        //     highgui::named_window("Android_cam", WINDOW_NORMAL).unwrap();
+        //     highgui::resize_window("Android_cam", 800, 600).unwrap();
+        //     highgui::imshow("Android_cam", &img);
+        //     wait_key_def().unwrap();
+        // }
 
         let board_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/real2.png";
         // Name - Path - Id

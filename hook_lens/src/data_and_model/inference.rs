@@ -6,6 +6,7 @@ use burn::{
     tensor::{Device, Shape, Tensor, TensorData},
 };
 use opencv::barcode::NONE;
+use lax::Lapack;
 
 use super::model::{Cnn, CnnRecord, Kan, KanCnn, KanCnnRecord, KanRecord};
 
@@ -32,7 +33,7 @@ pub enum ModelEnum<B: Backend> {
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         match self {
@@ -72,7 +73,7 @@ where
 pub fn infer_model<B: Backend>(model: &ModelEnum<B>, device: B::Device, image: Vec<u8>) -> u8
 where
     B::IntElem: TryInto<u8> + std::fmt::Debug,
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     let img = TensorData::new(image, Shape::new([32, 32, 3]));
     let img = Tensor::<B, 3>::from_data(img.convert::<B::FloatElem>(), &device)
@@ -96,7 +97,7 @@ pub fn load_model_paramter<B: Backend>(
     device: B::Device,
 ) -> ModelEnum<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     let model_object = get_model_object(id, &device);
 
@@ -172,7 +173,7 @@ where
 //from : 20---> 29 cnn_kan models
 fn get_model_object<B: Backend>(id: i8, device: &B::Device) -> ModelEnum<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     match id {
         1 => ModelEnum::Cnn(Cnn::new(13, device, 256)),
@@ -218,7 +219,7 @@ fn get_kan_cnn_model_from_record<B: Backend>(
     device: B::Device,
 ) -> KanCnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
@@ -232,7 +233,7 @@ fn get_kan_model_from_record<B: Backend>(
     device: B::Device,
 ) -> Kan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
