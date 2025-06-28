@@ -2759,6 +2759,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "hook_lens_integration"
+version = "0.1.0"
+dependencies = [
+ "rusty_brain",
+]
+
+[[package]]
 name = "http"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3013,13 +3020,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
-]
-
-[[package]]
-name = "integration"
-version = "0.1.0"
-dependencies = [
- "rusty_brain",
 ]
 
 [[package]]

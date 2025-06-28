@@ -257,7 +257,7 @@ void HookLensWindow::onBestMoveClicked()
     m_toSquareEdit->setPlaceholderText("Processing...");
     
     // Path to the integration Rust project
-    QString integrationProjectPath = "../../../rough_hook/integration";
+    QString integrationProjectPath = "../../../rough_hook/hook_lens_integration";
     
     // Try to run the integration Rust project with the FEN string as an argument
     QProcess* process = new QProcess(this);
