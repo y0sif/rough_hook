@@ -1,0 +1,33 @@
+{
+	"BUILD_DIR" : "/home/sasa/My_Projects/cutechess/build/gui_autogen",
+	"CMAKE_BINARY_DIR" : "/home/sasa/My_Projects/cutechess/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/sasa/My_Projects/cutechess/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/sasa/My_Projects/cutechess",
+	"CMAKE_SOURCE_DIR" : "/home/sasa/My_Projects/cutechess",
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/home/sasa/My_Projects/cutechess/build/gui_autogen/include",
+	"INPUTS" : 
+	[
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/makruk.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/merida.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/default.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/fantasy_alt.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/freak.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/spatial.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/eyes.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/skulls.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/fantasy.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/celtic.svg",
+		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/MaurizioMonge/prmi.svg"
+	],
+	"LOCK_FILE" : "/home/sasa/My_Projects/cutechess/build/CMakeFiles/gui_autogen.dir/AutoRcc_chessboard_BDUC3VPSJM_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "chessboard" ],
+	"OUTPUT_CHECKSUM" : "BDUC3VPSJM",
+	"OUTPUT_NAME" : "qrc_chessboard.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt5/bin/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/sasa/My_Projects/cutechess/build/CMakeFiles/gui_autogen.dir/AutoRcc_chessboard_BDUC3VPSJM_Used.txt",
+	"SOURCE" : "/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/chessboard.qrc",
+	"VERBOSITY" : 0
+}
