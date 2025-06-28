@@ -85,6 +85,67 @@ where
     }
 }
 
+
+#[derive(Module, Debug)]
+pub struct Mlp_no_bn<B: Backend> {
+    pub linear_layers: Vec<Linear<B>>,
+    pub dropout_layers: Vec<Dropout>,
+    pub class_weights: Tensor<B, 1>,
+}
+
+impl<B: Backend> Mlp_no_bn<B> {
+    pub fn new(
+        layers_info: Vec<(usize, usize)>,
+        class_weights: Tensor<B, 1>,
+        dropout_prob: f64,
+        device: &Device<B>,
+    ) -> Self {
+        let mut linear_layers: Vec<Linear<B>> = Vec::new();
+        let mut dropout_layers: Vec<Dropout> = Vec::new();
+
+        for (i, &layer_info) in layers_info.iter().enumerate() {
+            // Create linear layer
+            let layer = LinearConfig::new(layer_info.0, layer_info.1).init(device);
+            linear_layers.push(layer);
+
+            if i < layers_info.len() - 1 {
+                let dropout = DropoutConfig::new(dropout_prob).init();
+                dropout_layers.push(dropout);
+                
+            }   
+        }
+
+        Self {
+            linear_layers,
+            dropout_layers,
+            class_weights,
+        }
+    }
+}
+
+impl<B: Backend> DeepLearningModel<B> for Mlp_no_bn<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn forward(&self, input: Tensor<B, 2>) -> Tensor<B, 2> {
+        let mut x = input;
+        let num_layers = self.linear_layers.len();
+
+        for i in 0..num_layers {
+            // Apply linear transformation
+            x = self.linear_layers[i].forward(x);
+
+            // For all but the last layer: apply ReLU + Dropout
+            if i < num_layers - 1 {
+                x = relu(x);
+                x = self.dropout_layers[i].forward(x);
+            }
+        }
+        x
+    }
+}
+
+
 //////////////////////////////////////////////// Focal Loss (Hangs - BROKEN) ///////////////////////////////////////////////////////
 
 // pub struct FocalLoss<B: AutodiffBackend> {

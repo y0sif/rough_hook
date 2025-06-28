@@ -18,7 +18,7 @@ use burn::backend::ndarray::NdArray;
 //type MyBackend = Autodiff<Autodiff<Autodiff<Cuda>>>;
 //type MyBackend = Autodiff<Autodiff<Autodiff<NdArray>>>;
 fn main() {
-    let artifact_dir = "/home/khaled/mlp";
+    let artifact_dir = "/home/khaled/final_mlp_bn2";
     //let artifact_dir = "/home/khaled/kan";
 
     //Wgpu Code

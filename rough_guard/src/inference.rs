@@ -1,6 +1,7 @@
 use super::model::DeepLearningModel;
 use super::model::{Mlp, MlpRecord, ModifiedKan, ModifiedKanRecord};
 use crate::data::{ChessGameBatcher, ChessGameItem};
+use crate::model::Mlp_no_bn;
 use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
@@ -16,6 +17,7 @@ use crate::data::{FeaturesBatch};
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
     Mlp(Mlp<B>),
+    Mlp_no_bn(Mlp_no_bn<B>),
     ModifiedKan(ModifiedKan<B>),
 }
 
@@ -27,6 +29,7 @@ where
         match self {
             ModelEnum::Mlp(model) => model.forward(games),
             ModelEnum::ModifiedKan(model) => model.forward(games),
+            ModelEnum::Mlp_no_bn(model) => model.forward(games),
         }
     }
 }
@@ -93,6 +96,10 @@ where
             let model = load_kan_model_weigths(kan_model_archi, artifact_dir, device);
             ModelEnum::ModifiedKan(model)
         }
+        ModelEnum::Mlp_no_bn(mlp_no_bn_model_archi) => {
+            let model = load_mlp_no_bn_model_weigths(mlp_no_bn_model_archi, artifact_dir, device);
+            ModelEnum::Mlp_no_bn(model)
+        }
     };
     trained_model
 }
@@ -107,7 +114,24 @@ where
 {
     match id {
         // mlp model with 12 linerar layer
-        1 => ModelEnum::Mlp(Mlp::new(
+       1 => ModelEnum::Mlp_no_bn(Mlp_no_bn::new(
+            vec![
+                (7, 16),
+                (16, 16),
+                (16, 16),
+                (16, 8),
+                (8, 8),
+                (8, 8),
+                (8, 4),
+                (4, 4),
+                (4, 4),
+                (4, 2),
+            ],
+            class_weights,
+            0.0,
+            device,
+        )),
+        2 => ModelEnum::Mlp_no_bn(Mlp_no_bn::new(
             vec![
                 (7, 16),
                 (16, 16),
@@ -124,7 +148,32 @@ where
             0.3,
             device,
         )),
-        2 => ModelEnum::Mlp(Mlp::new(
+        3 => ModelEnum::Mlp_no_bn(Mlp_no_bn::new(
+            vec![
+                (7, 7),
+                (7, 7),
+                (7, 7),
+                (7, 6),
+                (6, 6),
+                (6, 6),
+                (6, 5),
+                (5, 5),
+                (5, 5),
+                (5, 4),
+                (4, 4),
+                (4, 4),
+                (4, 3),
+                (3, 3),
+                (3, 3),
+                (3, 2),
+                (2, 2),
+                (2, 2),
+            ],
+            class_weights,
+            0.0,
+            device,
+        )),
+        4 => ModelEnum::Mlp_no_bn(Mlp_no_bn::new(
             vec![
                 (7, 7),
                 (7, 7),
@@ -149,15 +198,40 @@ where
             0.3,
             device,
         )),
-        // // kan model with 2 kan layers
-        // 5 => ModelEnum::ModifiedKan(ModifiedKan::new(
-        //     vec![
-        //         ([241, 256, 128], [Some(10), Some(10), None, None]),
-        //         ([128, 64, 4], [Some(10), Some(10), None, None]),
-        //     ],
-        //     class_weights,
-        //     device,
-        // )),
+        5 => ModelEnum::Mlp(Mlp::new(
+            vec![
+                (7, 7),
+                (7, 7),
+                (7, 7),
+                (7, 6),
+                (6, 6),
+                (6, 6),
+                (6, 5),
+                (5, 5),
+                (5, 5),
+                (5, 4),
+                (4, 4),
+                (4, 4),
+                (4, 3),
+                (3, 3),
+                (3, 3),
+                (3, 2),
+                (2, 2),
+                (2, 2),
+            ],
+            class_weights,
+            0.15,
+            device,
+        )),
+        6 => ModelEnum::ModifiedKan(ModifiedKan::new(
+            vec![
+                ([7, 6, 5], [Some(20), Some(3), None, None]),
+                ([5, 4, 3], [Some(10), Some(2), None, None]),
+                ([3, 2, 2], [Some(5), Some(1), None, None]),
+            ],
+            class_weights,
+            device,
+        )),
         _ => panic!("not valid model Id"),
     }
 }
@@ -181,6 +255,19 @@ fn load_mlp_model_weigths<B: Backend>(
     artifact_dir: &str,
     device: B::Device,
 ) -> Mlp<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    let record = CompactRecorder::new()
+        .load(format!("{artifact_dir}/model").into(), &device)
+        .expect("Trained model should exist");
+    mlp_model.load_record(record)
+}
+fn load_mlp_no_bn_model_weigths<B: Backend>(
+    mlp_model: Mlp_no_bn<B>,
+    artifact_dir: &str,
+    device: B::Device,
+) -> Mlp_no_bn<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
 {
