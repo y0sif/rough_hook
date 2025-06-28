@@ -177,7 +177,7 @@ void HookLensWindow::onSendClicked()
     }
     
     // Path to the existing Rust project
-    QString rustProjectPath = "/home/sasa/My_Projects/Graduation_Project/rough_hook/hook_lens";
+    QString rustProjectPath = "../../../rough_hook/hook_lens";
     
     // Clear the result field
     m_resultLineEdit->clear();
@@ -257,7 +257,7 @@ void HookLensWindow::onBestMoveClicked()
     m_toSquareEdit->setPlaceholderText("Processing...");
     
     // Path to the integration Rust project
-    QString integrationProjectPath = "/home/sasa/My_Projects/Graduation_Project/rough_hook/integration";
+    QString integrationProjectPath = "../../../rough_hook/integration";
     
     // Try to run the integration Rust project with the FEN string as an argument
     QProcess* process = new QProcess(this);

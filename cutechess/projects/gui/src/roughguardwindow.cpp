@@ -120,7 +120,7 @@ void RoughGuardWindow::onSendClicked()
     }
     
     // Path to the existing Rust project
-    QString rustProjectPath = "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard_integration";
+    QString rustProjectPath = "../../../rough_hook/rough_guard_integration";
     
     // Clear the result field
     m_resultLineEdit->clear();
