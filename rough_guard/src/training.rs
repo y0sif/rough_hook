@@ -127,6 +127,50 @@ impl<B: Backend> ModifiedKan<B> {
     }
 }
 
+impl<B: Backend> crate::model::Mlp_no_bn<B> {
+    pub fn forward_classification(
+        &self,
+        features: Tensor<B, 2>,
+        label: Tensor<B, 1, Int>,
+        class_weights: Tensor<B, 1>,
+        focal: bool,
+    ) -> ClassificationOutput<B>
+    where
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    {
+        let output = self.forward(features);
+
+        let loss = CrossEntropyLossConfig::new()
+            .with_weights(Some(self.class_weights.clone().into_data().to_vec().unwrap()))
+            .init(&output.device())
+            .forward(output.clone(), label.clone().unsqueeze());
+
+        ClassificationOutput::new(loss, output, label)
+    }
+}
+
+// Implement TrainStep and ValidStep for Mlp_no_bn<B>
+impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for crate::model::Mlp_no_bn<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn step(&self, batch: FeaturesBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
+        let label = batch.label.clone();
+        let item = self.forward_classification(batch.features, label, self.class_weights.clone(), true);
+        TrainOutput::new(self, item.loss.backward(), item)
+    }
+}
+
+impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for crate::model::Mlp_no_bn<B>
+where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+{
+    fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
+        let label = batch.label.clone();
+        self.forward_classification(batch.features, label, self.class_weights.clone(), true)
+    }
+}
+
 impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
@@ -231,6 +275,30 @@ where
                 .expect("Trained model should be saved successfully");
         }
         ModelEnum::Mlp(mlp_model) => {
+            let learner = LearnerBuilder::new(artifact_dir)
+                .metric_train_numeric(AccuracyMetric::new())
+                .metric_valid_numeric(AccuracyMetric::new())
+                .metric_train_numeric(LossMetric::new())
+                .metric_valid_numeric(LossMetric::new())
+                .with_file_checkpointer(CompactRecorder::new())
+                .early_stopping(MetricEarlyStoppingStrategy::new::<LossMetric<B>>(
+                    Aggregate::Mean,
+                    Direction::Lowest,
+                    Split::Valid,
+                    StoppingCondition::NoImprovementSince { n_epochs: 10 },
+                ))
+                .devices(vec![device.clone()])
+                .num_epochs(config.num_epochs)
+                .summary()
+                .build(mlp_model, config.optimizer.init(), config.learning_rate);
+
+            let model_trained = learner.fit(dataloader_train, dataloader_test);
+
+            model_trained
+                .save_file(format!("{artifact_dir}/model"), &CompactRecorder::new())
+                .expect("Trained model should be saved successfully");
+        }
+        ModelEnum::Mlp_no_bn(mlp_model) => {
             let learner = LearnerBuilder::new(artifact_dir)
                 .metric_train_numeric(AccuracyMetric::new())
                 .metric_valid_numeric(AccuracyMetric::new())
