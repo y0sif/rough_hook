@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/pgngameentrymodel.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgngameentrymodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgngameentrymodel.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgngameentrymodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgngameentrymodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QAbstractItemModel \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qabstractitemmodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
@@ -284,12 +284,12 @@ CMakeFiles/gui.dir/projects/gui/src/pgngameentrymodel.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFutureWatcher \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfuturewatcher.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfuture.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngamefilter.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngamefilter.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbytearray.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDate \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
@@ -322,6 +322,6 @@ CMakeFiles/gui.dir/projects/gui/src/pgngameentrymodel.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtConcurrent/qtconcurrentcompilertest.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngameentry.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngameentry.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h

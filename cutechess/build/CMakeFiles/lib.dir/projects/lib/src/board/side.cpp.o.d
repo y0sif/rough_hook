@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/board/side.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qchar.h \

@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/board/boardfactory.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardfactory.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardfactory.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardfactory.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardfactory.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlist.h \
@@ -234,14 +234,14 @@ CMakeFiles/lib.dir/projects/lib/src/board/boardfactory.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qregexp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringmatcher.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/classregistry.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/classregistry.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h /usr/include/c++/13/map \
  /usr/include/c++/13/bits/stl_tree.h /usr/include/c++/13/bits/stl_map.h \
  /usr/include/c++/13/bits/stl_multimap.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvector.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
@@ -286,79 +286,79 @@ CMakeFiles/lib.dir/projects/lib/src/board/boardfactory.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/aiwokboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/makrukboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/shatranjboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/westernboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/almostboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/amazonboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/andernachboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/standardboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/antiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/aseanboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/atomicboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/berolinaboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/capablancaboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/caparandomboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/chancellorboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/checklessboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/chessgiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/loopboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/crazyhouseboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/chigorinboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/codrusboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/giveawayboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/connectboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/coregalboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/courierboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/dobutsushogiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/shogiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/embassyboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/euroshogiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/extinctionboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/frcboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/gothicboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/grandboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/gridboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/restrictedmoveboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/gryphonboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/aiwokboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/makrukboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/shatranjboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/westernboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/almostboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/amazonboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/andernachboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/standardboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/antiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/aseanboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/atomicboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/berolinaboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/capablancaboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/caparandomboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/chancellorboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/checklessboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/chessgiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/loopboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/crazyhouseboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/chigorinboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/codrusboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/giveawayboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/connectboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/coregalboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/courierboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/dobutsushogiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/shogiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/embassyboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/euroshogiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/extinctionboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/frcboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/gothicboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/grandboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/gridboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/restrictedmoveboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/gryphonboard.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStack \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstack.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/gustavboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/hoppelpoppelboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/hordeboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/janusboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/westernzobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/gustavboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/hoppelpoppelboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/hordeboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/janusboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/westernzobrist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMutex \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmutex.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/jesonmorboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/judkinsshogiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/kingofthehillboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/knightmateboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/knightrelayboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/losalamosboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/losersboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/ncheckboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/minishogiboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/modernboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/oukboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/placementboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/pocketknightboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/racingkingsboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/rifleboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/seirawanboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/sittuyinboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/suicideboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/threekingsboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/twokingseachboard.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/jesonmorboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/judkinsshogiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/kingofthehillboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/knightmateboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/knightrelayboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/losalamosboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/losersboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/ncheckboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/minishogiboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/modernboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/oukboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/placementboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/pocketknightboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/racingkingsboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/rifleboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/seirawanboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/sittuyinboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/suicideboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/threekingsboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/twokingseachboard.h

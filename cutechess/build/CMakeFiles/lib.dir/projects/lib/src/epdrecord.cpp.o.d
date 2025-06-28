@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/epdrecord.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/epdrecord.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/epdrecord.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/epdrecord.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/epdrecord.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlist.h \

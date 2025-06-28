@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/worker.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/worker.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/worker.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/worker.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/worker.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobjectdefs.h \

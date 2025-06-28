@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/boardview/graphicsboard.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicsboard.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicsboard.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicsboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicsboard.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsItem \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsitem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -293,13 +293,13 @@ CMakeFiles/gui.dir/projects/gui/src/boardview/graphicsboard.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvector.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
@@ -330,5 +330,5 @@ CMakeFiles/gui.dir/projects/gui/src/boardview/graphicsboard.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariantanimation.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeasingcurve.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qabstractanimation.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicspiece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicspiece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsObject

@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/3rdparty/qcustomplot/qcustomplot.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/3rdparty/qcustomplot/qcustomplot.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/3rdparty/qcustomplot/qcustomplot.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/3rdparty/qcustomplot/qcustomplot.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/3rdparty/qcustomplot/qcustomplot.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
  /usr/include/c++/13/type_traits \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \

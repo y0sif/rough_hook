@@ -1,25 +1,25 @@
-/home/sasa/My_Projects/cutechess/build/gui_autogen/include/gamewall.moc: /home/sasa/My_Projects/cutechess/projects/gui/src/gamewall.cpp \
-  /home/sasa/My_Projects/cutechess/build/gui_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardscene.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardview.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/chessclock.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/cutechessapp.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/gamewall.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/tilelayout.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardtransition.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessgame.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessplayer.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/gameadjudicator.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/include/gamewall.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamewall.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardscene.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardview.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/chessclock.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/cutechessapp.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamewall.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/tilelayout.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardtransition.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessgame.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessplayer.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gameadjudicator.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

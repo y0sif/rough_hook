@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/mersenne.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/mersenne.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/mersenne.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/mersenne.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/mersenne.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
  /usr/include/c++/13/type_traits \

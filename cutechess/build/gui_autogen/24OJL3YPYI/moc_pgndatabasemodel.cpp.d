@@ -1,13 +1,13 @@
-/home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgndatabasemodel.cpp: /home/sasa/My_Projects/cutechess/projects/gui/src/pgndatabasemodel.h \
-  /home/sasa/My_Projects/cutechess/build/gui_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/gamedatabasemanager.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/pgndatabase.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/pgngameentry.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgndatabasemodel.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgndatabasemodel.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamedatabasemanager.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgndatabase.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngameentry.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \

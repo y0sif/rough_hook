@@ -1,5 +1,5 @@
 CMakeFiles/test_chessboard.dir/projects/lib/tests/chessboard/tst_board.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/chessboard/tst_board.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/chessboard/tst_board.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -570,25 +570,25 @@ CMakeFiles/test_chessboard.dir/projects/lib/tests/chessboard/tst_board.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtConcurrent/qtconcurrentrunbase.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthreadpool.h \
  /usr/include/x86_64-linux-gnu/qt5/QtConcurrent/qtconcurrentstoredfunctioncall.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDebug \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardfactory.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardfactory.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
- /home/sasa/My_Projects/cutechess/projects/lib/src/classregistry.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/classregistry.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
- /home/sasa/My_Projects/cutechess/build/test_chessboard_autogen/include/tst_board.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_chessboard_autogen/include/tst_board.moc

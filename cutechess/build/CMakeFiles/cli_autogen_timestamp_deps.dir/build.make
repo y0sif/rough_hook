@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sasa/My_Projects/cutechess
+CMAKE_SOURCE_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sasa/My_Projects/cutechess/build
+CMAKE_BINARY_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build
 
 # Utility rule file for cli_autogen_timestamp_deps.
 
@@ -67,8 +67,8 @@ include CMakeFiles/cli_autogen_timestamp_deps.dir/compiler_depend.make
 include CMakeFiles/cli_autogen_timestamp_deps.dir/progress.make
 
 CMakeFiles/cli_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
-CMakeFiles/cli_autogen_timestamp_deps: libcutechess.a
 CMakeFiles/cli_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
+CMakeFiles/cli_autogen_timestamp_deps: libcutechess.a
 
 cli_autogen_timestamp_deps: CMakeFiles/cli_autogen_timestamp_deps
 cli_autogen_timestamp_deps: CMakeFiles/cli_autogen_timestamp_deps.dir/build.make
@@ -83,6 +83,6 @@ CMakeFiles/cli_autogen_timestamp_deps.dir/clean:
 .PHONY : CMakeFiles/cli_autogen_timestamp_deps.dir/clean
 
 CMakeFiles/cli_autogen_timestamp_deps.dir/depend:
-	cd /home/sasa/My_Projects/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/cli_autogen_timestamp_deps.dir/depend
 

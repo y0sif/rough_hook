@@ -1,17 +1,17 @@
-/home/sasa/My_Projects/cutechess/build/test_polyglotbook_autogen/include/tst_polyglotbook.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/polyglotbook/tst_polyglotbook.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_polyglotbook_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/standardboard.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/westernboard.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/openingbook.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/polyglotbook.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_polyglotbook_autogen/include/tst_polyglotbook.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/polyglotbook/tst_polyglotbook.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_polyglotbook_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/standardboard.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/westernboard.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingbook.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/polyglotbook.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

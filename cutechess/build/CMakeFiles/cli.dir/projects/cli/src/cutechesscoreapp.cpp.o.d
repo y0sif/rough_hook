@@ -1,7 +1,7 @@
 CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
@@ -270,20 +270,20 @@ CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdir.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfileinfo.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/mersenne.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/mersenne.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginemanager.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QList \
@@ -301,14 +301,14 @@ CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: \
  /usr/include/c++/13/bits/shared_ptr_atomic.h \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/syzygytablebase.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/syzygytablebase.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFlags \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qflags.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPair \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qpair.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h

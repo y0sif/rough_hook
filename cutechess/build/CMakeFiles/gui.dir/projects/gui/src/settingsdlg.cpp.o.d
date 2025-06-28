@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/settingsdlg.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/settingsdlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/settingsdlg.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/settingsdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/settingsdlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -294,7 +294,7 @@ CMakeFiles/gui.dir/projects/gui/src/settingsdlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qsizepolicy.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcursor.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qkeysequence.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/include/ui_settingsdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/include/ui_settingsdlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
@@ -348,26 +348,26 @@ CMakeFiles/gui.dir/projects/gui/src/settingsdlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QVBoxLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qwidget.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/enginemanagementwidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/enginemanagementwidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
- /home/sasa/My_Projects/cutechess/projects/gui/src/gamesettingswidget.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamesettingswidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qelapsedtimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/gameadjudicator.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gameadjudicator.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/tournamentsettingswidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/tournamentsettingswidget.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QShowEvent \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
@@ -383,12 +383,12 @@ CMakeFiles/gui.dir/projects/gui/src/settingsdlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdir.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfileinfo.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qpointer.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/cutechessapp.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/cutechessapp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication

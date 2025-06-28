@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/boardview/boardscene.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardscene.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardscene.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardscene.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardscene.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsScene \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsscene.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -297,25 +297,25 @@ CMakeFiles/gui.dir/projects/gui/src/boardview/boardscene.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
  /usr/include/c++/13/variant \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardtransition.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardtransition.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
  /usr/include/x86_64-linux-gnu/qt5/QtSvg/QSvgRenderer \
  /usr/include/x86_64-linux-gnu/qt5/QtSvg/qsvgrenderer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qxmlstream.h \
@@ -337,7 +337,7 @@ CMakeFiles/gui.dir/projects/gui/src/boardview/boardscene.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsitem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpainterpath.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsTextItem \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvector.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
@@ -349,16 +349,16 @@ CMakeFiles/gui.dir/projects/gui/src/boardview/boardscene.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlocale.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontiguouscache.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicsboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicsboard.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsItem \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QColor \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qcolor.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicspiecereserve.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicspiece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicspiecereserve.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicspiece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsObject \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/piecechooser.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/piecechooser.h

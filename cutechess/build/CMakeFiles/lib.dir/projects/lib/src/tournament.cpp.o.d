@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/tournament.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/tournament.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournament.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/tournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournament.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobjectdefs.h \
@@ -267,12 +267,12 @@ CMakeFiles/lib.dir/projects/lib/src/tournament.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qhash.h \
  /usr/include/c++/13/variant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qshareddata.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qelapsedtimer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
@@ -281,25 +281,25 @@ CMakeFiles/lib.dir/projects/lib/src/tournament.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPair \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qpair.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDate \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
  /usr/include/c++/13/climits \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/gameadjudicator.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentplayer.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/playerbuilder.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentpair.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gameadjudicator.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/playerbuilder.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentpair.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMultiMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qpointer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsharedpointer.h \
@@ -313,11 +313,11 @@ CMakeFiles/lib.dir/projects/lib/src/tournament.cpp.o: \
  /usr/include/c++/13/bits/shared_ptr_atomic.h \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardfactory.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardfactory.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/classregistry.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/classregistry.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvarlengtharray.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedPointer \
@@ -327,18 +327,18 @@ CMakeFiles/lib.dir/projects/lib/src/tournament.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontiguouscache.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/chessplayer.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/chessgame.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessgame.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSemaphore \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsemaphore.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgnstream.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/openingsuite.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/openingbook.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/sprt.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/elo.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgnstream.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingsuite.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingbook.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/sprt.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/elo.h

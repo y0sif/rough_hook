@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/threadedtask.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/threadedtask.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/threadedtask.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/threadedtask.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/threadedtask.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \

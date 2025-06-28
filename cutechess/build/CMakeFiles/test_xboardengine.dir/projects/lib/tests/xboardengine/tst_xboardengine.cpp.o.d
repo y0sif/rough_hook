@@ -1,5 +1,5 @@
 CMakeFiles/test_xboardengine.dir/projects/lib/tests/xboardengine/tst_xboardengine.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/xboardengine/tst_xboardengine.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/xboardengine/tst_xboardengine.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -563,39 +563,39 @@ CMakeFiles/test_xboardengine.dir/projects/lib/tests/xboardengine/tst_xboardengin
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtesteventloop.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtestsystem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qttestversion.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/xboardengine.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/chessengine.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/chessplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/xboardengine.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessengine.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessplayer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
- /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
- /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringRef \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDebug \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginebuttonoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginecheckoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginespinoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginetextoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginecombooption.h \
- /home/sasa/My_Projects/cutechess/build/test_xboardengine_autogen/include/tst_xboardengine.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginebuttonoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecheckoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginespinoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginetextoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecombooption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_xboardengine_autogen/include/tst_xboardengine.moc

@@ -1,0 +1,11 @@
+[package]
+name = "rough_guard_integration"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rusty_brain = {path = "../rusty_brain"}
+rough_guard = {path = "../rough_guard"}
+burn-cuda = "0.16.1"
+burn-dataset = "*"
+

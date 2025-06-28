@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/stringvalidator.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/stringvalidator.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/stringvalidator.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/stringvalidator.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/stringvalidator.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QValidator \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qvalidator.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtguiglobal.h \

@@ -1,15 +1,15 @@
 {
-	"BUILD_DIR" : "/home/sasa/My_Projects/cutechess/build/cli_autogen",
-	"CMAKE_BINARY_DIR" : "/home/sasa/My_Projects/cutechess/build",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/sasa/My_Projects/cutechess/build",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/sasa/My_Projects/cutechess",
+	"BUILD_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen",
+	"CMAKE_BINARY_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess",
 	"CMAKE_EXECUTABLE" : "/usr/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/home/sasa/My_Projects/cutechess/CMakeLists.txt",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/CMakeLists.txt",
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystem.cmake.in",
-		"/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeSystem.cmake",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeUnixFindMake.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake",
 		"/usr/share/cmake-3.28/Modules/Platform/Linux-Initialize.cmake",
@@ -64,7 +64,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in",
-		"/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/Platform/Linux-Determine-CXX.cmake",
@@ -115,7 +115,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in",
-		"/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake",
@@ -140,7 +140,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake",
 		"/usr/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in",
-		"/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake",
 		"/usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake",
@@ -159,7 +159,7 @@
 		"/usr/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake",
 		"/usr/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in",
-		"/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5ConfigVersion.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5Config.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5/Qt5ModuleLocation.cmake",
@@ -214,38 +214,38 @@
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Test/Qt5TestConfig.cmake",
 		"/usr/lib/x86_64-linux-gnu/cmake/Qt5Test/Qt5TestConfigExtras.cmake",
 		"/usr/share/cmake-3.28/Modules/GNUInstallDirs.cmake",
-		"/home/sasa/My_Projects/cutechess/projects/lib/res/eco/eco.qrc",
-		"/home/sasa/My_Projects/cutechess/projects/cli/res/doc/doc.qrc",
-		"/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/chessboard.qrc",
-		"/home/sasa/My_Projects/cutechess/projects/gui/res/icons/icons.qrc"
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/res/eco/eco.qrc",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/res/doc/doc.qrc",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/res/chessboard/chessboard.qrc",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/res/icons/icons.qrc"
 	],
-	"CMAKE_SOURCE_DIR" : "/home/sasa/My_Projects/cutechess",
-	"DEP_FILE" : "/home/sasa/My_Projects/cutechess/build/cli_autogen/deps",
+	"CMAKE_SOURCE_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess",
+	"DEP_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "cli_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.h",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.h",
 			"MU",
 			"HFJX3D5BNQ/moc_cutechesscoreapp.cpp",
 			null
 		],
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/enginematch.h",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/enginematch.h",
 			"MU",
 			"HFJX3D5BNQ/moc_enginematch.cpp",
 			null
 		],
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.h",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.h",
 			"MU",
 			"HFJX3D5BNQ/moc_matchparser.cpp",
 			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "/home/sasa/My_Projects/cutechess/build/cli_autogen/include",
-	"MOC_COMPILATION_FILE" : "/home/sasa/My_Projects/cutechess/build/cli_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : 
 	[
 		"CUTECHESS_VERSION=\"1.4.0\"",
@@ -262,10 +262,10 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/home/sasa/My_Projects/cutechess/projects/lib/src",
-		"/home/sasa/My_Projects/cutechess/projects/lib/src/board",
-		"/home/sasa/My_Projects/cutechess/projects/lib/3rdparty/fathom/src",
-		"/home/sasa/My_Projects/cutechess/projects/lib/components/json/src",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/3rdparty/fathom/src",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/components/json/src",
 		"/usr/include/x86_64-linux-gnu/qt5",
 		"/usr/include/x86_64-linux-gnu/qt5/QtCore",
 		"/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++",
@@ -288,54 +288,54 @@
 		"-c",
 		"/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "/home/sasa/My_Projects/cutechess/build/cli_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/A4F4RKMHKD/qrc_eco.cpp",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineconfigdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_enginemanagementwidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineselectiondlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasedlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasesearchdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamesettingswidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_importprogressdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newgamedlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newtournamentdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_pairtimecontroldlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_settingsdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontroldlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontrolwidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_tournamentsettingswidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/mocs_compilation.cpp"
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/A4F4RKMHKD/qrc_eco.cpp",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineconfigdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_enginemanagementwidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineselectiondlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasedlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasesearchdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamesettingswidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_importprogressdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newgamedlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newtournamentdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_pairtimecontroldlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_settingsdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontroldlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontrolwidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_tournamentsettingswidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/mocs_compilation.cpp"
 	],
 	"MULTI_CONFIG" : false,
 	"PARALLEL" : 6,
-	"PARSE_CACHE_FILE" : "/home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen.dir/ParseCache.txt",
+	"PARSE_CACHE_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/usr/lib/qt5/bin/moc",
 	"QT_UIC_EXECUTABLE" : "/usr/lib/qt5/bin/uic",
 	"QT_VERSION_MAJOR" : 5,
 	"QT_VERSION_MINOR" : 15,
-	"SETTINGS_FILE" : "/home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.cpp",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/enginematch.cpp",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/enginematch.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/main.cpp",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/main.cpp",
 			"MU",
 			null
 		],
 		[
-			"/home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.cpp",
+			"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.cpp",
 			"MU",
 			null
 		]
@@ -344,22 +344,22 @@
 	"UIC_SEARCH_PATHS" : [],
 	"UIC_SKIP" : 
 	[
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/A4F4RKMHKD/qrc_eco.cpp",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineconfigdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_enginemanagementwidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineselectiondlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasedlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasesearchdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamesettingswidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_importprogressdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newgamedlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newtournamentdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_pairtimecontroldlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_settingsdlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontroldlg.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontrolwidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/include/projects/gui/ui/ui_tournamentsettingswidget.h",
-		"/home/sasa/My_Projects/cutechess/build/lib_autogen/mocs_compilation.cpp"
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/A4F4RKMHKD/qrc_eco.cpp",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineconfigdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_enginemanagementwidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_engineselectiondlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasedlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamedatabasesearchdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_gamesettingswidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_importprogressdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newgamedlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_newtournamentdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_pairtimecontroldlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_settingsdlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontroldlg.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_timecontrolwidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/projects/gui/ui/ui_tournamentsettingswidget.h",
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/mocs_compilation.cpp"
 	],
 	"UIC_UI_FILES" : [],
 	"VERBOSITY" : 0

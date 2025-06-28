@@ -1,6 +1,6 @@
-/home/sasa/My_Projects/cutechess/build/test_mersenne_autogen/include/tst_mersenne.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/mersenne/tst_mersenne.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_mersenne_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/mersenne.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_mersenne_autogen/include/tst_mersenne.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/mersenne/tst_mersenne.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_mersenne_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/mersenne.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

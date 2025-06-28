@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/boardview/piecechooser.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/piecechooser.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/piecechooser.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/piecechooser.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/piecechooser.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsObject \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsitem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -313,11 +313,11 @@ CMakeFiles/gui.dir/projects/gui/src/boardview/piecechooser.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QParallelAnimationGroup \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qparallelanimationgroup.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qanimationgroup.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/graphicspiece.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/graphicspiece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \

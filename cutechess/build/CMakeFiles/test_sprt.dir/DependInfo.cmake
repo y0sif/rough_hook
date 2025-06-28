@@ -9,8 +9,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "" "test_sprt_autogen/timestamp" "custom" "test_sprt_autogen/deps"
-  "/home/sasa/My_Projects/cutechess/projects/lib/tests/sprt/tst_sprt.cpp" "CMakeFiles/test_sprt.dir/projects/lib/tests/sprt/tst_sprt.cpp.o" "gcc" "CMakeFiles/test_sprt.dir/projects/lib/tests/sprt/tst_sprt.cpp.o.d"
-  "/home/sasa/My_Projects/cutechess/build/test_sprt_autogen/mocs_compilation.cpp" "CMakeFiles/test_sprt.dir/test_sprt_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/test_sprt.dir/test_sprt_autogen/mocs_compilation.cpp.o.d"
+  "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/sprt/tst_sprt.cpp" "CMakeFiles/test_sprt.dir/projects/lib/tests/sprt/tst_sprt.cpp.o" "gcc" "CMakeFiles/test_sprt.dir/projects/lib/tests/sprt/tst_sprt.cpp.o.d"
+  "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_sprt_autogen/mocs_compilation.cpp" "CMakeFiles/test_sprt.dir/test_sprt_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/test_sprt.dir/test_sprt_autogen/mocs_compilation.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

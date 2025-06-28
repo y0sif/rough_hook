@@ -1,8 +1,8 @@
 CMakeFiles/lib.dir/projects/lib/src/enginecheckoption.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginecheckoption.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecheckoption.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginecheckoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecheckoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineoption.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qchar.h \

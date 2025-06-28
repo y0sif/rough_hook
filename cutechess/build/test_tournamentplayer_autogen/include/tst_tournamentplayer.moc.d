@@ -1,12 +1,12 @@
-/home/sasa/My_Projects/cutechess/build/test_tournamentplayer_autogen/include/tst_tournamentplayer.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/tournamentplayer/tst_tournamentplayer.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_tournamentplayer_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/openingbook.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/playerbuilder.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentplayer.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tournamentplayer_autogen/include/tst_tournamentplayer.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tournamentplayer/tst_tournamentplayer.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tournamentplayer_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingbook.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/playerbuilder.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentplayer.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

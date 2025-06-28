@@ -29,7 +29,7 @@ RoughGuardWindow::RoughGuardWindow(QWidget* parent)
     QHBoxLayout* buttonLayout = new QHBoxLayout();
     
     // Create and add the "Add File" button
-    m_addPGNButton = new QPushButton("Load PGN", this);
+    m_addPGNButton = new QPushButton("Load Folder", this);
     m_addPGNButton->setMaximumWidth(120);
     buttonLayout->addWidget(m_addPGNButton);
     
@@ -50,10 +50,10 @@ RoughGuardWindow::RoughGuardWindow(QWidget* parent)
     m_mainLayout->addLayout(buttonLayout);
     
     // Create and add the path text field
-    QLabel* pathLabel = new QLabel("Photo Path:", this);
+    QLabel* pathLabel = new QLabel("Folder Path:", this);
     m_pathLineEdit = new QLineEdit(this);
     m_pathLineEdit->setReadOnly(true);
-    m_pathLineEdit->setPlaceholderText("No photo selected...");
+    m_pathLineEdit->setPlaceholderText("No folder selected...");
     
     m_mainLayout->addWidget(pathLabel);
     m_mainLayout->addWidget(m_pathLineEdit);
@@ -82,28 +82,28 @@ RoughGuardWindow::RoughGuardWindow(QWidget* parent)
 
 void RoughGuardWindow::onAddFileClicked()
 {
-    // Open file dialog to select any file
-    QString fileName = QFileDialog::getOpenFileName(
+    // Open directory dialog to select a folder
+    QString folderPath = QFileDialog::getExistingDirectory(
         this,
-        "Select File",
+        "Select Folder",
         QDir::homePath(),
-        "All Files (*.*)"
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
     );
 
-    if (!fileName.isEmpty())
+    if (!folderPath.isEmpty())
     {
-        // Display the file path in the text field
-        m_pathLineEdit->setText(fileName);
+        // Display the folder path in the text field
+        m_pathLineEdit->setText(folderPath);
 
-        // Optional: Update label text to show selected file name
-        QFileInfo fileInfo(fileName);
+        // Optional: Update label text to show selected folder name
+        QFileInfo folderInfo(folderPath);
         // Enable send button or other actions as needed
         m_sendButton->setEnabled(true);
 
     }
     else{
-        // Show error message if no file was selected
-        QMessageBox::warning(this, "Error", "No file selected.");
+        // Show error message if no folder was selected
+        QMessageBox::warning(this, "Error", "No folder selected.");
         m_pathLineEdit->clear();
         m_sendButton->setEnabled(false);
     }
@@ -111,16 +111,16 @@ void RoughGuardWindow::onAddFileClicked()
 
 void RoughGuardWindow::onSendClicked()
 {
-    QString imagePath = m_pathLineEdit->text();
+    QString folderPath = m_pathLineEdit->text();
     
-    if (imagePath.isEmpty())
+    if (folderPath.isEmpty())
     {
-        QMessageBox::warning(this, "Error", "No file path to send.");
+        QMessageBox::warning(this, "Error", "No folder path to send.");
         return;
     }
     
     // Path to the existing Rust project
-    QString rustProjectPath = "/home/sasa/My_Projects/Graduation_Project/Test_Work/test2";
+    QString rustProjectPath = "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard_integration";
     
     // Clear the result field
     m_resultLineEdit->clear();
@@ -132,7 +132,7 @@ void RoughGuardWindow::onSendClicked()
     
     // Connect to handle the process completion
     connect(process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-        [this, process, imagePath](int exitCode, QProcess::ExitStatus exitStatus) {
+        [this, process, folderPath](int exitCode, QProcess::ExitStatus exitStatus) {
             if (exitStatus == QProcess::NormalExit && exitCode == 0)
             {
                 // Read the output from the Rust program
@@ -162,14 +162,15 @@ void RoughGuardWindow::onSendClicked()
             process->deleteLater();
         });
     
-    // Start the Rust process
+   // Clone the current environment
+    QStringList env = QProcess::systemEnvironment();
+    env << "RUSTFLAGS=-Awarnings";  // Suppress warnings
+    process->setEnvironment(env);
+
+    // Prepare arguments
     QStringList arguments;
-    arguments << "run" << "--" << imagePath;
+    arguments << "run" << "--" << folderPath;
+
+    // Start the process
     process->start("cargo", arguments);
-    
-    if (!process->waitForStarted(3000))
-    {
-        QMessageBox::critical(this, "Error", "Could not start the Rust project. Make sure Rust and Cargo are installed.");
-        process->deleteLater();
-    }
 }

@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/gamedatabasedlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamedatabasedlg.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/gamedatabasedlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamedatabasedlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -304,7 +304,7 @@ CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
  /usr/include/c++/13/variant \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
@@ -318,17 +318,17 @@ CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDate \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
  /usr/include/c++/13/climits \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/include/ui_gamedatabasedlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/include/ui_gamedatabasedlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication \
@@ -412,23 +412,23 @@ CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qlineedit.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QClipboard \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qclipboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgnstream.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgnstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngameentry.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/polyglotbook.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/openingbook.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngameentry.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/polyglotbook.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingbook.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMultiMap \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgndatabasemodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgndatabasemodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QAbstractItemModel \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgndatabase.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgndatabase.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDateTime \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFile \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfile.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/gamedatabasemanager.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgngameentrymodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamedatabasemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgngameentrymodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFuture \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfuture.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfutureinterface.h \
@@ -444,11 +444,11 @@ CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFutureWatcher \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfuturewatcher.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfuture.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngamefilter.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngamefilter.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qbytearray.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardview.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardview.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsView \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsview.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpainter.h \
@@ -456,23 +456,23 @@ CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsscene.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QPixmap \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qpixmap.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardscene.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardscene.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsScene \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsscene.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qpointer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSettings \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsettings.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardtransition.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/gameviewer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardtransition.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gameviewer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/gamedatabasesearchdlg.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/threadedtask.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamedatabasesearchdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/threadedtask.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qthread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdeadlinetimer.h \
@@ -481,17 +481,17 @@ CMakeFiles/gui.dir/projects/gui/src/gamedatabasedlg.cpp.o: \
  /usr/include/c++/13/bits/atomic_futex.h \
  /usr/include/c++/13/bits/std_thread.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTime \
- /home/sasa/My_Projects/cutechess/projects/gui/src/cutechessapp.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/cutechessapp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvarlengtharray.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsharedpointer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDebug \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdebug.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/include/gamedatabasedlg.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/include/gamedatabasedlg.moc

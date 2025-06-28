@@ -1,5 +1,5 @@
-/home/sasa/My_Projects/cutechess/build/cli_autogen/HFJX3D5BNQ/moc_cutechesscoreapp.cpp: /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.h \
-  /home/sasa/My_Projects/cutechess/build/cli_autogen/moc_predefs.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/HFJX3D5BNQ/moc_cutechesscoreapp.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/moc_predefs.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \

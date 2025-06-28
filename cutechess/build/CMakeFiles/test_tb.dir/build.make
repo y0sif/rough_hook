@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sasa/My_Projects/cutechess
+CMAKE_SOURCE_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sasa/My_Projects/cutechess/build
+CMAKE_BINARY_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/test_tb.dir/depend.make
@@ -72,37 +72,37 @@ include CMakeFiles/test_tb.dir/flags.make
 test_tb_autogen/timestamp: /usr/lib/qt5/bin/moc
 test_tb_autogen/timestamp: /usr/lib/qt5/bin/uic
 test_tb_autogen/timestamp: CMakeFiles/test_tb.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target test_tb"
-	/usr/bin/cmake -E cmake_autogen /home/sasa/My_Projects/cutechess/build/CMakeFiles/test_tb_autogen.dir/AutogenInfo.json RelWithDebInfo
-	/usr/bin/cmake -E touch /home/sasa/My_Projects/cutechess/build/test_tb_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target test_tb"
+	/usr/bin/cmake -E cmake_autogen /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/test_tb_autogen.dir/AutogenInfo.json RelWithDebInfo
+	/usr/bin/cmake -E touch /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tb_autogen/timestamp
 
 CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o: CMakeFiles/test_tb.dir/flags.make
 CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o: test_tb_autogen/mocs_compilation.cpp
 CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o: CMakeFiles/test_tb.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o -MF CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o -c /home/sasa/My_Projects/cutechess/build/test_tb_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o -MF CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tb_autogen/mocs_compilation.cpp
 
 CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/build/test_tb_autogen/mocs_compilation.cpp > CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tb_autogen/mocs_compilation.cpp > CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/build/test_tb_autogen/mocs_compilation.cpp -o CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tb_autogen/mocs_compilation.cpp -o CMakeFiles/test_tb.dir/test_tb_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o: CMakeFiles/test_tb.dir/flags.make
-CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o: /home/sasa/My_Projects/cutechess/projects/lib/tests/tb/tst_tb.cpp
+CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tb/tst_tb.cpp
 CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o: CMakeFiles/test_tb.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o -MF CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o.d -o CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o -c /home/sasa/My_Projects/cutechess/projects/lib/tests/tb/tst_tb.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o -MF CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o.d -o CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tb/tst_tb.cpp
 
 CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/projects/lib/tests/tb/tst_tb.cpp > CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tb/tst_tb.cpp > CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.i
 
 CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/projects/lib/tests/tb/tst_tb.cpp -o CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tb/tst_tb.cpp -o CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.s
 
 # Object files for target test_tb
 test_tb_OBJECTS = \
@@ -120,7 +120,7 @@ test_tb: /usr/lib/x86_64-linux-gnu/libQt5Concurrent.so.5.15.13
 test_tb: /usr/lib/x86_64-linux-gnu/libQt5Test.so.5.15.13
 test_tb: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
 test_tb: CMakeFiles/test_tb.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable test_tb"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable test_tb"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test_tb.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -132,6 +132,6 @@ CMakeFiles/test_tb.dir/clean:
 .PHONY : CMakeFiles/test_tb.dir/clean
 
 CMakeFiles/test_tb.dir/depend: test_tb_autogen/timestamp
-	cd /home/sasa/My_Projects/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build/CMakeFiles/test_tb.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/test_tb.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/test_tb.dir/depend
 

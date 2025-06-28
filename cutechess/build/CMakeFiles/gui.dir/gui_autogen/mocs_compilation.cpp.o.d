@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/gui_autogen/mocs_compilation.cpp.o: \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/mocs_compilation.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/YBOG5UKMKJ/moc_qcustomplot.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/YBOG5UKMKJ/moc_qcustomplot.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -118,7 +118,7 @@ CMakeFiles/gui.dir/gui_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/YBOG5UKMKJ/../../../projects/gui/3rdparty/qcustomplot/qcustomplot.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/YBOG5UKMKJ/../../../projects/gui/3rdparty/qcustomplot/qcustomplot.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
  /usr/include/c++/13/cstddef /usr/include/c++/13/utility \
  /usr/include/c++/13/bits/stl_relops.h \
@@ -948,178 +948,178 @@ CMakeFiles/gui.dir/gui_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtPrintSupport/qtprintsupportversion.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimeZone \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_autoverticalscroller.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/autoverticalscroller.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_autoverticalscroller.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/autoverticalscroller.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/moc_boardscene.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/boardscene.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/moc_boardscene.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/boardscene.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsScene \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMultiMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSettings \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardtransition.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardtransition.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QList \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/moc_boardview.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/boardview.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/moc_boardview.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/boardview.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsView \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QPixmap \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/moc_graphicspiece.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/graphicspiece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/moc_graphicspiece.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/graphicspiece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsObject \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/moc_piecechooser.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/piecechooser.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_chessclock.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/chessclock.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/moc_piecechooser.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/PVUVRRDQF3/../../../projects/gui/src/boardview/piecechooser.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_chessclock.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/chessclock.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_cutechessapp.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/cutechessapp.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_cutechessapp.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/cutechessapp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QApplication \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineconfigproxymodel.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineconfigproxymodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineconfigproxymodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineconfigproxymodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSortFilterProxyModel \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineconfigurationdlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineconfigurationdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineconfigurationdlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineconfigurationdlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineconfigurationmodel.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineconfigurationmodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineconfigurationmodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineconfigurationmodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QAbstractListModel \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_enginemanagementwidget.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/enginemanagementwidget.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineoptiondelegate.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineoptiondelegate.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_enginemanagementwidget.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/enginemanagementwidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineoptiondelegate.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineoptiondelegate.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QStyledItemDelegate \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineoptionmodel.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineoptionmodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineoptionmodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineoptionmodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QAbstractItemModel \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineselectiondlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineselectiondlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineselectiondlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/engineselectiondlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QItemSelection \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QListView \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_evalhistory.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/evalhistory.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_evalwidget.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/evalwidget.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasedlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasedlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_evalhistory.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/evalhistory.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_evalwidget.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/evalwidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasedlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasedlg.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTimer \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPair \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDate \
  /usr/include/c++/13/climits \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasemanager.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasemanager.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasesearchdlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasesearchdlg.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngamefilter.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasemanager.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasesearchdlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasesearchdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngamefilter.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamerepetitionspinbox.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamerepetitionspinbox.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamerepetitionspinbox.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamerepetitionspinbox.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QSpinBox \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QRadioButton \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamesettingswidget.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamesettingswidget.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/gameadjudicator.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gametabbar.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gametabbar.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamesettingswidget.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamesettingswidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gameadjudicator.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gametabbar.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gametabbar.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QTabBar \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gameviewer.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gameviewer.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamewall.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamewall.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_hooklenswindow.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/hooklenswindow.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_importprogressdlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/importprogressdlg.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_mainwindow.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/mainwindow.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gameviewer.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gameviewer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamewall.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamewall.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_hooklenswindow.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/hooklenswindow.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_importprogressdlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/importprogressdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_mainwindow.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/mainwindow.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QMainWindow \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_movelist.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movelist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_movelist.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movelist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QUrl \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QTextBlockFormat \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QTextCharFormat \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QTextCursor \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movenumbertoken.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgntoken.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movetoken.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movecommenttoken.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_newgamedlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/newgamedlg.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_newtournamentdialog.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/newtournamentdialog.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pairtimecontroldlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pairtimecontroldlg.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pathlineedit.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pathlineedit.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movenumbertoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgntoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movetoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/movecommenttoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_newgamedlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/newgamedlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_newtournamentdialog.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/newtournamentdialog.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pairtimecontroldlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pairtimecontroldlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pathlineedit.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pathlineedit.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLineEdit \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgndatabase.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgndatabase.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgndatabase.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgndatabase.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDateTime \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFile \
- /home/sasa/My_Projects/cutechess/projects/lib/src/pgngameentry.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgndatabasemodel.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgndatabasemodel.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgndatabase.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasemanager.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgngameentrymodel.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgngameentrymodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngameentry.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgndatabasemodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgndatabasemodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgndatabase.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/gamedatabasemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgngameentrymodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgngameentrymodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFuture \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFutureWatcher \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgnimporter.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgnimporter.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/worker.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgnimporter.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgnimporter.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/worker.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QRunnable \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTime \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgntagsmodel.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgntagsmodel.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_plaintextlog.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/plaintextlog.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_pgntagsmodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/pgntagsmodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_plaintextlog.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/plaintextlog.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QPlainTextEdit \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_roughguardwindow.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/roughguardwindow.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_settingsdlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/settingsdlg.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_stringvalidator.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/stringvalidator.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_roughguardwindow.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/roughguardwindow.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_settingsdlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/settingsdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_stringvalidator.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/stringvalidator.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QValidator \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QModelIndex \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_threadedtask.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/threadedtask.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_threadedtask.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/threadedtask.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QThread \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_tilelayout.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/tilelayout.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_tilelayout.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/tilelayout.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QLayout \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QStyle \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_timecontroldlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/timecontroldlg.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_timecontrolwidget.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/timecontrolwidget.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_tournamentresultsdlg.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/tournamentresultsdlg.h \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_tournamentsettingswidget.cpp \
- /home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/tournamentsettingswidget.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_timecontroldlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/timecontroldlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_timecontrolwidget.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/timecontrolwidget.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_tournamentresultsdlg.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/tournamentresultsdlg.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_tournamentsettingswidget.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/../../../projects/gui/src/tournamentsettingswidget.h

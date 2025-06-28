@@ -1,5 +1,5 @@
 CMakeFiles/test_tournamentplayer.dir/projects/lib/tests/tournamentplayer/tst_tournamentplayer.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/tournamentplayer/tst_tournamentplayer.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tournamentplayer/tst_tournamentplayer.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -563,19 +563,19 @@ CMakeFiles/test_tournamentplayer.dir/projects/lib/tests/tournamentplayer/tst_tou
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtesteventloop.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtestsystem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qttestversion.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentplayer.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/playerbuilder.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/playerbuilder.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
- /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
- /home/sasa/My_Projects/cutechess/projects/lib/src/openingbook.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingbook.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMultiMap \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/build/test_tournamentplayer_autogen/include/tst_tournamentplayer.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tournamentplayer_autogen/include/tst_tournamentplayer.moc

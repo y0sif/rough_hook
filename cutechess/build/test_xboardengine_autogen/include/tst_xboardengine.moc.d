@@ -1,25 +1,25 @@
-/home/sasa/My_Projects/cutechess/build/test_xboardengine_autogen/include/tst_xboardengine.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/xboardengine/tst_xboardengine.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_xboardengine_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessengine.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessplayer.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/enginebuttonoption.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/enginecheckoption.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/enginecombooption.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/engineoption.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/enginespinoption.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/enginetextoption.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/xboardengine.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_xboardengine_autogen/include/tst_xboardengine.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/xboardengine/tst_xboardengine.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_xboardengine_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessengine.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessplayer.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginebuttonoption.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecheckoption.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecombooption.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineoption.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginespinoption.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginetextoption.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/xboardengine.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

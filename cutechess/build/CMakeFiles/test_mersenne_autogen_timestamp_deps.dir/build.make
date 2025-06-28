@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sasa/My_Projects/cutechess
+CMAKE_SOURCE_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sasa/My_Projects/cutechess/build
+CMAKE_BINARY_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build
 
 # Utility rule file for test_mersenne_autogen_timestamp_deps.
 
@@ -67,8 +67,8 @@ include CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/compiler_depend.make
 include CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/progress.make
 
 CMakeFiles/test_mersenne_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
-CMakeFiles/test_mersenne_autogen_timestamp_deps: libcutechess.a
 CMakeFiles/test_mersenne_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
+CMakeFiles/test_mersenne_autogen_timestamp_deps: libcutechess.a
 
 test_mersenne_autogen_timestamp_deps: CMakeFiles/test_mersenne_autogen_timestamp_deps
 test_mersenne_autogen_timestamp_deps: CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/build.make
@@ -83,6 +83,6 @@ CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/clean:
 .PHONY : CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/clean
 
 CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/depend:
-	cd /home/sasa/My_Projects/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build/CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/test_mersenne_autogen_timestamp_deps.dir/depend
 

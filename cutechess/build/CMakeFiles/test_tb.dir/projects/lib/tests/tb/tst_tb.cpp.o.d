@@ -1,5 +1,5 @@
 CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/tb/tst_tb.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tb/tst_tb.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -564,26 +564,26 @@ CMakeFiles/test_tb.dir/projects/lib/tests/tb/tst_tb.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtestsystem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qttestversion.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/standardboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/westernboard.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/standardboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/westernboard.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDebug \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/syzygytablebase.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/syzygytablebase.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFlags \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPair \
- /home/sasa/My_Projects/cutechess/build/test_tb_autogen/include/tst_tb.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tb_autogen/include/tst_tb.moc

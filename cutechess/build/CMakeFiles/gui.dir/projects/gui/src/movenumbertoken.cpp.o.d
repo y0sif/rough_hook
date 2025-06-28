@@ -1,8 +1,8 @@
 CMakeFiles/gui.dir/projects/gui/src/movenumbertoken.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/movenumbertoken.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movenumbertoken.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/movenumbertoken.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgntoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movenumbertoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgntoken.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qchar.h \
@@ -296,7 +296,7 @@ CMakeFiles/gui.dir/projects/gui/src/movenumbertoken.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QTextCharFormat \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/qtextformat.h \
  /usr/include/x86_64-linux-gnu/qt5/QtGui/QTextBlockFormat \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \

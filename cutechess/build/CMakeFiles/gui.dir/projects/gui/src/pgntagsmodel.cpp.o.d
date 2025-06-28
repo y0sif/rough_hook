@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/pgntagsmodel.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgntagsmodel.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgntagsmodel.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgntagsmodel.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgntagsmodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QAbstractItemModel \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qabstractitemmodel.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \

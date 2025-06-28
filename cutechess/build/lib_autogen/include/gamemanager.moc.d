@@ -1,18 +1,18 @@
-/home/sasa/My_Projects/cutechess/build/lib_autogen/include/gamemanager.moc: /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.cpp \
-  /home/sasa/My_Projects/cutechess/build/lib_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessgame.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessplayer.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/gameadjudicator.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/playerbuilder.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/include/gamemanager.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessgame.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessplayer.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gameadjudicator.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/playerbuilder.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

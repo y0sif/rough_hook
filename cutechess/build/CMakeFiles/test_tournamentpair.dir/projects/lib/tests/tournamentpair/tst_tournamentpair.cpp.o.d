@@ -1,5 +1,5 @@
 CMakeFiles/test_tournamentpair.dir/projects/lib/tests/tournamentpair/tst_tournamentpair.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/tournamentpair/tst_tournamentpair.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tournamentpair/tst_tournamentpair.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -563,5 +563,5 @@ CMakeFiles/test_tournamentpair.dir/projects/lib/tests/tournamentpair/tst_tournam
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtesteventloop.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtestsystem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qttestversion.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentpair.h \
- /home/sasa/My_Projects/cutechess/build/test_tournamentpair_autogen/include/tst_tournamentpair.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentpair.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tournamentpair_autogen/include/tst_tournamentpair.moc

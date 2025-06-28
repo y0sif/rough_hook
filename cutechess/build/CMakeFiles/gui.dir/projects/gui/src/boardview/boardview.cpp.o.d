@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/boardview/boardview.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardview.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardview.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/boardview/boardview.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/boardview/boardview.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QGraphicsView \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qgraphicsview.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \

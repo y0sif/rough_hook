@@ -1,16 +1,16 @@
-/home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_tournament.cpp: /home/sasa/My_Projects/cutechess/projects/lib/src/tournament.h \
-  /home/sasa/My_Projects/cutechess/build/lib_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/gameadjudicator.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/playerbuilder.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentpair.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentplayer.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_tournament.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournament.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gameadjudicator.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/playerbuilder.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentpair.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentplayer.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \

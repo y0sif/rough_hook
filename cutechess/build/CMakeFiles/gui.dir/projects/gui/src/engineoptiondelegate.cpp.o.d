@@ -1,7 +1,7 @@
 CMakeFiles/gui.dir/projects/gui/src/engineoptiondelegate.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/engineoptiondelegate.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/engineoptiondelegate.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/engineoptiondelegate.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/engineoptiondelegate.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QStyledItemDelegate \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qstyleditemdelegate.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qtwidgetsglobal.h \
@@ -329,7 +329,7 @@ CMakeFiles/gui.dir/projects/gui/src/engineoptiondelegate.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontiguouscache.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pathlineedit.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pathlineedit.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDir \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdir.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfileinfo.h \

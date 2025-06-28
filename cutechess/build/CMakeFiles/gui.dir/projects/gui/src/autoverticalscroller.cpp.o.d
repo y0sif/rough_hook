@@ -1,5 +1,5 @@
 CMakeFiles/gui.dir/projects/gui/src/autoverticalscroller.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/autoverticalscroller.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/autoverticalscroller.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QAbstractItemView \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qabstractitemview.h \
@@ -316,6 +316,6 @@ CMakeFiles/gui.dir/projects/gui/src/autoverticalscroller.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qrubberband.h \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/QScrollBar \
  /usr/include/x86_64-linux-gnu/qt5/QtWidgets/qscrollbar.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/autoverticalscroller.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/autoverticalscroller.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h

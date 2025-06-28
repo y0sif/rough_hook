@@ -1,7 +1,7 @@
 CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qiterator.h \

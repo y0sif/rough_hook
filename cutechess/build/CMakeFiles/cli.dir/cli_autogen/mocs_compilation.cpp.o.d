@@ -1,7 +1,7 @@
 CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: \
- /home/sasa/My_Projects/cutechess/build/cli_autogen/mocs_compilation.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/build/cli_autogen/HFJX3D5BNQ/moc_cutechesscoreapp.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/HFJX3D5BNQ/moc_cutechesscoreapp.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -118,7 +118,7 @@ CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/sasa/My_Projects/cutechess/build/cli_autogen/HFJX3D5BNQ/../../../projects/cli/src/cutechesscoreapp.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/HFJX3D5BNQ/../../../projects/cli/src/cutechesscoreapp.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreapplication.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
@@ -263,8 +263,8 @@ CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMessageLogContext \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlogging.h \
- /home/sasa/My_Projects/cutechess/build/cli_autogen/HFJX3D5BNQ/moc_enginematch.cpp \
- /home/sasa/My_Projects/cutechess/build/cli_autogen/HFJX3D5BNQ/../../../projects/cli/src/enginematch.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/HFJX3D5BNQ/moc_enginematch.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/HFJX3D5BNQ/../../../projects/cli/src/enginematch.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
@@ -273,11 +273,11 @@ CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qelapsedtimer.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/openingbook.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/openingbook.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMultiMap \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h

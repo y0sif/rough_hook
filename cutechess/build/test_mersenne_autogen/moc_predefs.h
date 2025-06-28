@@ -3,7 +3,7 @@
 #define __UINT_LEAST16_MAX__ 0xffff
 #define __FLT16_HAS_QUIET_NAN__ 1
 #define __ATOMIC_ACQUIRE 2
-#define QT_TESTCASE_BUILDDIR "/home/sasa/My_Projects/cutechess/build"
+#define QT_TESTCASE_BUILDDIR "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build"
 #define __FLT128_MAX_10_EXP__ 4932
 #define __FLT_MIN__ 1.17549435082228750796873653722224568e-38F
 #define __GCC_IEC_559_COMPLEX 2
@@ -103,7 +103,7 @@
 #define __GXX_WEAK__ 1
 #define __SHRT_WIDTH__ 16
 #define __FLT32_IS_IEC_60559__ 1
-#define CUTECHESS_TEST_DATA_DIR "/home/sasa/My_Projects/cutechess/projects/lib/tests/data"
+#define CUTECHESS_TEST_DATA_DIR "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/data"
 #define __LDBL_MIN__ 3.36210314311209350626267781732175260e-4932L
 #define __DBL_IS_IEC_60559__ 1
 #define __DEC32_MAX__ 9.999999E96DF

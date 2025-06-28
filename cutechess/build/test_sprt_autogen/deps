@@ -1,15 +1,15 @@
 test_sprt_autogen/timestamp: \
-	/home/sasa/My_Projects/cutechess/CMakeLists.txt \
-	/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake \
-	/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake \
-	/home/sasa/My_Projects/cutechess/build/CMakeFiles/3.28.3/CMakeSystem.cmake \
-	/home/sasa/My_Projects/cutechess/build/test_sprt_autogen/moc_predefs.h \
-	/home/sasa/My_Projects/cutechess/projects/cli/res/doc/doc.qrc \
-	/home/sasa/My_Projects/cutechess/projects/gui/res/chessboard/chessboard.qrc \
-	/home/sasa/My_Projects/cutechess/projects/gui/res/icons/icons.qrc \
-	/home/sasa/My_Projects/cutechess/projects/lib/res/eco/eco.qrc \
-	/home/sasa/My_Projects/cutechess/projects/lib/src/sprt.h \
-	/home/sasa/My_Projects/cutechess/projects/lib/tests/sprt/tst_sprt.cpp \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/CMakeLists.txt \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeCCompiler.cmake \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeCXXCompiler.cmake \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/3.28.3/CMakeSystem.cmake \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_sprt_autogen/moc_predefs.h \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/res/doc/doc.qrc \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/res/chessboard/chessboard.qrc \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/res/icons/icons.qrc \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/res/eco/eco.qrc \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/sprt.h \
+	/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/sprt/tst_sprt.cpp \
 	/usr/include/asm-generic/errno-base.h \
 	/usr/include/asm-generic/errno.h \
 	/usr/include/assert.h \

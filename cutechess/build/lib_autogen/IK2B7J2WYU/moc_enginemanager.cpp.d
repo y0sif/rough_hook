@@ -1,6 +1,6 @@
-/home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_enginemanager.cpp: /home/sasa/My_Projects/cutechess/projects/lib/src/enginemanager.h \
-  /home/sasa/My_Projects/cutechess/build/lib_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_enginemanager.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginemanager.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \

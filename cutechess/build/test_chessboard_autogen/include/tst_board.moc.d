@@ -1,15 +1,15 @@
-/home/sasa/My_Projects/cutechess/build/test_chessboard_autogen/include/tst_board.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/chessboard/tst_board.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_chessboard_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/board.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/boardfactory.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/piece.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/zobrist.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/classregistry.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_chessboard_autogen/include/tst_board.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/chessboard/tst_board.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_chessboard_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/board.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardfactory.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/piece.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/zobrist.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/classregistry.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

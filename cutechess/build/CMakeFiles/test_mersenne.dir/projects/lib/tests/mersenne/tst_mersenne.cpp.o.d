@@ -1,5 +1,5 @@
 CMakeFiles/test_mersenne.dir/projects/lib/tests/mersenne/tst_mersenne.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/mersenne/tst_mersenne.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/mersenne/tst_mersenne.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -563,6 +563,6 @@ CMakeFiles/test_mersenne.dir/projects/lib/tests/mersenne/tst_mersenne.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtesteventloop.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtestsystem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qttestversion.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/mersenne.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/mersenne.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
- /home/sasa/My_Projects/cutechess/build/test_mersenne_autogen/include/tst_mersenne.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_mersenne_autogen/include/tst_mersenne.moc

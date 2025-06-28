@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DCUTECHESS_VERSION=\"1.4.0\" -DLIB_EXPORT="" -DQT_CORE_LIB -DQT_NO_DEBUG
 
-CXX_INCLUDES = -I/home/sasa/My_Projects/cutechess/build/cli_autogen/include -I/home/sasa/My_Projects/cutechess/projects/lib/src -I/home/sasa/My_Projects/cutechess/projects/lib/src/board -I/home/sasa/My_Projects/cutechess/projects/lib/3rdparty/fathom/src -I/home/sasa/My_Projects/cutechess/projects/lib/components/json/src -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+CXX_INCLUDES = -I/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/include -I/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src -I/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board -I/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/3rdparty/fathom/src -I/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/components/json/src -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 
 CXX_FLAGS = -O2 -g -DNDEBUG -fPIC
 

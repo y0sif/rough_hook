@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/src/engineoptionfactory.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineoptionfactory.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineoptionfactory.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineoptionfactory.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineoptionfactory.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qatomic.h \
@@ -251,13 +251,13 @@ CMakeFiles/lib.dir/projects/lib/src/engineoptionfactory.cpp.o: \
  /usr/include/c++/13/ratio /usr/include/c++/13/cstdint \
  /usr/include/c++/13/limits /usr/include/c++/13/ctime \
  /usr/include/c++/13/bits/parse_numbers.h /usr/include/c++/13/variant \
- /home/sasa/My_Projects/cutechess/projects/lib/src/engineoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineoption.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginetextoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginebuttonoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginecheckoption.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginecombooption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginetextoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginebuttonoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecheckoption.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecombooption.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/enginespinoption.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginespinoption.h

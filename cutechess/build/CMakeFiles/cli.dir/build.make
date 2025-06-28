@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/sasa/My_Projects/cutechess
+CMAKE_SOURCE_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/sasa/My_Projects/cutechess/build
+CMAKE_BINARY_DIR = /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/cli.dir/depend.make
@@ -72,100 +72,100 @@ include CMakeFiles/cli.dir/flags.make
 cli_autogen/timestamp: /usr/lib/qt5/bin/moc
 cli_autogen/timestamp: /usr/lib/qt5/bin/uic
 cli_autogen/timestamp: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target cli"
-	/usr/bin/cmake -E cmake_autogen /home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen.dir/AutogenInfo.json RelWithDebInfo
-	/usr/bin/cmake -E touch /home/sasa/My_Projects/cutechess/build/cli_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target cli"
+	/usr/bin/cmake -E cmake_autogen /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen.dir/AutogenInfo.json RelWithDebInfo
+	/usr/bin/cmake -E touch /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/timestamp
 
-cli_autogen/SJPZDV6HL2/qrc_doc.cpp: /home/sasa/My_Projects/cutechess/projects/cli/res/doc/doc.qrc
+cli_autogen/SJPZDV6HL2/qrc_doc.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/res/doc/doc.qrc
 cli_autogen/SJPZDV6HL2/qrc_doc.cpp: CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Info.json
-cli_autogen/SJPZDV6HL2/qrc_doc.cpp: /home/sasa/My_Projects/cutechess/projects/cli/res/doc/help.txt
+cli_autogen/SJPZDV6HL2/qrc_doc.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/res/doc/help.txt
 cli_autogen/SJPZDV6HL2/qrc_doc.cpp: /usr/lib/qt5/bin/rcc
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic RCC for projects/cli/res/doc/doc.qrc"
-	/usr/bin/cmake -E cmake_autorcc /home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Info.json RelWithDebInfo
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic RCC for projects/cli/res/doc/doc.qrc"
+	/usr/bin/cmake -E cmake_autorcc /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Info.json RelWithDebInfo
 
 CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: CMakeFiles/cli.dir/flags.make
 CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: cli_autogen/mocs_compilation.cpp
 CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o -MF CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o -c /home/sasa/My_Projects/cutechess/build/cli_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o -MF CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/mocs_compilation.cpp
 
 CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/build/cli_autogen/mocs_compilation.cpp > CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/mocs_compilation.cpp > CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/build/cli_autogen/mocs_compilation.cpp -o CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/mocs_compilation.cpp -o CMakeFiles/cli.dir/cli_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: CMakeFiles/cli.dir/flags.make
-CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.cpp
+CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.cpp
 CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o -c /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.cpp
 
 CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.cpp > CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.cpp > CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.i
 
 CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/projects/cli/src/cutechesscoreapp.cpp -o CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/cutechesscoreapp.cpp -o CMakeFiles/cli.dir/projects/cli/src/cutechesscoreapp.cpp.s
 
 CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o: CMakeFiles/cli.dir/flags.make
-CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o: /home/sasa/My_Projects/cutechess/projects/cli/src/enginematch.cpp
+CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/enginematch.cpp
 CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o -c /home/sasa/My_Projects/cutechess/projects/cli/src/enginematch.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/enginematch.cpp
 
 CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/projects/cli/src/enginematch.cpp > CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/enginematch.cpp > CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.i
 
 CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/projects/cli/src/enginematch.cpp -o CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/enginematch.cpp -o CMakeFiles/cli.dir/projects/cli/src/enginematch.cpp.s
 
 CMakeFiles/cli.dir/projects/cli/src/main.cpp.o: CMakeFiles/cli.dir/flags.make
-CMakeFiles/cli.dir/projects/cli/src/main.cpp.o: /home/sasa/My_Projects/cutechess/projects/cli/src/main.cpp
+CMakeFiles/cli.dir/projects/cli/src/main.cpp.o: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/main.cpp
 CMakeFiles/cli.dir/projects/cli/src/main.cpp.o: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/main.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/main.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/main.cpp.o -c /home/sasa/My_Projects/cutechess/projects/cli/src/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/main.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/main.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/main.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/main.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/main.cpp
 
 CMakeFiles/cli.dir/projects/cli/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cli.dir/projects/cli/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/projects/cli/src/main.cpp > CMakeFiles/cli.dir/projects/cli/src/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/main.cpp > CMakeFiles/cli.dir/projects/cli/src/main.cpp.i
 
 CMakeFiles/cli.dir/projects/cli/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cli.dir/projects/cli/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/projects/cli/src/main.cpp -o CMakeFiles/cli.dir/projects/cli/src/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/main.cpp -o CMakeFiles/cli.dir/projects/cli/src/main.cpp.s
 
 CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o: CMakeFiles/cli.dir/flags.make
-CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o: /home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.cpp
+CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.cpp
 CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o -c /home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o -MF CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o.d -o CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.cpp
 
 CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.cpp > CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.cpp > CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.i
 
 CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/projects/cli/src/matchparser.cpp -o CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/src/matchparser.cpp -o CMakeFiles/cli.dir/projects/cli/src/matchparser.cpp.s
 
 CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o: CMakeFiles/cli.dir/flags.make
 CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o: cli_autogen/SJPZDV6HL2/qrc_doc.cpp
 CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o: CMakeFiles/cli.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o -MF CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o.d -o CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o -c /home/sasa/My_Projects/cutechess/build/cli_autogen/SJPZDV6HL2/qrc_doc.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o -MF CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o.d -o CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.o -c /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/SJPZDV6HL2/qrc_doc.cpp
 
 CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/cutechess/build/cli_autogen/SJPZDV6HL2/qrc_doc.cpp > CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/SJPZDV6HL2/qrc_doc.cpp > CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.i
 
 CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/cutechess/build/cli_autogen/SJPZDV6HL2/qrc_doc.cpp -o CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/SJPZDV6HL2/qrc_doc.cpp -o CMakeFiles/cli.dir/cli_autogen/SJPZDV6HL2/qrc_doc.cpp.s
 
 # Object files for target cli
 cli_OBJECTS = \
@@ -189,7 +189,7 @@ cutechess-cli: CMakeFiles/cli.dir/build.make
 cutechess-cli: libcutechess.a
 cutechess-cli: /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.15.13
 cutechess-cli: CMakeFiles/cli.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/sasa/My_Projects/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable cutechess-cli"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX executable cutechess-cli"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cli.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -202,6 +202,6 @@ CMakeFiles/cli.dir/clean:
 
 CMakeFiles/cli.dir/depend: cli_autogen/SJPZDV6HL2/qrc_doc.cpp
 CMakeFiles/cli.dir/depend: cli_autogen/timestamp
-	cd /home/sasa/My_Projects/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build /home/sasa/My_Projects/cutechess/build/CMakeFiles/cli.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/cli.dir/depend
 

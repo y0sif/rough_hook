@@ -1,5 +1,5 @@
-/home/sasa/My_Projects/cutechess/build/gui_autogen/YBOG5UKMKJ/moc_qcustomplot.cpp: /home/sasa/My_Projects/cutechess/projects/gui/3rdparty/qcustomplot/qcustomplot.h \
-  /home/sasa/My_Projects/cutechess/build/gui_autogen/moc_predefs.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/YBOG5UKMKJ/moc_qcustomplot.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/3rdparty/qcustomplot/qcustomplot.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/moc_predefs.h \
   /usr/include/GL/gl.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \

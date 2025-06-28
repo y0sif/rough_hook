@@ -1,20 +1,23 @@
 {
-	"BUILD_DIR" : "/home/sasa/My_Projects/cutechess/build/cli_autogen",
-	"CMAKE_BINARY_DIR" : "/home/sasa/My_Projects/cutechess/build",
-	"CMAKE_CURRENT_BINARY_DIR" : "/home/sasa/My_Projects/cutechess/build",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/home/sasa/My_Projects/cutechess",
-	"CMAKE_SOURCE_DIR" : "/home/sasa/My_Projects/cutechess",
+	"BUILD_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen",
+	"CMAKE_BINARY_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess",
+	"CMAKE_SOURCE_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess",
 	"GENERATOR" : "Unix Makefiles",
-	"INCLUDE_DIR" : "/home/sasa/My_Projects/cutechess/build/cli_autogen/include",
-	"INPUTS" : [ "/home/sasa/My_Projects/cutechess/projects/cli/res/doc/help.txt" ],
-	"LOCK_FILE" : "/home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Lock.lock",
+	"INCLUDE_DIR" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/cli_autogen/include",
+	"INPUTS" : 
+	[
+		"/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/res/doc/help.txt"
+	],
+	"LOCK_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Lock.lock",
 	"MULTI_CONFIG" : false,
 	"OPTIONS" : [ "-name", "doc" ],
 	"OUTPUT_CHECKSUM" : "SJPZDV6HL2",
 	"OUTPUT_NAME" : "qrc_doc.cpp",
 	"RCC_EXECUTABLE" : "/usr/lib/qt5/bin/rcc",
 	"RCC_LIST_OPTIONS" : [ "--list" ],
-	"SETTINGS_FILE" : "/home/sasa/My_Projects/cutechess/build/CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Used.txt",
-	"SOURCE" : "/home/sasa/My_Projects/cutechess/projects/cli/res/doc/doc.qrc",
+	"SETTINGS_FILE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/CMakeFiles/cli_autogen.dir/AutoRcc_doc_SJPZDV6HL2_Used.txt",
+	"SOURCE" : "/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/cli/res/doc/doc.qrc",
 	"VERBOSITY" : 0
 }

@@ -1,5 +1,5 @@
 CMakeFiles/test_sprt.dir/projects/lib/tests/sprt/tst_sprt.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/tests/sprt/tst_sprt.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/sprt/tst_sprt.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTest \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/QtTestDepends \
@@ -563,5 +563,5 @@ CMakeFiles/test_sprt.dir/projects/lib/tests/sprt/tst_sprt.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtesteventloop.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qtestsystem.h \
  /usr/include/x86_64-linux-gnu/qt5/QtTest/qttestversion.h \
- /home/sasa/My_Projects/cutechess/projects/lib/src/sprt.h \
- /home/sasa/My_Projects/cutechess/build/test_sprt_autogen/include/tst_sprt.moc
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/sprt.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_sprt_autogen/include/tst_sprt.moc

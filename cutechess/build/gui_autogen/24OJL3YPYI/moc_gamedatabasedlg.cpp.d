@@ -1,10 +1,10 @@
-/home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasedlg.cpp: /home/sasa/My_Projects/cutechess/projects/gui/src/gamedatabasedlg.h \
-  /home/sasa/My_Projects/cutechess/build/gui_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/genericmove.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/square.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/pgngame.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_gamedatabasedlg.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/gamedatabasedlg.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/genericmove.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/square.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/pgngame.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

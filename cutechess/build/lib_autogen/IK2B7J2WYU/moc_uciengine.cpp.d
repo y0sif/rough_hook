@@ -1,13 +1,13 @@
-/home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_uciengine.cpp: /home/sasa/My_Projects/cutechess/projects/lib/src/uciengine.h \
-  /home/sasa/My_Projects/cutechess/build/lib_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/move.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/result.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/board/side.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessengine.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/chessplayer.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/engineconfiguration.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/moveevaluation.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/timecontrol.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_uciengine.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/uciengine.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/result.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/side.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessengine.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessplayer.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/engineconfiguration.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/moveevaluation.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/timecontrol.h \
   /usr/include/assert.h \
   /usr/include/c++/13/algorithm \
   /usr/include/c++/13/array \

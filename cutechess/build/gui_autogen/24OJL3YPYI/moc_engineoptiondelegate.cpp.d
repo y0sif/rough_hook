@@ -1,5 +1,5 @@
-/home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineoptiondelegate.cpp: /home/sasa/My_Projects/cutechess/projects/gui/src/engineoptiondelegate.h \
-  /home/sasa/My_Projects/cutechess/build/gui_autogen/moc_predefs.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_engineoptiondelegate.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/engineoptiondelegate.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/moc_predefs.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

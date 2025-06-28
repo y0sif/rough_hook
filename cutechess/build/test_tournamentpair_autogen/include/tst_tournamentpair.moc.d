@@ -1,6 +1,6 @@
-/home/sasa/My_Projects/cutechess/build/test_tournamentpair_autogen/include/tst_tournamentpair.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/tournamentpair/tst_tournamentpair.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_tournamentpair_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/tournamentpair.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tournamentpair_autogen/include/tst_tournamentpair.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/tournamentpair/tst_tournamentpair.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_tournamentpair_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentpair.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

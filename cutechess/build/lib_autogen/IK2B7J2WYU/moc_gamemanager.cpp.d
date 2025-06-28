@@ -1,5 +1,5 @@
-/home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_gamemanager.cpp: /home/sasa/My_Projects/cutechess/projects/lib/src/gamemanager.h \
-  /home/sasa/My_Projects/cutechess/build/lib_autogen/moc_predefs.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_gamemanager.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/gamemanager.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/moc_predefs.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

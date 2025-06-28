@@ -1,6 +1,6 @@
-/home/sasa/My_Projects/cutechess/build/test_sprt_autogen/include/tst_sprt.moc: /home/sasa/My_Projects/cutechess/projects/lib/tests/sprt/tst_sprt.cpp \
-  /home/sasa/My_Projects/cutechess/build/test_sprt_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/lib/src/sprt.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_sprt_autogen/include/tst_sprt.moc: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/tests/sprt/tst_sprt.cpp \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/test_sprt_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/sprt.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

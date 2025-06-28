@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/mocs_compilation.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/mocs_compilation.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_chessengine.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_chessengine.cpp \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -118,8 +118,8 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessengine.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessengine.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessplayer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QObject \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobjectdefs.h \
@@ -263,8 +263,8 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVector \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvector.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/result.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/result.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/side.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMetaType \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmetatype.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QCoreApplication \
@@ -272,13 +272,13 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qobject.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcoreevent.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/move.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QtGlobal \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qglobal.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/timecontrol.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/timecontrol.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QElapsedTimer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qelapsedtimer.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/moveevaluation.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/moveevaluation.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
@@ -287,14 +287,14 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QStringRef \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/engineconfiguration.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_chessgame.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessgame.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/engineconfiguration.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_chessgame.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessgame.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qmap.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSemaphore \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsemaphore.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/pgngame.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/pgngame.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QList \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlist.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPair \
@@ -303,24 +303,24 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qdatetime.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qshareddata.h \
  /usr/include/c++/13/climits \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/square.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/gameadjudicator.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_chessplayer.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessplayer.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_enginemanager.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/enginemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/square.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/gameadjudicator.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_chessplayer.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_enginemanager.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/enginemanager.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSet \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_gamemanager.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/gamemanager.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_gamemanager.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/gamemanager.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qpointer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsharedpointer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsharedpointer_impl.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/gauntlettournament.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/gauntlettournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournament.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QFile \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfile.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qfiledevice.h \
@@ -329,33 +329,33 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qlocale.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournamentplayer.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/playerbuilder.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/side.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournamentpair.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_humanplayer.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/humanplayer.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_knockouttournament.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/knockouttournament.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_pyramidtournament.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/pyramidtournament.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_roundrobintournament.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/roundrobintournament.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_tournament.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournament.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_uciengine.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/uciengine.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessengine.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournamentplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/playerbuilder.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/side.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournamentpair.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_humanplayer.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/humanplayer.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_knockouttournament.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/knockouttournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_pyramidtournament.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/pyramidtournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_roundrobintournament.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/roundrobintournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_tournament.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/tournament.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_uciengine.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/uciengine.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/chessengine.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVarLengthArray \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvarlengtharray.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_worker.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/worker.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_worker.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/worker.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QRunnable \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qrunnable.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QTime \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/moc_xboardengine.cpp \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/xboardengine.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/board.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/moc_xboardengine.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/xboardengine.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/board.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QSharedPointer \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qsharedpointer.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QDebug \
@@ -363,8 +363,8 @@ CMakeFiles/lib.dir/lib_autogen/mocs_compilation.cpp.o: \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qtextstream.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qset.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontiguouscache.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/piece.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/move.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/genericmove.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/zobrist.h \
- /home/sasa/My_Projects/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/result.h
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/piece.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/move.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/genericmove.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/zobrist.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/lib_autogen/IK2B7J2WYU/../../../projects/lib/src/board/result.h

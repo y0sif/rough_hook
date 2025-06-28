@@ -1,9 +1,9 @@
-/home/sasa/My_Projects/cutechess/build/gui_autogen/24OJL3YPYI/moc_movelist.cpp: /home/sasa/My_Projects/cutechess/projects/gui/src/movelist.h \
-  /home/sasa/My_Projects/cutechess/build/gui_autogen/moc_predefs.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/movecommenttoken.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/movenumbertoken.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/movetoken.h \
-  /home/sasa/My_Projects/cutechess/projects/gui/src/pgntoken.h \
+/home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/24OJL3YPYI/moc_movelist.cpp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movelist.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/build/gui_autogen/moc_predefs.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movecommenttoken.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movenumbertoken.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movetoken.h \
+  /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgntoken.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
   /usr/include/assert.h \

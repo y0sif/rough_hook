@@ -1,8 +1,8 @@
 CMakeFiles/gui.dir/projects/gui/src/movetoken.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/gui/src/movetoken.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movetoken.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/movetoken.h \
- /home/sasa/My_Projects/cutechess/projects/gui/src/pgntoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/movetoken.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/gui/src/pgntoken.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QString \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qstring.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qchar.h \

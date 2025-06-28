@@ -1,7 +1,7 @@
 CMakeFiles/lib.dir/projects/lib/components/json/src/jsonparser.cpp.o: \
- /home/sasa/My_Projects/cutechess/projects/lib/components/json/src/jsonparser.cpp \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/components/json/src/jsonparser.cpp \
  /usr/include/stdc-predef.h \
- /home/sasa/My_Projects/cutechess/projects/lib/components/json/src/jsonparser.h \
+ /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/components/json/src/jsonparser.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/QVariant \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qvariant.h \
  /usr/include/x86_64-linux-gnu/qt5/QtCore/qatomic.h \
