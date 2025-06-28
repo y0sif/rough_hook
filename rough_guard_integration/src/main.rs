@@ -25,10 +25,10 @@ fn main() {
         let final_db_path = separate_features(&sample_test_path);
         compute_distances(
             &final_db_path,
-            "/home/sasa/My_Projects/Graduation_Project/rough_hook/scripts/rough_guard_scripts/5. Compute Euclidean Distance/bucket_averages.json",
+            "../scripts/rough_guard_scripts/5. Compute Euclidean Distance/bucket_averages.json",
         );
 
-        let model_path = "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard/rough_guard_models/mlp_model/model";
+        let model_path = "../rough_guard/rough_guard_models/mlp_model/model";
 
         let model: ModelEnum<Cuda<f32, i32>> =
             load_model_paramter::<Cuda<f32, i32>>(5, &model_path, CudaDevice::default());
@@ -53,8 +53,7 @@ fn main() {
 }
 
 fn cleanup_existing_db_files() {
-    let current_dir =
-        "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard_integration";
+    let current_dir = "../rough_guard_integration";
 
     if let Ok(entries) = fs::read_dir(current_dir) {
         for entry in entries {
@@ -81,8 +80,7 @@ fn cleanup_existing_db_files() {
 fn load_features_to_db(folder_path: &str) -> Result<String, String> {
     let script_path =
         "../scripts/rough_guard_scripts/2. Feature Extraction & DB Creation/feature_extraction.py";
-    let db_path =
-        "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard_integration/sample.db";
+    let db_path = "../rough_guard_integration/sample.db";
 
     // Execute the Python script
     let output = Command::new("python3")
@@ -102,8 +100,7 @@ fn load_features_to_db(folder_path: &str) -> Result<String, String> {
 }
 fn label_db(db_path: &str, folder_path: &str) {
     let script_path = "../scripts/rough_guard_scripts/3. Database Labeling/label_db.py";
-    let db_path =
-        "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard_integration/sample.db";
+    let db_path = "../rough_guard_integration/sample.db";
 
     // Execute the Python script
     let output = Command::new("python3")
@@ -115,7 +112,7 @@ fn label_db(db_path: &str, folder_path: &str) {
 }
 
 fn separate_features(db_path: &str) -> String {
-    let new_db_path = "/home/sasa/My_Projects/Graduation_Project/rough_hook/rough_guard_integration/final_sample.db";
+    let new_db_path = "../rough_guard_integration/final_sample.db";
     let script_path =
         "../scripts/rough_guard_scripts/4. Separate White & Black/pgn_separate_features.py";
 

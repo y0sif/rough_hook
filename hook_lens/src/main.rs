@@ -12,7 +12,7 @@ fn main() {
     if args.len() > 1 {
         let image_path = &args[1];
 
-        let model_path = "/home/sasa/My_Projects/Graduation_Project/rough_hook/hook_lens/hook_lens_models/cnn_models/cnn_hook_lens";
+        let model_path = "../hook_lens/hook_lens_models/cnn_models/cnn_hook_lens";
 
         let model: ModelEnum<Cuda<f32, i32>> =
             load_model_paramter::<Cuda<f32, i32>>(1, &model_path, CudaDevice::default());
