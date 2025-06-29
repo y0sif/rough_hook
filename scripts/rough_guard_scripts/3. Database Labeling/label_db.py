@@ -2,6 +2,7 @@ import os
 import chess.pgn
 import json
 import sqlite3
+import argparse
 from tqdm import tqdm
 
 def update_labels(pgn_directory, mapping_file, db_file):
@@ -57,9 +58,12 @@ def update_labels(pgn_directory, mapping_file, db_file):
     print(f"Updated labels for {row_id - 1} games.")
 
 if __name__ == '__main__':
-    # Set your file paths accordingly
-    pgn_directory = "mar_filtered_games"  # Directory with 623k sorted PGN files
-    mapping_file = "all_players.json"               # JSON file mapping usernames to 0 or 1
-    db_file = "mar_pgn_features.db"                         # Your database file
+    
+    parser = argparse.ArgumentParser(description='Process chess games into feature vectors')
+    parser.add_argument('input_dir', help='Directory containing PGN files')
+    parser.add_argument('db_file', help='Database file to update')
+    args = parser.parse_args()
 
-    update_labels(pgn_directory, mapping_file, db_file)
+    mapping_file = "/home/sasa/My_Projects/Graduation_Project/rough_hook/scripts/rough_guard_scripts/3. Database Labeling/Preporcess Players/2. Unique Player Concatentation/all_players.json"       # JSON file mapping usernames to 0 or 1
+
+    update_labels(args.input_dir, mapping_file, args.db_file)

@@ -1,11 +1,15 @@
-use burn::nn::{BatchNormConfig, Dropout, DropoutConfig, Linear, LinearConfig};
 use burn::nn::BatchNorm;
+use burn::nn::{BatchNormConfig, Dropout, DropoutConfig, Linear, LinearConfig};
 use burn::prelude::*;
 use burn::tensor::backend::AutodiffBackend;
-use burn::tensor::{activation::{relu, log_softmax}, Tensor};
+use burn::tensor::{
+    activation::{log_softmax, relu},
+    Tensor,
+};
 use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
 use burn_jit::cubecl::prelude::le;
 
+use lax::Lapack;
 pub trait DeepLearningModel<B: Backend>
 where
     B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
@@ -42,12 +46,12 @@ impl<B: Backend> Mlp<B> {
                 // Add BatchNorm after each linear layer except the last one
                 let bn = BatchNormConfig::new(layer_info.1).init(device);
                 bn_layers.push(bn);
-                
+
                 if i < 2 {
                     let dropout = DropoutConfig::new(dropout_prob).init();
                     dropout_layers.push(dropout);
                 }
-            }   
+            }
         }
 
         Self {
@@ -61,7 +65,7 @@ impl<B: Backend> Mlp<B> {
 
 impl<B: Backend> DeepLearningModel<B> for Mlp<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn forward(&self, input: Tensor<B, 2>) -> Tensor<B, 2> {
         let mut x = input;
@@ -84,7 +88,6 @@ where
         x
     }
 }
-
 
 #[derive(Module, Debug)]
 pub struct Mlp_no_bn<B: Backend> {
@@ -111,8 +114,7 @@ impl<B: Backend> Mlp_no_bn<B> {
             if i < layers_info.len() - 1 {
                 let dropout = DropoutConfig::new(dropout_prob).init();
                 dropout_layers.push(dropout);
-                
-            }   
+            }
         }
 
         Self {
@@ -125,7 +127,7 @@ impl<B: Backend> Mlp_no_bn<B> {
 
 impl<B: Backend> DeepLearningModel<B> for Mlp_no_bn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn forward(&self, input: Tensor<B, 2>) -> Tensor<B, 2> {
         let mut x = input;
@@ -144,7 +146,6 @@ where
         x
     }
 }
-
 
 //////////////////////////////////////////////// Focal Loss (Hangs - BROKEN) ///////////////////////////////////////////////////////
 
@@ -170,7 +171,7 @@ where
 
 //         // 2) gather the log-prob of the true class → [B]
 //         //    gather(dim, indices) expects indices: Tensor<B, D, Int>
-//         let labels_idx: Tensor<B, 2, burn::tensor::Int> = 
+//         let labels_idx: Tensor<B, 2, burn::tensor::Int> =
 //             labels.clone().unsqueeze_dim(1);     // [B, 1]
 //         let true_log_p = log_probs
 //             .gather(1, labels_idx)        // [B, 1]
@@ -196,7 +197,7 @@ where
 //         //let loss_sum_1d = loss.clone().sum();
 //         //let loss_sum: Tensor<B, 0> = loss_sum_1d.reshape([] as [usize; 0]);
 //         //let mean_loss: Tensor<B, 1> = loss_sum_1d / (loss.shape().num_elements() as f32);
-        
+
 //         //mean_loss
 //         loss.mean()
 //     }
@@ -211,7 +212,7 @@ pub struct ModifiedKan<B: Backend> {
 
 impl<B: Backend> ModifiedKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     pub fn new(
         layers_info: Vec<([i32; 3], [Option<i32>; 4])>,
@@ -235,7 +236,7 @@ where
 
 impl<B: Backend> DeepLearningModel<B> for ModifiedKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
         let mut x = games;
@@ -252,7 +253,7 @@ fn construct_kan_layer<B: Backend>(
     device: &Device<B>,
 ) -> EfficientKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     let mut kan_options = KanOptions::new([
         options_values[0] as u32,

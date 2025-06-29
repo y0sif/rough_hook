@@ -2,8 +2,10 @@
 mod tests {
     use crate::data_and_model::inference::{self, load_model_paramter, ModelEnum};
     use crate::input_data_handling::fen_string_generation::get_fen_string_from;
-    use image::imageops;
+    use image::{imageops, GenericImageView};
     use imageops::FilterType;
+    use opencv::highgui::{wait_key_def, WINDOW_NORMAL};
+    use opencv::{highgui, imgcodecs};
     use rusty_brain::board::Board;
     //use crate::input_data_handling::fen_string_generation::get_fen_string_from;
     use crate::test::test_models_repository::Repository;
@@ -11,7 +13,9 @@ mod tests {
     use prettytable::{row, Table};
     use std::collections::HashMap;
     use std::fs;
-    use std::time::Instant;
+    use std::os::unix::thread;
+    use std::thread::sleep;
+    use std::time::{Duration, Instant};
 
     #[test]
     fn test_all() {
@@ -22,17 +26,29 @@ mod tests {
         assert_eq!(flag, true);
 
         // generalization test
-        // test_models_on_un_seen_data(); 
+        // test_models_on_un_seen_data();
         // assert_eq!(1, 0);
     }
 
     fn test_fen_string_of_image_1() -> bool {
-        let board_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/test_6.png";
+        // #[cfg(debug_assertions)]
+        // {
+        //     let img_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/real1.png";
+        //     let img = imgcodecs::imread(img_path, imgcodecs::IMREAD_COLOR).unwrap();
+        //     // Display the image
+        //     //set window size
+        //     highgui::named_window("Android_cam", WINDOW_NORMAL).unwrap();
+        //     highgui::resize_window("Android_cam", 800, 600).unwrap();
+        //     highgui::imshow("Android_cam", &img);
+        //     wait_key_def().unwrap();
+        // }
+
+        let board_image_path = "/home/mostafayounis630/My_Projects/Graduation_Project/rough_hook/hook_lens/images_for_real_life_test/real2.png";
         // Name - Path - Id
         let mut repository = Repository::new();
 
         //repository.load_all_models();
-        repository.load_models_by_ids(vec![1, 27]); // uncomment it to provide the models you want to test
+        repository.load_models_by_ids(vec![1]); // uncomment it to provide the models you want to test
 
         // name , correct_pieces  , wrong_pieces , accuracy
         let mut models_results: Vec<(&str, i16, i16, f32, f32)> = Vec::new();
@@ -47,23 +63,25 @@ mod tests {
 
             println!("\n\n-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-->  Testing : {}  model  <--#-#-#-#-#-#-#-#-#-#-#-#-#-#-#\n\n" , {model_name});
             let start = Instant::now();
-            let predicted_fen_string = get_fen_string_from(board_image_path, model);
+            let mut predicted_fen_string = get_fen_string_from(board_image_path, model);
+
             let duration = start.elapsed().as_secs_f32();
-            println!("====================== actual board =======================");
+            //println!("====================== actual board =======================");
 
             let mut actual_board = Board::from_fen(actual_fen_string.clone() + &static_str);
-            actual_board.print_board();
+            //actual_board.print_board();
 
             println!("====================== predicted board =======================");
 
             let mut predicted_board = Board::from_fen(predicted_fen_string.clone() + &static_str);
+
             predicted_board.print_board();
 
             if predicted_fen_string == actual_fen_string {
                 flag = true;
             }
 
-            println!("\nactual_fen_string = {}", actual_fen_string);
+            // println!("\nactual_fen_string = {}", actual_fen_string);
             println!("predicted fen string = {}", predicted_fen_string);
 
             let wrong =
@@ -72,16 +90,18 @@ mod tests {
             let accuracy = (correct as f32 / 64.0) * 100 as f32;
             let accuracy = format!("{:.2}", accuracy).parse::<f32>().unwrap();
 
-            println!("Correct = {}", correct);
-            println!("wrong = {}", wrong);
-            println!("accuracy = {}", accuracy);
-            println!("duaration = {:?}", duration);
+            // println!("Correct = {}", correct);
+            // println!("wrong = {}", wrong);
+            // println!("accuracy = {}", accuracy);
+            // println!("duaration = {:?}", duration);
 
             models_results.push((model_name, correct, wrong, accuracy, duration));
 
             println!("\n\n");
         }
-        print_results_table(models_results);
+        //print_results_table(models_results);
+        //sleep(2000);
+
         return flag;
     }
 

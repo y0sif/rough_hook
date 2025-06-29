@@ -1,13 +1,12 @@
 import sqlite3
 import numpy as np
 import json
+import argparse
 from tqdm import tqdm
 
 # Configuration
-DB_FILE = "test.db"
 TEST_TABLE = "test"
 DISTANCES_TABLE = "distances"
-AVERAGES_JSON = "F:\Linux\\rough_guard_db\db_shit\\bucket_averages.json"
 
 # Helper functions
 
@@ -55,6 +54,15 @@ def create_distances_table(conn):
 
 # Main function
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Compute Euclidean distances for test set features using precomputed averages.')
+    parser.add_argument('db_file', help='Directory containing PGN files')
+    parser.add_argument('average_json', help='Database file to update')
+    args = parser.parse_args()
+
+    DB_FILE = args.db_file
+    AVERAGES_JSON = args.average_json
+
     # Load precomputed averages
     with open(AVERAGES_JSON, 'r') as f:
         raw_averages = json.load(f)

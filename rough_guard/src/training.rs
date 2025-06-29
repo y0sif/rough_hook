@@ -1,9 +1,10 @@
 use crate::{
     data::{ChessGameBatcher, ChessGameDataSet, FeaturesBatch},
     inference::ModelEnum,
-    model::{DeepLearningModel, Mlp, ModifiedKan}//, //FocalLoss},
+    model::{DeepLearningModel, Mlp, ModifiedKan}, //, //FocalLoss},
 };
 use burn::{
+    backend::Autodiff,
     config::Config,
     data::dataloader::DataLoaderBuilder,
     module::Module,
@@ -12,7 +13,6 @@ use burn::{
     prelude::Backend,
     record::CompactRecorder,
     tensor::{backend::AutodiffBackend, Int, Tensor},
-    backend::Autodiff,
     train::{
         metric::{
             store::{Aggregate, Direction, Split},
@@ -57,42 +57,44 @@ impl<B: Backend> Mlp<B> {
         focal: bool,
     ) -> ClassificationOutput<B>
     where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
     {
         let output = self.forward(features);
 
         // if focal{
         //     let focal_loss = FocalLoss::new(&output.device(), class_weights.clone(), 2.0);
         //     let loss = focal_loss.forward(output.clone(), label.clone());
-        
+
         //     ClassificationOutput::new(loss, output, label)
         // }
         // else{
-            let loss = CrossEntropyLossConfig::new()
-                .with_weights(Some(self.class_weights.clone().into_data().to_vec().unwrap()))
-                .init(&output.device())
-                .forward(output.clone(), label.clone().unsqueeze());
-            
-            ClassificationOutput::new(loss, output, label)
+        let loss = CrossEntropyLossConfig::new()
+            .with_weights(Some(
+                self.class_weights.clone().into_data().to_vec().unwrap(),
+            ))
+            .init(&output.device())
+            .forward(output.clone(), label.clone().unsqueeze());
+
+        ClassificationOutput::new(loss, output, label)
         //}
-        
     }
 }
 
 impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
         let label = batch.label.clone();
-        let item = self.forward_classification(batch.features, label, self.class_weights.clone(), true);
+        let item =
+            self.forward_classification(batch.features, label, self.class_weights.clone(), true);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
 
 impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for Mlp<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
         let label = batch.label.clone();
@@ -108,7 +110,7 @@ impl<B: Backend> ModifiedKan<B> {
         class_weights: Tensor<B, 1>,
     ) -> ClassificationOutput<B>
     where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
     {
         let output = self.forward(features);
         let loss = CrossEntropyLossConfig::new()
@@ -136,12 +138,14 @@ impl<B: Backend> crate::model::Mlp_no_bn<B> {
         focal: bool,
     ) -> ClassificationOutput<B>
     where
-        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+        B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
     {
         let output = self.forward(features);
 
         let loss = CrossEntropyLossConfig::new()
-            .with_weights(Some(self.class_weights.clone().into_data().to_vec().unwrap()))
+            .with_weights(Some(
+                self.class_weights.clone().into_data().to_vec().unwrap(),
+            ))
             .init(&output.device())
             .forward(output.clone(), label.clone().unsqueeze());
 
@@ -150,20 +154,22 @@ impl<B: Backend> crate::model::Mlp_no_bn<B> {
 }
 
 // Implement TrainStep and ValidStep for Mlp_no_bn<B>
-impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for crate::model::Mlp_no_bn<B>
+impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>>
+    for crate::model::Mlp_no_bn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
         let label = batch.label.clone();
-        let item = self.forward_classification(batch.features, label, self.class_weights.clone(), true);
+        let item =
+            self.forward_classification(batch.features, label, self.class_weights.clone(), true);
         TrainOutput::new(self, item.loss.backward(), item)
     }
 }
 
 impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for crate::model::Mlp_no_bn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
         let label = batch.label.clone();
@@ -171,9 +177,10 @@ where
     }
 }
 
-impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
+impl<B: Backend + AutodiffBackend> TrainStep<FeaturesBatch<B>, ClassificationOutput<B>>
+    for ModifiedKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> burn::train::TrainOutput<ClassificationOutput<B>> {
         let label = batch.label.clone();
@@ -183,7 +190,7 @@ where
 }
 impl<B: Backend> ValidStep<FeaturesBatch<B>, ClassificationOutput<B>> for ModifiedKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn step(&self, batch: FeaturesBatch<B>) -> ClassificationOutput<B> {
         let label = batch.label.clone();
@@ -191,17 +198,16 @@ where
     }
 }
 
-
 #[derive(Config)]
 pub struct TrainingConfig {
     pub optimizer: AdamConfig,
     #[config(default = 100)]
     pub num_epochs: usize,
-    #[config(default = 256)] 
+    #[config(default = 256)]
     pub batch_size: usize,
     #[config(default = 4)]
     pub num_workers: usize,
-    #[config(default = 42)] 
+    #[config(default = 42)]
     pub seed: u64,
     #[config(default = 1.0e-4)]
     pub learning_rate: f64,
@@ -218,9 +224,8 @@ pub fn train<B: Backend + AutodiffBackend>(
     config: TrainingConfig,
     device: B::Device,
     model: ModelEnum<B>,
-) 
-where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+) where
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     create_artifact_dir(artifact_dir);
     config

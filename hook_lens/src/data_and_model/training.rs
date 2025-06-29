@@ -22,7 +22,7 @@ const ARTIFACT_DIR: &str = "/tmp/hook_lens";
 
 impl<B: Backend> Cnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     pub fn forward_classification(
         &self,
@@ -40,7 +40,7 @@ where
 
 impl<B: AutodiffBackend> TrainStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn step(&self, batch: ChessBoardBatch<B>) -> TrainOutput<ClassificationOutput<B>> {
         let item = self.forward_classification(batch.images, batch.targets);
@@ -50,7 +50,7 @@ where
 
 impl<B: Backend> ValidStep<ChessBoardBatch<B>, ClassificationOutput<B>> for Cnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn step(&self, batch: ChessBoardBatch<B>) -> ClassificationOutput<B> {
         self.forward_classification(batch.images, batch.targets)
@@ -79,7 +79,7 @@ fn create_artifact_dir(artifact_dir: &str) {
 
 pub fn train<B: AutodiffBackend>(config: TrainingConfig, device: B::Device)
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     create_artifact_dir(ARTIFACT_DIR);
 

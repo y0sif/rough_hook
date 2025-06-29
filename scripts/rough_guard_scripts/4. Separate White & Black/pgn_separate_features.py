@@ -1,4 +1,5 @@
 import sqlite3
+import argparse
 
 def transform_label(original_label, is_white):
     if original_label == 0:
@@ -35,7 +36,7 @@ def reformat_database(original_db, new_db):
     ''')
     
     # Fetch all rows from the original table
-    cursor.execute("SELECT * FROM train")
+    cursor.execute("SELECT * FROM test")
     rows = cursor.fetchall()
     
     new_data = []
@@ -60,4 +61,10 @@ def reformat_database(original_db, new_db):
     new_conn.close()
     
 if __name__ == "__main__":
-    reformat_database("mar_pgn_features.db", "test.db")
+
+    parser = argparse.ArgumentParser(description='Reformat chess game database to separate White and Black features')
+    parser.add_argument('old_db', help='Directory containing PGN files')
+    parser.add_argument('new_db', help='Database file to update')
+    args = parser.parse_args()
+
+    reformat_database(args.old_db, args.new_db)

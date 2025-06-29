@@ -2,17 +2,17 @@ use super::model::DeepLearningModel;
 use super::model::{Mlp, MlpRecord, ModifiedKan, ModifiedKanRecord};
 use crate::data::{ChessGameBatcher, ChessGameItem};
 use crate::model::Mlp_no_bn;
+use burn::tensor::backend::AutodiffBackend;
+use burn::train::{ClassificationOutput, TrainStep, ValidStep};
 use burn::{
     data::dataloader::batcher::Batcher,
     prelude::*,
     record::{CompactRecorder, Recorder},
     tensor::{activation::softmax, cast::ToElement},
 };
-use burn::tensor::backend::AutodiffBackend;
-use burn::train::{TrainStep, ValidStep, ClassificationOutput};
 
 // Import FeaturesBatch and ClassificationOutput from their module
-use crate::data::{FeaturesBatch};
+use crate::data::FeaturesBatch;
 
 #[derive(Module, Debug)]
 pub enum ModelEnum<B: Backend> {
@@ -23,7 +23,7 @@ pub enum ModelEnum<B: Backend> {
 
 impl<B: Backend> DeepLearningModel<B> for ModelEnum<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     fn forward(&self, games: Tensor<B, 2>) -> Tensor<B, 2> {
         match self {
@@ -41,7 +41,7 @@ pub fn infer<B: Backend>(
 ) -> (u8, Vec<f32>)
 where
     B::IntElem: TryInto<u8> + std::fmt::Debug,
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     let label = game.label;
     let batcher = ChessGameBatcher::new(device);
@@ -82,7 +82,7 @@ pub fn load_model_paramter<B: Backend>(
     device: B::Device,
 ) -> ModelEnum<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     let dummy_weights = Tensor::<B, 1>::zeros([4], &device);
     let model_archi = get_model_archi(id, dummy_weights, &device);
@@ -110,11 +110,11 @@ fn get_model_archi<B: Backend>(
     device: &B::Device,
 ) -> ModelEnum<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     match id {
         // mlp model with 12 linerar layer
-       1 => ModelEnum::Mlp_no_bn(Mlp_no_bn::new(
+        1 => ModelEnum::Mlp_no_bn(Mlp_no_bn::new(
             vec![
                 (7, 16),
                 (16, 16),
@@ -242,7 +242,7 @@ fn load_kan_model_weigths<B: Backend>(
     device: B::Device,
 ) -> ModifiedKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
@@ -256,7 +256,7 @@ fn load_mlp_model_weigths<B: Backend>(
     device: B::Device,
 ) -> Mlp<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)
@@ -269,7 +269,7 @@ fn load_mlp_no_bn_model_weigths<B: Backend>(
     device: B::Device,
 ) -> Mlp_no_bn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack + lax::Lapack,
 {
     let record = CompactRecorder::new()
         .load(format!("{artifact_dir}/model").into(), &device)

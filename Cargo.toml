@@ -1,7 +1,8 @@
 [workspace]
+resolver = "2"
 
 members = [
     "rusty_brain",
     "hook_lens",
-    "rough_guard",
+    "rough_guard", "hook_lens_integration" ,"rough_guard_integration",
 ]

@@ -1,19 +1,32 @@
+use std::env;
 fn main() {
-    #[cfg(debug_assertions)]
-    {
+    use burn_cuda::{Cuda, CudaDevice};
+    use fen_string_generation::*;
+    use hook_lens::{
+        data_and_model::inference::{load_model_paramter, ModelEnum},
+        input_data_handling::*,
+    };
 
-        use hook_lens::input_data_handling::*;
-        use fen_string_generation::*;
-        
-        let model_path = "/home/sasa630/Graduation_Project/hook_lens_models/hook_lens_cnn";
-        let board_image_path = "/home/sasa630/Graduation_Project/test_images/test_real_time_image.png";
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() > 1 {
+        let image_path = &args[1];
+
+        let model_path = "../hook_lens/hook_lens_models/cnn_models/cnn_hook_lens";
+
+        let model: ModelEnum<Cuda<f32, i32>> =
+            load_model_paramter::<Cuda<f32, i32>>(1, &model_path, CudaDevice::default());
+
+        let mut predicted_fen_string = get_fen_string_from(image_path, model);
+
+        println!("{}", predicted_fen_string);
+
         //let fen_string = get_fen_string_from(board_image_path, model_path, 1);
-       // println!("Fen String : {}", fen_string);
+        // println!("Fen String : {}", fen_string);
 
         // println!("|-------------------------- Testing ---------------------------|");
         // println!("| Testing in Debug Mode : \'cargo test --release -p hook_lens\'  |");
-        // println!("| Testing in Development Mode : \'cargo test -p hook_lens\'      |"); 
+        // println!("| Testing in Development Mode : \'cargo test -p hook_lens\'      |");
         // println!("|--------------------------------------------------------------|");
     }
-    
-} 
+}

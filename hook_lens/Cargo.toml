@@ -20,16 +20,17 @@ intel-mkl-static = ["ndarray-linalg/intel-mkl-static"]
 intel-mkl-system = ["ndarray-linalg/intel-mkl-system"]
 
 [dependencies]
-burn = { version = "0.14.0", features = ["train", "wgpu", "vision"] }
-burn-cuda = "0.14.0"
+burn = { version = "0.16.1", features = ["train", "wgpu", "vision"] }
+burn-cuda = "0.16.1"
 serde = "*"
 image = "*"
 opencv="*"
-burn-efficient-kan = "*"
+burn-efficient-kan = "0.3.0"
 ndarray = "0.14"  
-ndarray-linalg = "0.16"  
+ndarray-linalg = { version = "0.16", features = ["openblas-system"] }
+lax = "0.17"
 rusty_brain = {path = "../rusty_brain"}
 prettytable-rs = "0.10"
 [dev-dependencies.ndarray-linalg]
 version = "0.16"
-features = ["netlib-system"]
+features = ["openblas-system"]

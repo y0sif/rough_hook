@@ -1,0 +1,7 @@
+[package]
+name = "hook_lens_integration"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rusty_brain = {path = "../rusty_brain"}

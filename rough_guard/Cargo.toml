@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = []
+default = ["openblas-system"]
 
 netlib = ["ndarray-linalg/netlib"]
 openblas = ["ndarray-linalg/openblas"]
@@ -21,8 +21,8 @@ intel-mkl-system = ["ndarray-linalg/intel-mkl-system"]
 
 
 [dependencies]
-burn = { version = "0.14.0", features = ["train", "wgpu", "vision", "ndarray"] }
-burn-cuda = "0.14.0"
+burn = { version = "0.16.1", features = ["train", "wgpu", "vision", "ndarray"] }
+burn-cuda = "0.16.1"
 burn-dataset = "*"
 burn-efficient-kan = "*"
 ndarray = "0.14"  
@@ -32,6 +32,7 @@ rand = "0.8"
 prettytable-rs = "0.10"
 burn-fusion = "0.14.0"
 burn-jit = "0.14.0"
+lax = "0.17"
 
 [dev-dependencies.ndarray-linalg]
 version = "0.16"

@@ -293,9 +293,10 @@ if __name__ == "__main__":
     
     parser = argparse.ArgumentParser(description='Process chess games into feature vectors')
     parser.add_argument('input_dir', help='Directory containing PGN files')
+    parser.add_argument('output_db', help='SQLite database file to store features')
     args = parser.parse_args()
     
-    db_file = '/home/khaled/rough_guard_db/test_dataset.db'
+    db_file = args.output_db
     db_exists = os.path.exists(db_file)
     conn = sqlite3.connect(db_file)
     create_table(conn)

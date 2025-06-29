@@ -11,10 +11,11 @@ use burn::{
 };
 
 use burn_efficient_kan::{Kan as EfficientKan, KanOptions};
+use lax::Lapack;
 
 pub trait DeepLearningModel<B: Backend>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2>;
 }
@@ -104,7 +105,7 @@ impl<B: Backend> Cnn<B> {
 }
 impl<B: Backend> DeepLearningModel<B> for Cnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
@@ -156,7 +157,7 @@ pub struct Kan<B: Backend> {
 }
 impl<B: Backend> Kan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     pub fn new(
         num_classes: usize,
@@ -173,7 +174,7 @@ where
 
 impl<B: Backend> DeepLearningModel<B> for Kan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = x.flatten(1, 3);
@@ -206,7 +207,7 @@ pub struct KanCnn<B: Backend> {
 
 impl<B: Backend> KanCnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     pub fn new(
         num_classes: usize,
@@ -272,7 +273,7 @@ where
 
 impl<B: Backend> DeepLearningModel<B> for KanCnn<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     fn forward(&self, x: Tensor<B, 4>) -> Tensor<B, 2> {
         let x = self.conv1.forward(x);
@@ -315,7 +316,7 @@ fn construct_kan_layer<B: Backend>(
     device: &Device<B>,
 ) -> EfficientKan<B>
 where
-    B::FloatElem: ndarray_linalg::Scalar + ndarray_linalg::Lapack,
+    B::FloatElem: ndarray_linalg::Scalar + lax::Lapack,
 {
     let mut kan_options = KanOptions::new([2048, hidden_layer_size as u32, num_classes as u32]);
 
