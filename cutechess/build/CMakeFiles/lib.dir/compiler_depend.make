@@ -645,97 +645,20 @@ lib_autogen/timestamp: /home/sasa/My_Projects/Graduation_Project/rough_hook/cute
   /usr/lib/x86_64-linux-gnu/cmake/Qt5Widgets/Qt5WidgetsConfigExtras.cmake \
   /usr/lib/x86_64-linux-gnu/cmake/Qt5Widgets/Qt5WidgetsConfigVersion.cmake \
   /usr/lib/x86_64-linux-gnu/cmake/Qt5Widgets/Qt5WidgetsMacros.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in \
-  /usr/share/cmake-3.28/Modules/CMakeCCompilerABI.c \
   /usr/share/cmake-3.28/Modules/CMakeCInformation.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in \
-  /usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp \
   /usr/share/cmake-3.28/Modules/CMakeCXXInformation.cmake \
   /usr/share/cmake-3.28/Modules/CMakeCommonLanguageInclude.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeCompilerIdDetection.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake \
   /usr/share/cmake-3.28/Modules/CMakeGenericSystem.cmake \
   /usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake \
   /usr/share/cmake-3.28/Modules/CMakeLanguageInformation.cmake \
   /usr/share/cmake-3.28/Modules/CMakeParseArguments.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeParseImplicitIncludeInfo.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeParseImplicitLinkInfo.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeParseLibraryArchitecture.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeSystem.cmake.in \
   /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake \
   /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeTestCompilerCommon.cmake \
-  /usr/share/cmake-3.28/Modules/CMakeUnixFindMake.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/ADSP-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/ARMCC-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/ARMClang-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/AppleClang-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Borland-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Bruce-C-DetermineCompiler.cmake \
   /usr/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompilerInternal.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Compaq-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Cray-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/CrayClang-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Embarcadero-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Fujitsu-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/GHS-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/GNU-C-DetermineCompiler.cmake \
   /usr/share/cmake-3.28/Modules/Compiler/GNU-C.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake \
   /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake \
   /usr/share/cmake-3.28/Modules/Compiler/GNU.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/HP-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/HP-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/IAR-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Intel-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/LCC-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/MSVC-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/NVHPC-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/NVIDIA-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/OrangeC-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/PGI-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/PathScale-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/SCO-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/SDCC-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/SunPro-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/TI-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Tasking-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/Watcom-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/XL-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/XL-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/XLClang-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/zOS-C-DetermineCompiler.cmake \
-  /usr/share/cmake-3.28/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake \
   /usr/share/cmake-3.28/Modules/GNUInstallDirs.cmake \
-  /usr/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake \
-  /usr/share/cmake-3.28/Modules/Platform/Linux-Determine-CXX.cmake \
   /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-C.cmake \
   /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-CXX.cmake \
   /usr/share/cmake-3.28/Modules/Platform/Linux-GNU.cmake \
@@ -39089,6 +39012,8 @@ CMakeFiles/lib.dir/projects/lib/src/xboardengine.cpp.o: /home/sasa/My_Projects/G
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/QRandomGenerator:
 
+/usr/include/c++/13/random:
+
 /usr/include/c++/13/bits/random.tcc:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/QByteArray:
@@ -39104,6 +39029,8 @@ CMakeFiles/lib.dir/projects/lib/src/xboardengine.cpp.o: /home/sasa/My_Projects/G
 /usr/include/x86_64-linux-gnu/qt5/QtCore/QProcess:
 
 /usr/include/x86_64-linux-gnu/bits/mathcalls-helper-functions.h:
+
+/usr/include/x86_64-linux-gnu/bits/math-vector.h:
 
 /usr/include/x86_64-linux-gnu/bits/iscanonical.h:
 
@@ -39167,7 +39094,11 @@ CMakeFiles/lib.dir/projects/lib/src/xboardengine.cpp.o: /home/sasa/My_Projects/G
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/3rdparty/fathom/src/tbconfig.h:
 
+/usr/include/x86_64-linux-gnu/sys/types.h:
+
 /usr/include/x86_64-linux-gnu/sys/single_threaded.h:
+
+/usr/include/x86_64-linux-gnu/sys/select.h:
 
 /usr/include/x86_64-linux-gnu/bits/waitflags.h:
 
@@ -39215,11 +39146,15 @@ lib_autogen/IK2B7J2WYU/moc_humanplayer.cpp:
 
 lib_autogen/IK2B7J2WYU/moc_enginemanager.cpp:
 
+lib_autogen/IK2B7J2WYU/moc_chessplayer.cpp:
+
 lib_autogen/IK2B7J2WYU/moc_chessgame.cpp:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qregularexpression.h:
 
 lib_autogen/mocs_compilation.cpp:
+
+lib_autogen/A4F4RKMHKD/qrc_eco.cpp:
 
 /usr/share/cmake-3.28/Modules/Platform/UnixPaths.cmake:
 
@@ -39227,55 +39162,7 @@ lib_autogen/mocs_compilation.cpp:
 
 /usr/share/cmake-3.28/Modules/Platform/Linux-GNU-C.cmake:
 
-/usr/share/cmake-3.28/Modules/Internal/FeatureTesting.cmake:
-
 /usr/share/cmake-3.28/Modules/GNUInstallDirs.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/zOS-C-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/XLClang-C-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/TI-DetermineCompiler.cmake:
-
-/usr/include/x86_64-linux-gnu/sys/select.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake:
-
-/usr/include/c++/13/random:
-
-/usr/share/cmake-3.28/Modules/Compiler/SunPro-C-DetermineCompiler.cmake:
-
-lib_autogen/IK2B7J2WYU/moc_chessplayer.cpp:
-
-/usr/share/cmake-3.28/Modules/Compiler/SDCC-C-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/SCO-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/PGI-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/OrangeC-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/MSVC-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Intel-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/IAR-DetermineCompiler.cmake:
-
-lib_autogen/A4F4RKMHKD/qrc_eco.cpp:
-
-/usr/share/cmake-3.28/Modules/Compiler/HP-CXX-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/HP-C-DetermineCompiler.cmake:
 
 /usr/share/cmake-3.28/Modules/Compiler/GNU.cmake:
 
@@ -39283,71 +39170,13 @@ lib_autogen/A4F4RKMHKD/qrc_eco.cpp:
 
 /usr/share/cmake-3.28/Modules/Compiler/GNU-CXX.cmake:
 
-/usr/share/cmake-3.28/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/GNU-C-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Fujitsu-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Embarcadero-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/CrayClang-DetermineCompiler.cmake:
-
-/usr/include/x86_64-linux-gnu/bits/math-vector.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/Cray-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/GHS-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Compaq-C-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompiler.cmake:
-
 /usr/share/cmake-3.28/Modules/Compiler/CMakeCommonCompilerMacros.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/Borland-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/AppleClang-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/ADSP-DetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeUnixFindMake.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeTestCompilerCommon.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeTestCXXCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeTestCCompiler.cmake:
 
 /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInitialize.cmake:
 
 /usr/share/cmake-3.28/Modules/CMakeSystemSpecificInformation.cmake:
 
-/usr/share/cmake-3.28/Modules/CMakeSystem.cmake.in:
-
-/usr/share/cmake-3.28/Modules/CMakeParseImplicitIncludeInfo.cmake:
-
 /usr/share/cmake-3.28/Modules/CMakeInitializeConfigs.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeFindBinUtils.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeDetermineSystem.cmake:
-
-/usr/include/x86_64-linux-gnu/sys/types.h:
-
-/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerId.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeDetermineCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeDetermineCXXCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeCompilerIdDetection.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeCCompilerABI.c:
-
-/usr/share/cmake-3.28/Modules/CMakeCCompiler.cmake.in:
 
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Widgets/Qt5WidgetsMacros.cmake:
 
@@ -39391,8 +39220,6 @@ lib_autogen/A4F4RKMHKD/qrc_eco.cpp:
 
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QEvdevKeyboardPlugin.cmake:
 
-/usr/share/cmake-3.28/Modules/Compiler/NVIDIA-DetermineCompiler.cmake:
-
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5Gui_QEglFSKmsGbmIntegrationPlugin.cmake:
 
 /usr/include/c++/13/condition_variable:
@@ -39406,8 +39233,6 @@ lib_autogen/IK2B7J2WYU/moc_xboardengine.cpp:
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake:
 
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Gui/Qt5GuiConfig.cmake:
-
-/usr/share/cmake-3.28/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake:
 
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Core/Qt5CoreMacros.cmake:
 
@@ -39511,8 +39336,6 @@ lib_autogen/IK2B7J2WYU/moc_worker.cpp:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/giveawayboard.h:
 
-/usr/share/cmake-3.28/Modules/Compiler/Watcom-DetermineCompiler.cmake:
-
 /usr/include/c++/13/bits/stream_iterator.h:
 
 /usr/include/math.h:
@@ -39520,8 +39343,6 @@ lib_autogen/IK2B7J2WYU/moc_worker.cpp:
 /usr/include/c++/13/cstdio:
 
 /usr/include/x86_64-linux-gnu/bits/types/__mbstate_t.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/minishogiboard.h:
 
@@ -39542,8 +39363,6 @@ lib_autogen/IK2B7J2WYU/moc_worker.cpp:
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qversiontagging.h:
 
 CMakeFiles/3.28.3/CMakeCCompiler.cmake:
-
-/usr/share/cmake-3.28/Modules/CMakeDetermineCCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentfactory.h:
 
@@ -39615,8 +39434,6 @@ CMakeFiles/3.28.3/CMakeCCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginefactory.h:
 
-/usr/share/cmake-3.28/Modules/Compiler/LCC-C-DetermineCompiler.cmake:
-
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/mersenne.cpp:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardtransition.cpp:
@@ -39624,8 +39441,6 @@ CMakeFiles/3.28.3/CMakeCCompiler.cmake:
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Concurrent/Qt5ConcurrentConfigVersion.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/placementboard.cpp:
-
-/usr/share/cmake-3.28/Modules/CMakeDetermineCompilerABI.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/enginecombooption.cpp:
 
@@ -39648,8 +39463,6 @@ CMakeFiles/3.28.3/CMakeCCompiler.cmake:
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessgame.cpp:
 
 /usr/include/c++/13/compare:
-
-/usr/share/cmake-3.28/Modules/Compiler/Bruce-C-DetermineCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/chessengine.cpp:
 
@@ -39793,8 +39606,6 @@ lib_autogen/include/gamemanager.moc:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/chancellorboard.h:
 
-/usr/share/cmake-3.28/Modules/CMakeCXXCompiler.cmake.in:
-
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/twokingseachboard.cpp:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/dobutsushogiboard.h:
@@ -39817,15 +39628,11 @@ lib_autogen/include/gamemanager.moc:
 
 /usr/include/x86_64-linux-gnu/bits/time.h:
 
-/usr/share/cmake-3.28/Modules/Compiler/ARMClang-DetermineCompiler.cmake:
-
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qconfig.h:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/extinctionboard.h:
 
 /usr/include/c++/13/bits/exception.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/Tasking-DetermineCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/boardfactory.cpp:
 
@@ -39919,8 +39726,6 @@ CMakeFiles/3.28.3/CMakeCXXCompiler.cmake:
 
 /usr/share/cmake-3.28/Modules/Platform/Linux.cmake:
 
-/usr/share/cmake-3.28/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake:
-
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/components/json/src/jsonparser.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qlogging.h:
@@ -39963,13 +39768,9 @@ CMakeFiles/3.28.3/CMakeCXXCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/coregalboard.h:
 
-/usr/share/cmake-3.28/Modules/CMakeParseImplicitLinkInfo.cmake:
-
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/janusboard.cpp:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/checklessboard.cpp:
-
-/usr/share/cmake-3.28/Modules/CMakeCXXCompilerABI.cpp:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qgenericatomic.h:
 
@@ -40010,8 +39811,6 @@ CMakeFiles/3.28.3/CMakeSystem.cmake:
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/econode.h:
 
 /usr/include/c++/13/atomic:
-
-/usr/share/cmake-3.28/Modules/Compiler/XL-CXX-DetermineCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/gridboard.cpp:
 
@@ -40066,8 +39865,6 @@ lib_autogen/IK2B7J2WYU/moc_uciengine.cpp:
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/epdrecord.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/QMap:
-
-/usr/share/cmake-3.28/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/embassyboard.cpp:
 
@@ -40126,8 +39923,6 @@ lib_autogen/IK2B7J2WYU/moc_pyramidtournament.cpp:
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qelapsedtimer.h:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/capablancaboard.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/Clang-DetermineCompilerInternal.cmake:
 
 /usr/include/c++/13/bits/basic_ios.h:
 
@@ -40224,8 +40019,6 @@ lib_autogen/IK2B7J2WYU/moc_chessengine.cpp:
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/move.h:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/kingofthehillboard.cpp:
-
-/usr/share/cmake-3.28/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/oukboard.h:
 
@@ -40330,8 +40123,6 @@ lib_autogen/IK2B7J2WYU/moc_gamemanager.cpp:
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/board/gridboard.h:
 
 /usr/include/c++/13/bits/functional_hash.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake:
 
 /usr/include/c++/13/bits/hash_bytes.h:
 
@@ -40441,8 +40232,6 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/QDate:
 
-/usr/share/cmake-3.28/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake:
-
 /usr/include/c++/13/bits/refwrap.h:
 
 /usr/include/c++/13/bits/requires_hosted.h:
@@ -40462,8 +40251,6 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 /usr/include/c++/13/bits/std_abs.h:
 
 /usr/include/c++/13/bits/std_mutex.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qstringview.h:
 
@@ -40555,11 +40342,7 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 
 /usr/include/c++/13/cstdlib:
 
-/usr/share/cmake-3.28/Modules/Compiler/GNU-FindBinUtils.cmake:
-
 /usr/include/c++/13/cwctype:
-
-/usr/share/cmake-3.28/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake:
 
 /usr/lib/x86_64-linux-gnu/cmake/Qt5Svg/Qt5SvgConfigVersion.cmake:
 
@@ -40609,11 +40392,7 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 
 /usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
 
-/usr/share/cmake-3.28/Modules/CMakeParseLibraryArchitecture.cmake:
-
 /usr/include/c++/13/map:
-
-/usr/share/cmake-3.28/Modules/Compiler/NVHPC-DetermineCompiler.cmake:
 
 /usr/include/c++/13/string_view:
 
@@ -40670,8 +40449,6 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 /usr/include/x86_64-linux-gnu/bits/fcntl.h:
 
 /usr/include/x86_64-linux-gnu/asm/errno.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/PathScale-DetermineCompiler.cmake:
 
 /usr/include/x86_64-linux-gnu/asm/unistd_64.h:
 
@@ -40761,8 +40538,6 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
 
-/usr/share/cmake-3.28/Modules/Compiler/XL-C-DetermineCompiler.cmake:
-
 /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
 
 /usr/include/c++/13/bits/ostream.tcc:
@@ -40773,15 +40548,11 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qcompilerdetection.h:
 
-/usr/share/cmake-3.28/Modules/CMakeDetermineCompileFeatures.cmake:
-
 /usr/lib/gcc/x86_64-linux-gnu/13/include/stdarg.h:
 
 /usr/include/x86_64-linux-gnu/c++/13/bits/cpu_defines.h:
 
 /usr/include/c++/13/cstring:
-
-/usr/share/cmake-3.28/Modules/Platform/Linux-Determine-CXX.cmake:
 
 /home/sasa/My_Projects/Graduation_Project/rough_hook/cutechess/projects/lib/src/tournamentfactory.cpp:
 
@@ -40858,8 +40629,6 @@ lib_autogen/IK2B7J2WYU/moc_gauntlettournament.cpp:
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontainerfwd.h:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qcontainertools_impl.h:
-
-/usr/share/cmake-3.28/Modules/Compiler/ARMCC-DetermineCompiler.cmake:
 
 /usr/include/x86_64-linux-gnu/qt5/QtCore/qeventloop.h:
 

@@ -3,7 +3,7 @@ use image::{imageops, ColorType, DynamicImage, GenericImageView, ImageFormat};
 use opencv::core::{MatTraitConst, MatTraitConstManual, Point_, Rect, Size};
 use opencv::highgui;
 use opencv::imgcodecs::{imread, imwrite, IMREAD_COLOR};
-use opencv::types::VectorOfu8;
+//use opencv::types::VectorOfu8;
 use opencv::{
     core::{Mat, Point, Point2f, Vec2f, Vector},
     highgui::{imshow, wait_key_def},

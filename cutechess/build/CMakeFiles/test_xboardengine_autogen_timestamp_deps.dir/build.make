@@ -66,9 +66,9 @@ include CMakeFiles/test_xboardengine_autogen_timestamp_deps.dir/compiler_depend.
 # Include the progress variables for this target.
 include CMakeFiles/test_xboardengine_autogen_timestamp_deps.dir/progress.make
 
-CMakeFiles/test_xboardengine_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 CMakeFiles/test_xboardengine_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
 CMakeFiles/test_xboardengine_autogen_timestamp_deps: libcutechess.a
+CMakeFiles/test_xboardengine_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 
 test_xboardengine_autogen_timestamp_deps: CMakeFiles/test_xboardengine_autogen_timestamp_deps
 test_xboardengine_autogen_timestamp_deps: CMakeFiles/test_xboardengine_autogen_timestamp_deps.dir/build.make

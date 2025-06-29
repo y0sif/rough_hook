@@ -66,9 +66,9 @@ include CMakeFiles/test_tournamentplayer_autogen_timestamp_deps.dir/compiler_dep
 # Include the progress variables for this target.
 include CMakeFiles/test_tournamentplayer_autogen_timestamp_deps.dir/progress.make
 
-CMakeFiles/test_tournamentplayer_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 CMakeFiles/test_tournamentplayer_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
 CMakeFiles/test_tournamentplayer_autogen_timestamp_deps: libcutechess.a
+CMakeFiles/test_tournamentplayer_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 
 test_tournamentplayer_autogen_timestamp_deps: CMakeFiles/test_tournamentplayer_autogen_timestamp_deps
 test_tournamentplayer_autogen_timestamp_deps: CMakeFiles/test_tournamentplayer_autogen_timestamp_deps.dir/build.make

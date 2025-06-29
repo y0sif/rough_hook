@@ -66,9 +66,9 @@ include CMakeFiles/cli_autogen_timestamp_deps.dir/compiler_depend.make
 # Include the progress variables for this target.
 include CMakeFiles/cli_autogen_timestamp_deps.dir/progress.make
 
-CMakeFiles/cli_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 CMakeFiles/cli_autogen_timestamp_deps: /usr/lib/qt5/bin/uic
 CMakeFiles/cli_autogen_timestamp_deps: libcutechess.a
+CMakeFiles/cli_autogen_timestamp_deps: /usr/lib/qt5/bin/moc
 
 cli_autogen_timestamp_deps: CMakeFiles/cli_autogen_timestamp_deps
 cli_autogen_timestamp_deps: CMakeFiles/cli_autogen_timestamp_deps.dir/build.make
