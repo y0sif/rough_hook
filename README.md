@@ -119,14 +119,14 @@ cargo build -p rough_guard --release
 
 #### 3. Verify Installation
 ```bash
-# Test the chess engine
-cargo run -p rusty_brain --release
+# Test the chess engine (includes PERFT tests for move generation validation)
+cargo test -p rusty_brain --release
 
-# Run computer vision tests
-cargo test -p hook_lens --release
+# Run computer vision system
+cargo run -p hook_lens --release
 
-# Test behavioral analysis
-cargo test -p rough_guard --release
+# Run behavioral analysis system
+cargo run -p rough_guard --release
 ```
 
 ## Project Components
@@ -151,10 +151,8 @@ Note: Unlike Hook Lens and Rough Guard, NNUE training does not use the Burn fram
 # Start UCI mode
 cargo run -p rusty_brain --release
 
-# Run performance tests
+# Run PERFT tests for move generation validation
 cargo test -p rusty_brain --release
-
-# [Placeholder: Benchmark evaluation functions - command line arguments to be added]
 ```
 
 **Key Files:**
@@ -177,17 +175,16 @@ Computer vision pipeline for analyzing chess board images and extracting positio
 
 **Training Models:**
 ```bash
-# [Placeholder: Train CNN+MLP model - command line arguments to be added]
-
-# [Placeholder: Train CNN+KAN model - command line arguments to be added]
-
-# Test trained models
-cargo test -p hook_lens --release
+# Training and testing configurations need to be adjusted in the source code
+# Use cargo run to perform training or testing for specific models
+cargo run -p hook_lens --release
 ```
 
 **Using for Inference:**
 ```bash
-# [Placeholder: Analyze a chess board image - command line arguments to be added]
+# Training and testing configurations need to be adjusted in the source code
+# Use cargo run for model inference and evaluation
+cargo run -p hook_lens --release
 ```
 
 **Key Files:**
@@ -208,12 +205,9 @@ Behavioral anomaly detection system for identifying chess cheating patterns.
 
 **Training Models:**
 ```bash
-# [Placeholder: Train MLP classifier - command line arguments to be added]
-
-# [Placeholder: Train KAN classifier - command line arguments to be added]
-
-# Evaluate models
-cargo test -p rough_guard --release
+# Training and testing configurations need to be adjusted in the source code
+# Use cargo run to perform training or testing for specific models
+cargo run -p rough_guard --release
 ```
 
 **Key Files:**
@@ -238,10 +232,19 @@ mkdir -p databases
 
 ## Scripts
 
-The `scripts/` directory contains data preprocessing and augmentation utilities:
+The `scripts/` directory contains data preprocessing and augmentation utilities for the project components:
 
-**Planned Scripts:**
-- [Placeholder: Script implementations to be added based on research needs]
+**Hook Lens Scripts (Python):**
+- `data_augmentation_script.py` - Image data augmentation for training
+- `image_resize_script.py` - Batch image resizing utilities
+- `image_splitting_script.py` - Dataset splitting functionality
+
+**Rough Guard Scripts (Python):**
+- `1. PGN Filtering/` - Chess game filtering and preprocessing
+- `2. Feature Extraction & DB Creation/` - Feature extraction from chess games
+- `3. Database Labeling/` - Automated labeling for training data
+- `4. Separate White & Black/` - Game data separation by player color
+- `5. Compute Euclidean Distance/` - Distance computation for behavioral analysis
 
 ## Usage Examples
 
@@ -258,10 +261,16 @@ go depth 10
 ```
 
 ### Example 2: Analyze Chess Board Image
-- [Placeholder: example to be added]
+```bash
+# Configure analysis parameters in source code, then run
+cargo run -p hook_lens --release
+```
 
 ### Example 3: Behavioral Analysis
-- [Placeholder: example to be added]
+```bash
+# Configure analysis parameters in source code, then run
+cargo run -p rough_guard --release
+```
 
 ## Research Results
 
