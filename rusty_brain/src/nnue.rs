@@ -7,16 +7,8 @@ const QB: i16 = 64;
 This is how you would load the network in rust.
 Commented out because it will error if it can't find the file.
 */
-<<<<<<< HEAD
 pub static NNUE: Network =
     unsafe { std::mem::transmute(*include_bytes!("../../nnue_models/simple_with_more_data-40/quantised.bin")) };
-=======
-pub static NNUE: Network = unsafe {
-    std::mem::transmute(*include_bytes!(
-        "../../nnue_models/simple_with_more_data-40/quantised.bin"
-    ))
-};
->>>>>>> pre_production
 
 #[inline]
 /// Clipped ReLU - Activation Function.
@@ -84,30 +76,14 @@ impl Accumulator {
 
     /// Add a feature to an accumulator.
     pub fn add_feature(&mut self, feature_idx: usize, net: &Network) {
-<<<<<<< HEAD
         for (i, d) in self.vals.iter_mut().zip(&net.feature_weights[feature_idx].vals) {
-=======
-        for (i, d) in self
-            .vals
-            .iter_mut()
-            .zip(&net.feature_weights[feature_idx].vals)
-        {
->>>>>>> pre_production
             *i += *d
         }
     }
 
     /// Remove a feature from an accumulator.
     pub fn remove_feature(&mut self, feature_idx: usize, net: &Network) {
-<<<<<<< HEAD
         for (i, d) in self.vals.iter_mut().zip(&net.feature_weights[feature_idx].vals) {
-=======
-        for (i, d) in self
-            .vals
-            .iter_mut()
-            .zip(&net.feature_weights[feature_idx].vals)
-        {
->>>>>>> pre_production
             *i -= *d
         }
     }
