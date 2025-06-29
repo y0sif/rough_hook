@@ -3,16 +3,12 @@ use crate::board::{Board, Turn};
 use crate::movement::Move;
 use crate::nnue::NNUE;
 use crate::transposition::{TranspositionTable, Node};
-<<<<<<< HEAD
 use crate::square::Square;
-=======
->>>>>>> pre_production
 
 
 impl Board {
 
     pub fn find_best_move(&mut self, transposition_table: &mut TranspositionTable, depth: i32) -> (Move, i32) {
-<<<<<<< HEAD
         
         //In all functions below
             //Maximizing and Minimizing is an indicator of root call
@@ -46,14 +42,6 @@ impl Board {
         };
         (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
         */
-=======
-        // Start with max for White, min for Black to ensure correct root node selection
-        let eval = match self.turn {
-            Turn::White => self.alpha_beta_max_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
-            Turn::Black => self.alpha_beta_min_tt(transposition_table, true, i32::MIN, i32::MAX, depth),
-        };
-        (self.best_move.unwrap_or_else( || Move::encode(0, 0, 0)), eval)
->>>>>>> pre_production
         
         /* 
         //Iterative deepening, needs move ordering to show its strength
@@ -65,18 +53,11 @@ impl Board {
         */
 
 
-<<<<<<< HEAD
 
     }
 
     fn maxi(&mut self, maximizing: bool, depth_left: i32) -> i32 {
         if depth_left == 0 {
-=======
-    }
-
-    fn maxi(&mut self, maximazing: bool, depth: i32) -> i32 {
-        if depth == 0 {
->>>>>>> pre_production
             return match self.turn {
                 Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
                 Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
@@ -86,7 +67,6 @@ impl Board {
         let moves: Vec<Move> = self.generate_legal_moves();
 
         for current_move in moves {
-<<<<<<< HEAD
             self.make_move(current_move);
             let score = self.mini(false, depth_left - 1);
             if self.checkmate {
@@ -95,35 +75,18 @@ impl Board {
                 match self.turn {
                     Turn::White => return i32::MAX,
                     Turn::Black => return i32::MIN,
-=======
-
-            self.make_move(current_move);
-            let score = self.mini(false, depth - 1);
-            if self.checkmate {
-                self.undo_move();
-                match self.turn {
-                    Turn::White => return i32::MIN,
-                    Turn::Black => return i32::MAX,
->>>>>>> pre_production
                 };
             }
             else if self.draw || self.stalemate {
                 self.undo_move();
-<<<<<<< HEAD
                 if maximizing {self.best_move = Some(current_move)};
-=======
->>>>>>> pre_production
                 return 0;
             }
             self.undo_move();
 
             if score > max {
                 max = score;
-<<<<<<< HEAD
                 if maximizing {
-=======
-                if maximazing {
->>>>>>> pre_production
                     self.best_move = Some(current_move);
                 }
             }
@@ -131,13 +94,8 @@ impl Board {
         return max;
     }
 
-<<<<<<< HEAD
     fn mini(&mut self, minimizing: bool, depth_left: i32) -> i32 {
         if depth_left == 0 {
-=======
-    fn mini(&mut self, minimizing: bool, depth: i32) -> i32 {
-        if depth == 0 {
->>>>>>> pre_production
             return match self.turn {
                 Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
                 Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
@@ -147,7 +105,6 @@ impl Board {
         let moves: Vec<Move> = self.generate_legal_moves();
 
         for current_move in moves {
-<<<<<<< HEAD
             self.make_move(current_move);
             let score = self.maxi(false, depth_left - 1);
             if self.checkmate {
@@ -156,24 +113,11 @@ impl Board {
                 match self.turn {
                     Turn::White => return i32::MAX,
                     Turn::Black => return i32::MIN,
-=======
-
-            self.make_move(current_move);
-            let score = self.maxi(false, depth - 1);
-            if self.checkmate {
-                self.undo_move();
-                match self.turn {
-                    Turn::White => return i32::MIN,
-                    Turn::Black => return i32::MAX,
->>>>>>> pre_production
                 };
             }
             else if self.draw || self.stalemate {
                 self.undo_move();
-<<<<<<< HEAD
                 if minimizing {self.best_move = Some(current_move)};
-=======
->>>>>>> pre_production
                 return 0;
             }
             self.undo_move();
@@ -205,24 +149,15 @@ impl Board {
             let score: i32 = self.alpha_beta_min(false, alpha, beta, depth_left - 1);
             if self.checkmate {
                 self.undo_move();
-<<<<<<< HEAD
                 if maximizing {self.best_move = Some(current_move);}
                 match self.turn {
                     Turn::White => return i32::MAX,
                     Turn::Black => return i32::MIN,
-=======
-                match self.turn {
-                    Turn::White => return i32::MIN,
-                    Turn::Black => return i32::MAX,
->>>>>>> pre_production
                 };
             }
             else if self.draw || self.stalemate {
                 self.undo_move();
-<<<<<<< HEAD
                 if maximizing {self.best_move = Some(current_move)};
-=======
->>>>>>> pre_production
                 return 0;
             }
             self.undo_move();
@@ -265,24 +200,15 @@ impl Board {
             let score = self.alpha_beta_max(false, alpha, beta, depth_left-1);
             if self.checkmate {
                 self.undo_move();
-<<<<<<< HEAD
                 if minimizing {self.best_move = Some(current_move);}
                 match self.turn {
                     Turn::White => return i32::MAX,
                     Turn::Black => return i32::MIN,
-=======
-                match self.turn {
-                    Turn::White => return i32::MIN,
-                    Turn::Black => return i32::MAX,
->>>>>>> pre_production
                 };
             }
             else if self.draw || self.stalemate {
                 self.undo_move();
-<<<<<<< HEAD
                 if minimizing {self.best_move = Some(current_move)};
-=======
->>>>>>> pre_production
                 return 0;
             }
             self.undo_move();
@@ -358,24 +284,15 @@ impl Board {
             let score: i32 = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
             if self.checkmate {
                 self.undo_move();
-<<<<<<< HEAD
                 if maximizing {self.best_move = Some(current_move);}
                 match self.turn {
                     Turn::White => return i32::MAX,
                     Turn::Black => return i32::MIN,
-=======
-                match self.turn {
-                    Turn::White => return i32::MIN,
-                    Turn::Black => return i32::MAX,
->>>>>>> pre_production
                 };
             }
             else if self.draw || self.stalemate {
                 self.undo_move();
-<<<<<<< HEAD
                 if maximizing {self.best_move = Some(current_move)};
-=======
->>>>>>> pre_production
                 return 0;
             }
             self.undo_move();
@@ -453,24 +370,15 @@ impl Board {
             let score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
             if self.checkmate {
                 self.undo_move();
-<<<<<<< HEAD
                 if minimizing {self.best_move = Some(current_move);}
                 match self.turn {
                     Turn::White => return i32::MAX,
                     Turn::Black => return i32::MIN,
-=======
-                match self.turn {
-                    Turn::White => return i32::MIN,
-                    Turn::Black => return i32::MAX,
->>>>>>> pre_production
                 };
             }
             else if self.draw || self.stalemate {
                 self.undo_move();
-<<<<<<< HEAD
                 if minimizing {self.best_move = Some(current_move)};
-=======
->>>>>>> pre_production
                 return 0;
             }
             self.undo_move();
