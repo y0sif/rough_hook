@@ -50,6 +50,7 @@ rough_hook/
 ├── rusty_brain/          # Chess engine with switchable evaluation functions
 ├── hook_lens/            # Computer vision pipeline for chess piece classification  
 ├── rough_guard/          # Behavioral anomaly detection system
+├── cutechess/            # Modified cutechess GUI with Hook Lens & Rough Guard integration
 ├── databases/            # Training and evaluation datasets (see setup instructions)
 ├── scripts/              # Data preprocessing and augmentation scripts
 ├── nnue_models/          # Pre-trained NNUE neural network models
@@ -90,6 +91,9 @@ sudo apt-get install libatlas-base-dev libblas-dev liblapack-dev
 
 # Computer vision dependencies
 sudo apt install libopencv-dev clang libclang-dev
+
+# Qt dependencies for cutechess GUI
+sudo apt install qtbase5-dev qttools5-dev-tools
 ```
 
 #### 3. Install NVIDIA CUDA Toolkit (for GPU acceleration)
@@ -108,13 +112,19 @@ cd rough_hook
 
 #### 2. Build the Project
 ```bash
-# Build all components
+# Build all Rust components
 cargo build --release
 
-# Or build individual components
+# Or build individual Rust components
 cargo build -p rusty_brain --release
 cargo build -p hook_lens --release  
 cargo build -p rough_guard --release
+
+# Build cutechess (C++/Qt application)
+cd cutechess/build
+cmake ..
+make -j$(nproc)
+cd ../..
 ```
 
 #### 3. Verify Installation
@@ -127,19 +137,55 @@ cargo run -p hook_lens --release
 
 # Run behavioral analysis system
 cargo run -p rough_guard --release
+
+# Test cutechess GUI (should open the chess interface)
+cd cutechess/build
+./cutechess
+cd ../..
 ```
 
 ## Project Components
 
+### Cutechess Integration
+
+The project includes a modified version of cutechess with integrated Hook Lens and Rough Guard features.
+
+**Running cutechess with integrated features:**
+```bash
+# Navigate to the cutechess build directory and run the GUI
+cd cutechess/build
+./cutechess
+```
+
+**Accessing integrated features:**
+- Hook Lens integration: Available in the **Tools** menu
+- Rough Guard integration: Available in the **Tools** menu
+
+**Rebuilding cutechess after modifications:**
+If you make any changes to the cutechess source code, you'll need to rebuild the project:
+
+```bash
+# Clean the build directory
+cd cutechess
+rm -rf build/*
+
+# Regenerate CMake configuration
+cd build
+cmake ..
+
+# Build the project
+make -j$(nproc)
+```
+
 ### Rusty Brain - Chess Engine
 
-A complete UCI-compliant chess engine with switchable evaluation functions.
+A complete UCI-compliant chess engine.
 
 **Features:**
 - Bitboard representation with magic bitboards for sliding pieces
 - Alpha-beta search with iterative deepening
 - Transposition tables for search optimization  
-- Multiple evaluation functions: HCE, NNUE, and KAN
+- Evaluation functions: NNUE
 - UCI protocol support for chess GUI integration
 
 **NNUE Training:**
@@ -248,7 +294,19 @@ The `scripts/` directory contains data preprocessing and augmentation utilities 
 
 ## Usage Examples
 
-### Example 1: Chess Engine Analysis
+### Example 1: Using cutechess with integrated features
+```bash
+# Start cutechess GUI
+cd cutechess/build
+./cutechess
+
+# In the GUI:
+# 1. Go to Tools menu
+# 2. Select "Hook Lens" for computer vision features
+# 3. Select "Rough Guard" for behavioral analysis features
+```
+
+### Example 2: Chess Engine Analysis
 ```bash
 # Start the engine in UCI mode
 cargo run -p rusty_brain --release
@@ -260,13 +318,13 @@ position startpos moves e2e4 e7e5
 go depth 10
 ```
 
-### Example 2: Analyze Chess Board Image
+### Example 3: Analyze Chess Board Image
 ```bash
 # Configure analysis parameters in source code, then run
 cargo run -p hook_lens --release
 ```
 
-### Example 3: Behavioral Analysis
+### Example 4: Behavioral Analysis
 ```bash
 # Configure analysis parameters in source code, then run
 cargo run -p rough_guard --release
