@@ -1,0 +1,7 @@
+# Ignore C++ and CMake from GitHub language stats
+cpp/** linguist-vendored
+**/*.cpp linguist-vendored
+**/*.hpp linguist-vendored
+**/*.h linguist-vendored
+**/CMakeLists.txt linguist-vendored
+**/*.cmake linguist-vendored
