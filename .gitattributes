@@ -1,4 +1,5 @@
 # Ignore C++ and CMake from GitHub language stats
+cutechess/** linguist-vendored
 cpp/** linguist-vendored
 **/*.cpp linguist-vendored
 **/*.hpp linguist-vendored
