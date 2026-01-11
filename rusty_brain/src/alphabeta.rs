@@ -66,9 +66,18 @@ impl Board {
         let mut max = i32::MIN;
         let moves: Vec<Move> = self.generate_legal_moves();
 
+        if moves.len() == 1 {
+            self.best_move = Some(moves[0]);
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            }; 
+        }
+
         for current_move in moves {
             self.make_move(current_move);
-            let mut score = self.mini(false, depth_left - 1);
+            let mut score = 0;  //init
+
             if self.checkmate {
                 self.undo_move();
                 if maximizing {self.best_move = Some(current_move)};
@@ -83,6 +92,9 @@ impl Board {
                     if maximizing {self.best_move = Some(current_move)}
                 }
             
+            }
+            else {
+                score = self.mini(false, depth_left - 1);
             }
             self.undo_move();
 
@@ -106,9 +118,17 @@ impl Board {
         let mut min = i32::MAX;
         let moves: Vec<Move> = self.generate_legal_moves();
 
+        if moves.len() == 1 {
+            self.best_move = Some(moves[0]);
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            }; 
+        }
+
         for current_move in moves {
             self.make_move(current_move);
-            let mut score = self.maxi(false, depth_left - 1);
+            let mut score = 0; //init
             if self.checkmate {
                 self.undo_move();
                 if minimizing {self.best_move = Some(current_move)};
@@ -123,6 +143,9 @@ impl Board {
                     if minimizing {self.best_move = Some(current_move)}
                 }
                 
+            }
+            else {
+                score = self.maxi(false, depth_left - 1);
             }
             self.undo_move();
 
@@ -148,9 +171,18 @@ impl Board {
         let mut best_value = i32::MIN;
         let moves: Vec<Move> = self.generate_legal_moves();
 
+        if moves.len() == 1 {
+            self.best_move = Some(moves[0]);
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            }; 
+        }
+        
         for current_move in moves {
             self.make_move(current_move);
-            let mut score: i32 = self.alpha_beta_min(false, alpha, beta, depth_left - 1);
+            let mut score = 0; //init
+
             if self.checkmate {
                 self.undo_move();
                 if maximizing {self.best_move = Some(current_move);}
@@ -165,7 +197,11 @@ impl Board {
                     if maximizing {self.best_move = Some(current_move)}
                 }
             }
+            else {
+                score = self.alpha_beta_min(false, alpha, beta, depth_left - 1);
+            }
             self.undo_move();
+
             if score > best_value {
                 best_value = score;
                 if maximizing {
@@ -199,9 +235,19 @@ impl Board {
         let mut best_value = i32::MAX;
         let moves: Vec<Move> = self.generate_legal_moves();
 
+        if moves.len() == 1 {
+            self.best_move = Some(moves[0]);
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            }; 
+        }
+
+        
         for current_move in moves {
             self.make_move(current_move);
-            let mut score = self.alpha_beta_max(false, alpha, beta, depth_left-1);
+            let mut score = 0; //init
+
             if self.checkmate {
                 self.undo_move();
                 if minimizing {self.best_move = Some(current_move);}
@@ -215,6 +261,9 @@ impl Board {
                 if score < best_value {
                     if minimizing {self.best_move = Some(current_move)}
                 }
+            }
+            else {
+                score = self.alpha_beta_max(false, alpha, beta, depth_left-1);
             }
             self.undo_move();
 
@@ -283,10 +332,17 @@ impl Board {
         let mut best_value = i32::MIN;
         let moves: Vec<Move> = self.generate_legal_moves();
 
-        for current_move in moves {
+        if moves.len() == 1 {
+            self.best_move = Some(moves[0]);
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            }; 
+        }
 
+        for current_move in moves {
             self.make_move(current_move);
-            let mut score: i32 = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
+            let mut score: i32 = 0;
             if self.checkmate {
                 self.undo_move();
                 if maximizing {self.best_move = Some(current_move);}
@@ -300,6 +356,9 @@ impl Board {
                 if score > best_value {
                     if maximizing {self.best_move = Some(current_move)}
                 }
+            }
+            else {
+                score = self.alpha_beta_min_tt(transposition_table, false, alpha, beta, depth_left - 1);
             }
             self.undo_move();
             
@@ -370,10 +429,17 @@ impl Board {
         let mut best_value = i32::MAX;
         let moves: Vec<Move> = self.generate_legal_moves();
 
-        for current_move in moves {
+        if moves.len() == 1 {
+            self.best_move = Some(moves[0]);
+            return match self.turn {
+                Turn::White => NNUE.evaluate(&self.white_accumulator, &self.black_accumulator),
+                Turn::Black => -NNUE.evaluate(&self.black_accumulator, &self.white_accumulator),
+            }; 
+        }
 
+        for current_move in moves {
             self.make_move(current_move);
-            let mut score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
+            let mut score = 0;
             if self.checkmate {
                 self.undo_move();
                 if minimizing {self.best_move = Some(current_move);}
@@ -387,6 +453,9 @@ impl Board {
                 if score < best_value {
                     if minimizing {self.best_move = Some(current_move)}
                 }
+            }
+            else {
+                score = self.alpha_beta_max_tt(transposition_table, false, alpha, beta, depth_left-1);
             }
             self.undo_move();
 

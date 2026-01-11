@@ -26,7 +26,7 @@ pub struct Board{
     pub board_hashes: HashMap<u64, u8>,
     pub stalemate: bool,
     pub draw: bool,
-    pub half_move_clock: u8,
+    pub half_move_clock: u16,
     pub capture_log: Vec<Piece>,
     pub castling_rights_log: Vec<CastlingRights>,
     pub en_passant_square: Option<Square>,
